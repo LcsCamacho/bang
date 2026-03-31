@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🤠 BANG! - O Jogo de Cartas</title>
+<link href="https://fonts.googleapis.com/css2?family=Rye&family=Playfair+Display:ital,wght@0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="bang.css">
+</head>
+<body>
+
+<!-- ══ MENU ══ -->
+<div id="menu-screen" class="screen active">
+  <div class="title-banner"><h1>BANG!</h1><div class="sub">O Jogo do Velho Oeste</div></div>
+  <div class="poster" data-badge="★ ESCOLHA O MODO ★">
+    <h2>Como deseja jogar?</h2>
+    <button class="mode-btn offline" onclick="goTo('offline-screen')">
+      <span class="mode-icon">🤖</span>
+      <span class="mode-text"><span>Jogar Offline</span><span class="mode-sub">Você vs bots — Fácil, Médio ou Difícil</span></span>
+    </button>
+    <button class="mode-btn hotseat-m" onclick="goTo('hotseat-screen')">
+      <span class="mode-icon">👥</span>
+      <span class="mode-text"><span>Hotseat Local</span><span class="mode-sub">Vários jogadores no mesmo dispositivo</span></span>
+    </button>
+    <button class="mode-btn disabled">
+      <span class="mode-icon">🌐</span>
+      <span class="mode-text"><span>Jogar Online</span><span class="mode-sub">Partidas em rede com amigos</span></span>
+      <span class="soon-tag">Em Breve</span>
+    </button>
+  </div>
+</div>
+
+<!-- ══ OFFLINE SETUP ══ -->
+<div id="offline-screen" class="screen">
+  <div class="title-banner"><h1>BANG!</h1></div>
+  <div class="poster" data-badge="★ MODO OFFLINE ★">
+    <h2>🤖 Você vs Bots</h2>
+    <div class="sf">
+      <label>Total de Jogadores</label>
+      <input type="range" id="off-n" min="4" max="7" value="5" oninput="document.getElementById('off-nd').textContent=this.value;updateOffInfo()">
+      <div class="cnt" id="off-nd">5</div>
+    </div>
+    <div class="sf">
+      <label>Seu Nome</label>
+      <input type="text" id="human-name" placeholder="Seu apelido aqui">
+    </div>
+    <div class="sf">
+      <label>Dificuldade dos Bots</label>
+      <div class="diff-row">
+        <div class="dopt d-easy"><input type="radio" name="diff" id="de" value="easy"><label for="de">🟢 Fácil<br><span style="font-size:.58rem;opacity:.65">Joga aleatório</span></label></div>
+        <div class="dopt d-med"><input type="radio" name="diff" id="dm" value="medium" checked><label for="dm">🟡 Médio<br><span style="font-size:.58rem;opacity:.65">Tem estratégia</span></label></div>
+        <div class="dopt d-hard"><input type="radio" name="diff" id="dh" value="hard"><label for="dh">🔴 Difícil<br><span style="font-size:.58rem;opacity:.65">Muito agressivo</span></label></div>
+      </div>
+    </div>
+    <div class="info-line" id="off-info"></div>
+    <button class="btn-main" onclick="startOffline()">🤠 Iniciar vs Bots</button>
+    <button class="btn-back" onclick="goTo('menu-screen')">← Voltar</button>
+  </div>
+</div>
+
+<!-- ══ HOTSEAT SETUP ══ -->
+<div id="hotseat-screen" class="screen">
+  <div class="title-banner"><h1>BANG!</h1></div>
+  <div class="poster" data-badge="★ HOTSEAT ★">
+    <h2>👥 Partida Local</h2>
+    <div class="sf">
+      <label>Número de Jogadores</label>
+      <input type="range" id="hs-n" min="4" max="7" value="4" oninput="document.getElementById('hs-nd').textContent=this.value;updateHSNames()">
+      <div class="cnt" id="hs-nd">4</div>
+    </div>
+    <div class="sf"><label>Nomes</label><div id="hs-names" style="display:flex;flex-direction:column;gap:6px;margin-top:5px;"></div></div>
+    <button class="btn-main" onclick="startHotseat()">🤠 Iniciar Partida</button>
+    <button class="btn-back" onclick="goTo('menu-screen')">← Voltar</button>
+  </div>
+</div>
+
+<!-- ══ GAME ══ -->
+<div id="game-screen">
+  <div class="bot-bar" id="bot-bar"></div>
+  <div class="game-layout">
+    <div class="table-area"><div class="table-title">— MESA DO XERIFE —</div><div class="pgrid" id="pgrid"></div></div>
+    <div class="sidebar">
+      <div class="ss">
+        <h3>⚡ Turno</h3>
+        <div class="tinfo"><div class="tname" id="t-name">-</div><div class="tchar" id="t-char">-</div></div>
+        <div class="ptrack"><div class="pdot" id="ph-draw">Comprar</div><div class="pdot" id="ph-play">Jogar</div><div class="pdot" id="ph-discard">Descartar</div></div>
+      </div>
+      <div class="ss">
+        <h3>🃏 Baralho</h3>
+        <div class="dpiles"><div class="dpile">🂠<br><span id="draw-n">-</span></div><div class="dpile" style="opacity:.5">🂡<br><span id="disc-n">-</span></div></div>
+      </div>
+      <div class="ss" style="flex:1;overflow:hidden"><h3>📜 Registro</h3><div class="glog" id="glog"></div></div>
+    </div>
+    <div class="hand-area">
+      <div class="hh"><div class="htitle" id="h-title">Sua Mão</div><div class="hmeta" id="h-meta"></div></div>
+      <div class="crow" id="h-cards"></div>
+      <div class="abts" id="h-btns"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="moverlay" id="tgt-modal">
+  <div class="mbox">
+    <h2 id="m-title">Escolher Alvo</h2><p id="m-desc"></p>
+    <div class="tlist" id="m-list"></div>
+    <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+  </div>
+</div>
+<div class="moverlay" id="store-modal">
+  <div class="mbox"><h2>🏪 Loja Geral</h2><p id="sm-desc">Escolha uma carta:</p><div class="tlist" id="sm-list"></div></div>
+</div>
+
+<!-- HOTSEAT COVER -->
+<div class="hcover" id="hcover">
+  <h2 id="hc-name"></h2>
+  <p>Passe o dispositivo para este jogador.<br>Não mostre sua mão!</p>
+  <p class="rh" id="hc-hint"></p>
+  <button class="btn-main" style="max-width:240px" onclick="revealTurn()">👁 Ver Minha Mão</button>
+</div>
+
+<!-- WIN -->
+<div class="woverlay" id="win-ov">
+  <div class="wbox">
+    <div class="wi" id="w-icon">🤠</div><h1 id="w-title">Vitória!</h1>
+    <p id="w-desc"></p><div class="wroles" id="w-roles"></div>
+    <button class="btn-main" onclick="location.reload()">↺ Nova Partida</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="bang.js"></script>
+</body>
+</html>
