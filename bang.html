@@ -22,10 +22,9 @@
       <span class="mode-icon">👥</span>
       <span class="mode-text"><span>Hotseat Local</span><span class="mode-sub">Vários jogadores no mesmo dispositivo</span></span>
     </button>
-    <button class="mode-btn disabled">
+    <button class="mode-btn online-m" onclick="goTo('online-screen')">
       <span class="mode-icon">🌐</span>
       <span class="mode-text"><span>Jogar Online</span><span class="mode-sub">Partidas em rede com amigos</span></span>
-      <span class="soon-tag">Em Breve</span>
     </button>
   </div>
 </div>
@@ -74,10 +73,31 @@
   </div>
 </div>
 
+<!-- ══ ONLINE LOBBY ══ -->
+<div id="online-screen" class="screen">
+  <div class="title-banner"><h1>BANG!</h1></div>
+  <div class="poster" data-badge="★ ONLINE ★">
+    <h2>🌐 Sala multijogador</h2>
+    <div class="sf"><label>Seu nome</label><input type="text" id="on-name" placeholder="Apelido"></div>
+    <div class="sf"><label>Criar sala</label><button type="button" class="btn-main" onclick="onlineCreateRoom()">➕ Criar sala</button></div>
+    <div class="sf"><label>Entrar com código</label>
+      <input type="text" id="on-room" placeholder="ex.: a1b2c3d4" maxlength="8" style="text-transform:lowercase">
+      <button type="button" class="btn-main" style="margin-top:8px" onclick="onlineJoinRoom()">🚪 Entrar na sala</button>
+    </div>
+    <div id="on-lobby" class="on-lobby" style="display:none">
+      <p class="info-line">Sala: <strong id="on-rid"></strong></p>
+      <ul id="on-plist" class="on-plist"></ul>
+      <button type="button" class="btn-main" id="on-start" style="display:none" onclick="onlineStart()">🤠 Iniciar partida</button>
+    </div>
+    <button class="btn-back" onclick="onlineBack()">← Voltar</button>
+  </div>
+</div>
+
 <!-- ══ GAME ══ -->
 <div id="game-screen">
   <div class="bot-bar" id="bot-bar"></div>
   <div class="game-layout">
+    <div class="opponents-ring" id="opponents-ring" aria-hidden="true"></div>
     <div class="table-area"><div class="table-title">— MESA DO XERIFE —</div><div class="pgrid" id="pgrid"></div></div>
     <div class="sidebar">
       <div class="ss">
@@ -91,7 +111,7 @@
       </div>
       <div class="ss" style="flex:1;overflow:hidden"><h3>📜 Registro</h3><div class="glog" id="glog"></div></div>
     </div>
-    <div class="hand-area">
+    <div class="hand-area hand-dock" id="hand-dock">
       <div class="hh"><div class="htitle" id="h-title">Sua Mão</div><div class="hmeta" id="h-meta"></div></div>
       <div class="crow" id="h-cards"></div>
       <div class="abts" id="h-btns"></div>
@@ -131,5 +151,6 @@
 <div class="toast" id="toast"></div>
 
 <script src="bang.js"></script>
+<script src="bang-network.js"></script>
 </body>
 </html>

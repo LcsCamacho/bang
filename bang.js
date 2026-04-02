@@ -804,6 +804,10 @@ function beginTurn() {
   else if (LocalState.mode === "hotseat") showHotseat();
 }
 function doDraw() {
+  if (LocalState.mode === "online" && typeof BangNetwork !== "undefined") {
+    BangNetwork.sendGameAction({ type: "draw" });
+    return;
+  }
   const p = currentP();
   if (LocalState.phase !== PHASES.draw) return;
   const drawStrategyKey =
@@ -817,17 +821,29 @@ function doDraw() {
   renderGame();
 }
 function endPlay() {
+  if (LocalState.mode === "online" && typeof BangNetwork !== "undefined") {
+    BangNetwork.sendGameAction({ type: "endPlay" });
+    return;
+  }
   if (LocalState.phase === PHASES.play) {
     LocalState.phase = PHASES.discard;
     renderGame();
   }
 }
 function doDiscard(i) {
+  if (LocalState.mode === "online" && typeof BangNetwork !== "undefined") {
+    BangNetwork.sendGameAction({ type: "discard", index: i });
+    return;
+  }
   if (LocalState.phase !== PHASES.discard) return;
   disc(currentP().hand.splice(i, 1)[0]);
   renderGame();
 }
 function endDiscard() {
+  if (LocalState.mode === "online" && typeof BangNetwork !== "undefined") {
+    BangNetwork.sendGameAction({ type: "endDiscard" });
+    return;
+  }
   const p = currentP();
   if (p.hand.length > p.life) {
     toast(`Descarte até ${p.life} carta(s)!`);
@@ -921,6 +937,10 @@ function resolveDuel(ch, df) {
 
 // ═══ PLAY CARD ═══
 function playCard(idx) {
+  if (LocalState.mode === "online" && typeof BangNetwork !== "undefined") {
+    BangNetwork.sendGameAction({ type: "playCard", index: idx });
+    return;
+  }
   if (LocalState.gameOver || LocalState.phase !== "play") return;
   const p = currentP();
   const c = p.hand[idx];
@@ -1184,6 +1204,13 @@ function validTargets(type, atk) {
 }
 
 // ═══ GENERAL STORE ═══
+function closeStoreModal() {
+  const modal = document.getElementById("store-modal");
+  if (modal) modal.classList.remove("open");
+  const list = document.getElementById("sm-list");
+  if (list) list.innerHTML = "";
+}
+
 function resolveStore(p, idx, c) {
   const al = alive();
   LocalState.storeCards = [];
@@ -1208,10 +1235,13 @@ function processStore() {
     LocalState.storePick >= LocalState.storeOrder.length ||
     LocalState.storeCards.length === 0
   ) {
-    document.getElementById("store-modal").classList.remove("open");
+    closeStoreModal();
     renderGame();
     return;
   }
+  // Fecha e limpa antes de cada passo: evita botões antigos clicáveis enquanto bots escolhem (async).
+  closeStoreModal();
+
   const pi = LocalState.storeOrder[LocalState.storePick],
     picker = LocalState.players[pi];
   if (picker.isBot) {
@@ -1232,14 +1262,18 @@ function processStore() {
   document.getElementById("sm-desc").textContent =
     `${picker.name}, escolha uma carta:`;
   const list = document.getElementById("sm-list");
-  list.innerHTML = "";
-  LocalState.storeCards.forEach((c, i) => {
+  LocalState.storeCards.forEach((card) => {
     const btn = document.createElement("button");
     btn.className = "tbtn";
-    btn.innerHTML = `${c.icon} ${c.label} <span class="td">${c.suit}${c.value}</span>`;
+    btn.innerHTML = `${card.icon} ${card.label} <span class="td">${card.suit}${card.value}</span>`;
     btn.onclick = () => {
-      picker.hand.push(LocalState.storeCards.splice(i, 1)[0]);
-      addLog(`🏪 ${picker.name} pega ${c.label}.`);
+      if (LocalState.storeOrder[LocalState.storePick] !== pi) return;
+      const cardIndex = LocalState.storeCards.indexOf(card);
+      if (cardIndex < 0) return;
+      const taken = LocalState.storeCards.splice(cardIndex, 1)[0];
+      closeStoreModal();
+      picker.hand.push(taken);
+      addLog(`🏪 ${picker.name} pega ${taken.label}.`);
       LocalState.storePick++;
       processStore();
     };
@@ -1477,7 +1511,11 @@ function openModal(type, targets, cb) {
   targets.forEach((t) => {
     const btn = document.createElement("button");
     btn.className = "tbtn";
-    btn.innerHTML = `${rIcon(t.role)} ${t.name} <small style="opacity:.6">(${t.char.name})</small> <span class="td">❤️${t.life} dist.${dist(currentP(), t)}</span>`;
+    const sheriffTag =
+      t.role === "sheriff"
+        ? ` <span style="color:var(--sheriff-gold);font-weight:700">${rLabel("sheriff")}</span>`
+        : "";
+    btn.innerHTML = `${rIcon(t.role)} ${t.name}${sheriffTag} <small style="opacity:.6">(${t.char.name})</small> <span class="td">❤️${t.life} dist.${dist(currentP(), t)}</span>`;
     btn.onclick = () => {
       closeModal();
       cb(t);
@@ -1508,7 +1546,7 @@ function revealTurn() {
 
 // ═══ RENDER ═══
 function renderGame() {
-  if (LocalState.gameOver) return;
+  if (LocalState.gameOver && LocalState.mode !== "online") return;
   renderPlayers();
   renderHand();
   renderSidebar();
@@ -1518,6 +1556,23 @@ function renderGame() {
 function renderPlayers() {
   const grid = document.getElementById("pgrid");
   grid.innerHTML = "";
+  const ring = document.getElementById("opponents-ring");
+  if (ring) {
+    ring.innerHTML = "";
+    if (LocalState.mode === "online" && typeof BangNetwork !== "undefined") {
+      const myId = BangNetwork.myPlayerId;
+      LocalState.players.forEach((p, i) => {
+        if (p.id === myId) return;
+        const div = document.createElement("div");
+        div.className = getPlayerCardClassName(p, i === LocalState.current) + " pcard-opp";
+        const bullets = renderPlayerLifeBullets(p);
+        const eq = renderPlayerEquipment(p);
+        const roleDisp = renderPlayerRoleIndicator(p);
+        div.innerHTML = `<div class="ph"><div class="pname">${p.name}</div><div class="prole">${roleDisp}</div></div><div class="pchar">${p.char.name}</div><div class="lbar">${bullets}</div><div class="erow">${eq}</div><div class="hcount">${p.alive ? `🂠 ${p.hand.length}` : "💀"}</div>${p.jailed ? '<div class="jail-banner">PRESO</div>' : ""}${p.hasDynamite ? '<div class="dyn-banner">💣</div>' : ""}`;
+        ring.appendChild(div);
+      });
+    }
+  }
   LocalState.players.forEach((p, i) => {
     const div = document.createElement("div");
     div.className = getPlayerCardClassName(p, i === LocalState.current);
@@ -1565,6 +1620,14 @@ function renderPlayerRoleIndicator(player) {
     { when: () => player.role === "sheriff", render: () => "⭐" },
     { when: () => !player.alive, render: () => rIcon(player.role) },
     {
+      when: () =>
+        LocalState.mode === "online" &&
+        typeof BangNetwork !== "undefined" &&
+        player.id === BangNetwork.myPlayerId &&
+        player.role !== "hidden",
+      render: () => `<span style="font-size:.68rem">${rIcon(player.role)}</span>`,
+    },
+    {
       when: () => LocalState.mode === "offline" && player.isBot,
       render: () =>
         `<span style="font-size:.68rem">${rIcon(player.role)}</span>`,
@@ -1578,16 +1641,24 @@ function renderPlayerRoleIndicator(player) {
 }
 function renderHand() {
   const p = currentP();
+  const myId =
+    LocalState.mode === "online" && typeof BangNetwork !== "undefined"
+      ? BangNetwork.myPlayerId
+      : null;
+  const hideHand =
+    LocalState.mode === "online" && myId != null && p.id !== myId;
   document.getElementById("h-title").textContent = p.isBot
     ? `🤖 ${p.name}`
-    : `Mão de ${p.name}`;
+    : hideHand
+      ? `🂠 ${p.name} (oponente)`
+      : `Mão de ${p.name}`;
   document.getElementById("h-meta").textContent =
     `${p.char.name} · ❤️${p.life}/${p.maxLife} · ${WEAPONS[p.equipment.weaponKey].icon}${WEAPONS[p.equipment.weaponKey].label}`;
   const ce = document.getElementById("h-cards"),
     be = document.getElementById("h-btns");
   ce.innerHTML = "";
   be.innerHTML = "";
-  if (p.isBot) {
+  if (p.isBot || hideHand) {
     for (let i = 0; i < p.hand.length; i++) {
       const el = document.createElement("div");
       el.className = "card disabled";
@@ -1624,6 +1695,10 @@ function renderHand() {
       sb.className = "btn btn-phase";
       sb.textContent = "💊 Descartar 2 → +1 vida";
       sb.onclick = () => {
+        if (LocalState.mode === "online" && typeof BangNetwork !== "undefined") {
+          BangNetwork.sendGameAction({ type: "sidKetchum" });
+          return;
+        }
         for (
           let discardIndex = 0;
           discardIndex < PLAYER_ABILITY_RULES.sidKetchumDiscardCost;
@@ -1668,6 +1743,15 @@ function cardDisabled(c, p) {
 }
 function mkCard(c, idx, disabled) {
   const el = document.createElement("div");
+  if (c.type === "back") {
+    el.className = "card disabled";
+    el.setAttribute("data-type", "back");
+    el.style.cssText =
+      "background:linear-gradient(135deg,#5c3a1e,#3a1f08);border-color:var(--sand);";
+    el.innerHTML =
+      '<span style="font-size:1.8rem;color:var(--sand)">🂠</span>';
+    return el;
+  }
   el.className = "card" + (disabled ? " disabled" : "");
   el.setAttribute("data-type", c.type);
   el.title = CTIPS[c.type] || "";
@@ -1732,4 +1816,52 @@ function toast(msg) {
   el.classList.add("show");
   clearTimeout(el._t);
   el._t = setTimeout(() => el.classList.remove("show"), GAME_LIMITS.toastDurationMs);
+}
+
+// ═══ ONLINE LOBBY ═══
+function renderLobby(msg) {
+  const lobby = document.getElementById("on-lobby");
+  if (!lobby) return;
+  lobby.style.display = "block";
+  const rid = document.getElementById("on-rid");
+  if (rid) rid.textContent = msg.roomId;
+  const list = document.getElementById("on-plist");
+  if (list) {
+    list.innerHTML = "";
+    (msg.players || []).forEach((pl) => {
+      const li = document.createElement("li");
+      li.textContent = `${pl.displayName}${pl.isHost ? " ★ anfitrião" : ""}${pl.isYou ? " (você)" : ""}`;
+      list.appendChild(li);
+    });
+  }
+  const startBtn = document.getElementById("on-start");
+  if (startBtn) startBtn.style.display = msg.youAreHost ? "block" : "none";
+}
+
+function onlineCreateRoom() {
+  const name = document.getElementById("on-name")?.value.trim() || "Jogador";
+  if (typeof BangNetwork === "undefined") {
+    toast("Módulo de rede não carregado.");
+    return;
+  }
+  BangNetwork.createRoom(name);
+}
+
+function onlineJoinRoom() {
+  const code = document.getElementById("on-room")?.value.trim();
+  const name = document.getElementById("on-name")?.value.trim() || "Jogador";
+  if (!code) {
+    toast("Informe o código da sala.");
+    return;
+  }
+  if (typeof BangNetwork !== "undefined") BangNetwork.joinRoom(code, name);
+}
+
+function onlineStart() {
+  if (typeof BangNetwork !== "undefined") BangNetwork.startOnlineGame();
+}
+
+function onlineBack() {
+  if (typeof BangNetwork !== "undefined") BangNetwork.leaveRoom();
+  goTo("menu-screen");
 }
