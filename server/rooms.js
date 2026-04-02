@@ -52,11 +52,11 @@ class Room {
   }
 
   getRoomUpdatePayload(forSocketId) {
-    const list = [];
-    for (const [socketId, p] of this.players) {
-      list.push({
+    const lobbyRows = [];
+    for (const [socketId, seat] of this.players) {
+      lobbyRows.push({
         socketId,
-        displayName: p.displayName,
+        displayName: seat.displayName,
         isHost: socketId === this.hostId,
         isYou: forSocketId != null && socketId === forSocketId,
         ready: true,
@@ -67,7 +67,7 @@ class Room {
       roomId: this.roomId,
       hostId: this.hostId,
       started: this.started,
-      players: list,
+      players: lobbyRows,
       maxPlayers: MAX_PLAYERS,
       youAreHost: forSocketId != null && this.isHost(forSocketId),
     };
@@ -81,14 +81,14 @@ class Room {
     const engine = createBangEngine();
     const names = [];
     const socketOrder = [];
-    for (const [sid, p] of this.players) {
-      socketOrder.push(sid);
-      names.push(p.displayName);
+    for (const [socketId, seat] of this.players) {
+      socketOrder.push(socketId);
+      names.push(seat.displayName);
     }
     const gamePlayers = engine.createOnlinePlayers(names);
-    socketOrder.forEach((sid, i) => {
-      const pl = this.players.get(sid);
-      pl.playerId = gamePlayers[i].id;
+    socketOrder.forEach((socketId, tableIndex) => {
+      const seat = this.players.get(socketId);
+      seat.playerId = gamePlayers[tableIndex].id;
     });
     engine.launchNetworkGame(gamePlayers);
     this.engine = engine;
@@ -98,29 +98,29 @@ class Room {
 
   applyGameAction(socketId, action) {
     if (!this.engine || !this.started) return { error: "Partida não iniciada" };
-    const pl = this.players.get(socketId);
-    if (!pl || pl.playerId == null) return { error: "Jogador não encontrado" };
-    return this.engine.applyAction(pl.playerId, action);
+    const seat = this.players.get(socketId);
+    if (!seat || seat.playerId == null) return { error: "Jogador não encontrado" };
+    return this.engine.applyAction(seat.playerId, action);
   }
 
   getSnapshotFor(socketId) {
     if (!this.engine) return null;
-    const pl = this.players.get(socketId);
-    if (!pl || pl.playerId == null) return null;
-    return buildGameSnapshot(this.engine.getState(), pl.playerId);
+    const seat = this.players.get(socketId);
+    if (!seat || seat.playerId == null) return null;
+    return buildGameSnapshot(this.engine.getState(), seat.playerId);
   }
 
   /**
    * @returns {{ ok: boolean, oldSocketId?: string }}
    */
   reconnectSession(sessionToken, newSocketId) {
-    for (const [oldSid, p] of this.players) {
-      if (p.sessionToken === sessionToken) {
-        if (oldSid === newSocketId) return { ok: true };
-        this.players.delete(oldSid);
-        this.players.set(newSocketId, p);
-        if (this.hostId === oldSid) this.hostId = newSocketId;
-        return { ok: true, oldSocketId: oldSid };
+    for (const [previousSocketId, seat] of this.players) {
+      if (seat.sessionToken === sessionToken) {
+        if (previousSocketId === newSocketId) return { ok: true };
+        this.players.delete(previousSocketId);
+        this.players.set(newSocketId, seat);
+        if (this.hostId === previousSocketId) this.hostId = newSocketId;
+        return { ok: true, oldSocketId: previousSocketId };
       }
     }
     return { ok: false };
@@ -146,9 +146,9 @@ class RoomManager {
   reconnectSocket(roomId, sessionToken, newSocketId) {
     const room = this.rooms.get(roomId);
     if (!room) return { error: "Sala não encontrada" };
-    const r = room.reconnectSession(sessionToken, newSocketId);
-    if (!r.ok) return { error: "Sessão inválida" };
-    if (r.oldSocketId) this.socketToRoom.delete(r.oldSocketId);
+    const sessionOutcome = room.reconnectSession(sessionToken, newSocketId);
+    if (!sessionOutcome.ok) return { error: "Sessão inválida" };
+    if (sessionOutcome.oldSocketId) this.socketToRoom.delete(sessionOutcome.oldSocketId);
     this.socketToRoom.set(newSocketId, roomId);
     return { room };
   }
@@ -205,11 +205,11 @@ class RoomManager {
   broadcastGameState(room, sendFn) {
     if (!room.engine) return;
     for (const socketId of room.players.keys()) {
-      const snap = room.getSnapshotFor(socketId);
-      if (!snap) continue;
+      const gameSnapshot = room.getSnapshotFor(socketId);
+      if (!gameSnapshot) continue;
       sendFn(socketId, {
         type: MESSAGE_TYPES.GAME_STATE,
-        ...snap,
+        ...gameSnapshot,
       });
     }
   }

@@ -8,18 +8,18 @@ const path = require("path");
 const enginePath = path.join(__dirname, "..", "..", "bang-engine.js");
 let body = fs.readFileSync(enginePath, "utf8");
 
-const SERVER_PRELUDE = `function addLog(msg, type = "") {
-  state.log.unshift({ msg, type });
+const SERVER_PRELUDE = `function addLog(logText, type = "") {
+  state.log.unshift({ msg: logText, type });
   if (state.log.length > GAME_LIMITS.logMaxEntries) state.log.pop();
 }
-function rLabel(r) {
-  return ROLE_LABELS[r] || r;
+function rLabel(roleId) {
+  return ROLE_LABELS[roleId] || roleId;
 }
-function rIcon(r) {
-  return ROLE_ICONS[r] || "?";
+function rIcon(roleId) {
+  return ROLE_ICONS[roleId] || "?";
 }
-function toast(msg) {
-  state.lastToast = msg;
+function toast(messageText) {
+  state.lastToast = messageText;
 }
 `;
 

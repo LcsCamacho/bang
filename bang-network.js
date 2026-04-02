@@ -17,56 +17,61 @@
     RECONNECTED: "reconnected",
   };
 
-  let ws = null;
+  let socket = null;
   let myPlayerId = null;
   let sessionToken = null;
   let roomId = null;
   let reconnectTimer = null;
 
   function wsUrl() {
-    const p = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const wsScheme = window.location.protocol === "https:" ? "wss:" : "ws:";
     if (typeof window.BANG_WS_URL === "string" && window.BANG_WS_URL.trim()) {
       return window.BANG_WS_URL.trim();
     }
     if (typeof window.BANG_WS_PORT !== "undefined" && window.BANG_WS_PORT !== null) {
       const port = String(window.BANG_WS_PORT).trim();
-      if (port) return `${p}//${window.location.hostname || "localhost"}:${port}`;
+      if (port)
+        return `${wsScheme}//${window.location.hostname || "localhost"}:${port}`;
     }
-    if (!window.location.host) return `${p}//localhost:3777`;
-    return `${p}//${window.location.host}`;
+    if (!window.location.host) return `${wsScheme}//localhost:3777`;
+    return `${wsScheme}//${window.location.host}`;
   }
 
-  function send(obj) {
-    if (ws && ws.readyState === 1) ws.send(JSON.stringify(obj));
+  function send(payload) {
+    if (socket && socket.readyState === 1) socket.send(JSON.stringify(payload));
   }
 
-  function mergeSnapshot(pub, priv) {
-    if (!pub) return;
-    myPlayerId = priv ? priv.playerId : myPlayerId;
-    document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
-    const gs = document.getElementById("game-screen");
-    if (gs) gs.style.display = "block";
+  function mergeSnapshot(publicSnapshot, privateSnapshot) {
+    if (!publicSnapshot) return;
+    myPlayerId = privateSnapshot ? privateSnapshot.playerId : myPlayerId;
+    document.querySelectorAll(".screen").forEach((screenEl) => screenEl.classList.remove("active"));
+    const gameScreenEl = document.getElementById("game-screen");
+    if (gameScreenEl) gameScreenEl.style.display = "block";
     document.body.classList.add("game-online");
     LocalState.mode = "online";
-    LocalState.gameOver = pub.gameOver;
-    LocalState.current = pub.current;
-    LocalState.phase = pub.phase;
-    LocalState.drawPile = Array(Math.max(0, pub.drawPileCount || 0)).fill(null);
+    LocalState.gameOver = publicSnapshot.gameOver;
+    LocalState.current = publicSnapshot.current;
+    LocalState.phase = publicSnapshot.phase;
+    LocalState.drawPile = Array(Math.max(0, publicSnapshot.drawPileCount || 0)).fill(null);
     LocalState.discardPile = [];
-    LocalState.log = pub.log || [];
-    LocalState.pending = pub.pending || null;
+    LocalState.log = publicSnapshot.log || [];
+    LocalState.pending = publicSnapshot.pending || null;
     LocalState.storeCards = [];
     LocalState.storeOrder = [];
     LocalState.storePick = 0;
 
-    LocalState.players = pub.players.map((sp) => {
-      const isMe = sp.id === myPlayerId;
+    LocalState.players = publicSnapshot.players.map((publicPlayer) => {
+      const isMe = publicPlayer.id === myPlayerId;
       const role =
-        isMe && priv && priv.role ? priv.role : sp.role === "hidden" ? "hidden" : sp.role;
+        isMe && privateSnapshot && privateSnapshot.role
+          ? privateSnapshot.role
+          : publicPlayer.role === "hidden"
+            ? "hidden"
+            : publicPlayer.role;
       const hand =
-        isMe && priv && Array.isArray(priv.hand)
-          ? priv.hand
-          : Array(sp.handCount || 0)
+        isMe && privateSnapshot && Array.isArray(privateSnapshot.hand)
+          ? privateSnapshot.hand
+          : Array(publicPlayer.handCount || 0)
               .fill(null)
               .map(() => ({
                 type: "back",
@@ -76,147 +81,158 @@
                 value: "",
               }));
       return {
-        id: sp.id,
-        name: sp.name,
+        id: publicPlayer.id,
+        name: publicPlayer.name,
         role,
-        char: sp.char || { name: sp.charName, ability: sp.charAbility, desc: "" },
-        life: sp.life,
-        maxLife: sp.maxLife,
+        char: publicPlayer.char || {
+          name: publicPlayer.charName,
+          ability: publicPlayer.charAbility,
+          desc: "",
+        },
+        life: publicPlayer.life,
+        maxLife: publicPlayer.maxLife,
         hand,
-        equipment: sp.equipment || {
+        equipment: publicPlayer.equipment || {
           weaponKey: "colt45",
           barrel: false,
           mustang: false,
           scope: false,
         },
-        alive: sp.alive,
-        jailed: sp.jailed,
-        hasDynamite: sp.hasDynamite,
-        usedBang: sp.usedBang,
+        alive: publicPlayer.alive,
+        jailed: publicPlayer.jailed,
+        hasDynamite: publicPlayer.hasDynamite,
+        usedBang: publicPlayer.usedBang,
         isBot: false,
         difficulty: null,
       };
     });
 
-    if (pub.winInfo) {
+    if (publicSnapshot.winInfo) {
       LocalState.gameOver = true;
-      document.getElementById("w-icon").textContent = pub.winInfo.icon || "🤠";
-      document.getElementById("w-title").textContent = pub.winInfo.title || "";
-      document.getElementById("w-desc").textContent = pub.winInfo.desc || "";
+      document.getElementById("w-icon").textContent = publicSnapshot.winInfo.icon || "🤠";
+      document.getElementById("w-title").textContent = publicSnapshot.winInfo.title || "";
+      document.getElementById("w-desc").textContent = publicSnapshot.winInfo.desc || "";
       document.getElementById("w-roles").innerHTML = LocalState.players
-        .map((p) => {
+        .map((player) => {
           const roleTag =
-            p.role === "hidden" ? "?" : typeof rLabel === "function" ? rLabel(p.role) : p.role;
-          return `<div><b>${p.name}</b> — ${roleTag} (${p.char.name}) ${p.alive ? "✅" : "💀"}</div>`;
+            player.role === "hidden"
+              ? "?"
+              : typeof rLabel === "function"
+                ? rLabel(player.role)
+                : player.role;
+          return `<div><b>${player.name}</b> — ${roleTag} (${player.char.name}) ${player.alive ? "✅" : "💀"}</div>`;
         })
         .join("");
       document.getElementById("win-ov").classList.add("open");
     }
 
-    if (pub.lastToast && typeof toast === "function") toast(pub.lastToast);
+    if (publicSnapshot.lastToast && typeof toast === "function")
+      toast(publicSnapshot.lastToast);
 
-    if (!pub.pending || pub.pending.kind !== "storePick") {
-      const sm = document.getElementById("store-modal");
-      if (sm) sm.classList.remove("open");
+    if (!publicSnapshot.pending || publicSnapshot.pending.kind !== "storePick") {
+      const storeModalEl = document.getElementById("store-modal");
+      if (storeModalEl) storeModalEl.classList.remove("open");
     }
   }
 
   function handlePendingModals() {
-    const p = LocalState.pending;
-    if (!p || LocalState.gameOver) return;
-    if (p.kind === "chooseTarget" && p.playerId === myPlayerId) {
-      const tgts = LocalState.players.filter(
-        (x) => p.validTargetIds && p.validTargetIds.includes(x.id),
+    const pendingAction = LocalState.pending;
+    if (!pendingAction || LocalState.gameOver) return;
+    if (pendingAction.kind === "chooseTarget" && pendingAction.playerId === myPlayerId) {
+      const validTargets = LocalState.players.filter(
+        (player) =>
+          pendingAction.validTargetIds && pendingAction.validTargetIds.includes(player.id),
       );
-      openModal(p.cardType || "bang", tgts, (tgt) => {
-        sendGameAction({ type: "chooseTarget", targetId: tgt.id });
+      openModal(pendingAction.cardType || "bang", validTargets, (chosenTarget) => {
+        sendGameAction({ type: "chooseTarget", targetId: chosenTarget.id });
       });
     }
-    if (p.kind === "missedAsBang" && p.playerId === myPlayerId) {
-      const tgts = LocalState.players.filter(
-        (x) => p.validTargetIds && p.validTargetIds.includes(x.id),
+    if (pendingAction.kind === "missedAsBang" && pendingAction.playerId === myPlayerId) {
+      const validTargets = LocalState.players.filter(
+        (player) =>
+          pendingAction.validTargetIds && pendingAction.validTargetIds.includes(player.id),
       );
-      openModal("bang", tgts, (tgt) => {
-        sendGameAction({ type: "missedAsBangTarget", targetId: tgt.id });
+      openModal("bang", validTargets, (chosenTarget) => {
+        sendGameAction({ type: "missedAsBangTarget", targetId: chosenTarget.id });
       });
     }
-    if (p.kind === "storePick" && p.pickerId === myPlayerId) {
-      const list = document.getElementById("sm-list");
+    if (pendingAction.kind === "storePick" && pendingAction.pickerId === myPlayerId) {
+      const storeListEl = document.getElementById("sm-list");
       document.getElementById("sm-desc").textContent = "Escolha uma carta:";
-      list.innerHTML = "";
-      (p.cards || []).forEach((card, idx) => {
-        const btn = document.createElement("button");
-        btn.className = "tbtn";
-        btn.innerHTML = `${card.icon} ${card.label} <span class="td">${card.suit}${card.value}</span>`;
-        btn.onclick = () => {
+      storeListEl.innerHTML = "";
+      (pendingAction.cards || []).forEach((card, cardIndex) => {
+        const pickCardButton = document.createElement("button");
+        pickCardButton.className = "tbtn";
+        pickCardButton.innerHTML = `${card.icon} ${card.label} <span class="td">${card.suit}${card.value}</span>`;
+        pickCardButton.onclick = () => {
           document.getElementById("store-modal").classList.remove("open");
-          sendGameAction({ type: "storePick", cardIndex: idx });
+          sendGameAction({ type: "storePick", cardIndex });
         };
-        list.appendChild(btn);
+        storeListEl.appendChild(pickCardButton);
       });
       document.getElementById("store-modal").classList.add("open");
     }
   }
 
-  function onMessage(ev) {
-    let msg;
+  function onMessage(event) {
+    let message;
     try {
-      msg = JSON.parse(ev.data);
+      message = JSON.parse(event.data);
     } catch {
       return;
     }
-    if (msg.type === MSG.ERROR) {
-      if (typeof toast === "function") toast(msg.message || "Erro");
+    if (message.type === MSG.ERROR) {
+      if (typeof toast === "function") toast(message.message || "Erro");
       return;
     }
-    if (msg.type === MSG.ROOM_UPDATE) {
-      sessionToken = msg.sessionToken || sessionToken;
-      roomId = msg.roomId || roomId;
-      if (typeof renderLobby === "function") renderLobby(msg);
+    if (message.type === MSG.ROOM_UPDATE) {
+      sessionToken = message.sessionToken || sessionToken;
+      roomId = message.roomId || roomId;
+      if (typeof renderLobby === "function") renderLobby(message);
       return;
     }
-    if (msg.type === MSG.GAME_STATE) {
-      mergeSnapshot(msg.public, msg.private);
-      sessionToken = msg.sessionToken || sessionToken;
+    if (message.type === MSG.GAME_STATE) {
+      mergeSnapshot(message.public, message.private);
+      sessionToken = message.sessionToken || sessionToken;
       if (typeof renderGame === "function") renderGame();
       handlePendingModals();
       return;
     }
-    if (msg.type === MSG.RECONNECTED) {
-      roomId = msg.roomId || roomId;
+    if (message.type === MSG.RECONNECTED) {
+      roomId = message.roomId || roomId;
       return;
     }
   }
 
   function connect() {
-    if (ws && ws.readyState === 1) return ws;
+    if (socket && socket.readyState === 1) return socket;
     const targetUrl = wsUrl();
     console.log("[BangNetwork] connecting to", targetUrl);
-    ws = new WebSocket(targetUrl);
-    ws.onopen = () => {
+    socket = new WebSocket(targetUrl);
+    socket.onopen = () => {
       console.log("[BangNetwork] connected");
       if (sessionToken && roomId) {
         send({ type: MSG.RECONNECT, sessionToken, roomId });
       }
     };
-    ws.onmessage = onMessage;
-    ws.onclose = () => {
+    socket.onmessage = onMessage;
+    socket.onclose = () => {
       console.warn("[BangNetwork] disconnected, retrying...");
       if (typeof toast === "function") toast("Conexão perdida. Reconectando…");
       clearTimeout(reconnectTimer);
       reconnectTimer = setTimeout(connect, 2000);
     };
-    ws.onerror = (ev) => {
-      console.error("[BangNetwork] websocket error", ev);
+    socket.onerror = (errorEvent) => {
+      console.error("[BangNetwork] websocket error", errorEvent);
     };
-    return ws;
+    return socket;
   }
 
   function ensureSend(payload) {
-    const sock = connect();
-    if (sock.readyState === 1) send(payload);
+    const activeSocket = connect();
+    if (activeSocket.readyState === 1) send(payload);
     else
-      sock.addEventListener(
+      activeSocket.addEventListener(
         "open",
         () => {
           send(payload);
@@ -234,8 +250,8 @@
     ensureSend({ type: MSG.CREATE_ROOM, displayName });
   }
 
-  function joinRoom(id, displayName) {
-    ensureSend({ type: MSG.JOIN_ROOM, roomId: id.trim(), displayName });
+  function joinRoom(roomCode, displayName) {
+    ensureSend({ type: MSG.JOIN_ROOM, roomId: roomCode.trim(), displayName });
   }
 
   function leaveRoom() {

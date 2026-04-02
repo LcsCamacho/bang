@@ -47,6 +47,7 @@ const MESSAGE_TYPES = {
   ROOM_UPDATE: "roomUpdate",
   GAME_STATE: "gameState",
   ERROR: "error",
+  /** Resposta a PING; corpo típico: `{ type, serverTimeMs }` */
   PONG: "pong",
   RECONNECTED: "reconnected",
 };

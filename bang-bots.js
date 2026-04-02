@@ -1,17 +1,17 @@
 // ═══ BOT AI ═══
 // ═══ BOT AI ═══
 function botDoTurn() {
-  const p = currentP();
-  if (!p.isBot) return;
+  const botPlayer = currentP();
+  if (!botPlayer.isBot) return;
   showBotBar();
   doDraw();
   setTimeout(botPlay, GAME_LIMITS.botStartDelayMs);
 }
 function showBotBar() {
-  const p = currentP();
-  const b = document.getElementById("bot-bar");
-  b.textContent = `🤖 ${p.name} está jogando... (${p.char.name} · ${diffLabel(p.difficulty)})`;
-  b.classList.add("show");
+  const botPlayer = currentP();
+  const botBarEl = document.getElementById("bot-bar");
+  botBarEl.textContent = `🤖 ${botPlayer.name} está jogando... (${botPlayer.char.name} · ${diffLabel(botPlayer.difficulty)})`;
+  botBarEl.classList.add("show");
 }
 function hideBotBar() {
   document.getElementById("bot-bar").classList.remove("show");
@@ -21,11 +21,11 @@ function diffLabel(d) {
 }
 
 function botPlay() {
-  const p = currentP();
-  if (!p.isBot || LocalState.phase !== PHASES.play || LocalState.gameOver) return;
+  const botPlayer = currentP();
+  if (!botPlayer.isBot || LocalState.phase !== PHASES.play || LocalState.gameOver) return;
   const playStrategy =
-    BOT_TURN_STRATEGY[p.difficulty] || BOT_TURN_STRATEGY.hard;
-  const acted = playStrategy(p);
+    BOT_TURN_STRATEGY[botPlayer.difficulty] || BOT_TURN_STRATEGY.hard;
+  const acted = playStrategy(botPlayer);
   if (acted && !LocalState.gameOver) setTimeout(botPlay, GAME_LIMITS.botLoopDelayMs);
   else
     setTimeout(() => {
@@ -34,13 +34,13 @@ function botPlay() {
     }, GAME_LIMITS.botEndDelayMs);
 }
 
-function botEasy(p) {
-  const play = p.hand
-    .map((c, i) => ({ c, i }))
-    .filter(({ c }) => !botSkip(c, p));
-  if (!play.length) return false;
-  const { c, i } = play[Math.floor(Math.random() * play.length)];
-  return botUse(p, i, c);
+function botEasy(botPlayer) {
+  const playable = botPlayer.hand
+    .map((card, handIndex) => ({ card, handIndex }))
+    .filter(({ card }) => !botSkip(card, botPlayer));
+  if (!playable.length) return false;
+  const { card, handIndex } = playable[Math.floor(Math.random() * playable.length)];
+  return botUse(botPlayer, handIndex, card);
 }
 
 function getAliveSheriff() {
@@ -138,80 +138,87 @@ function executeBotRules(player, rules) {
   const firstAppliedRule = rules.find((rule) => rule(player));
   return Boolean(firstAppliedRule);
 }
-function botMedium(p) {
-  return executeBotRules(p, BOT_RULES.medium);
+function botMedium(botPlayer) {
+  return executeBotRules(botPlayer, BOT_RULES.medium);
 }
 
-function botHard(p) {
-  return executeBotRules(p, BOT_RULES.hard);
+function botHard(botPlayer) {
+  return executeBotRules(botPlayer, BOT_RULES.hard);
 }
 
-function bestWeaponIdx(p) {
-  let best = { reach: WEAPONS[p.equipment.weaponKey]?.reach || 1, i: -1 };
-  p.hand.forEach((c, i) => {
-    if (!WEAPON_CARD_TYPES.includes(c.type)) return;
-    const r =
-      WEAPONS[c.weaponKey || c.type]?.reach || GAME_LIMITS.defaultWeaponReach;
-    if (r > best.reach) best = { reach: r, i };
+function bestWeaponIdx(player) {
+  let bestWeapon = { reach: WEAPONS[player.equipment.weaponKey]?.reach || 1, handIndex: -1 };
+  player.hand.forEach((card, handIndex) => {
+    if (!WEAPON_CARD_TYPES.includes(card.type)) return;
+    const weaponReach =
+      WEAPONS[card.weaponKey || card.type]?.reach || GAME_LIMITS.defaultWeaponReach;
+    if (weaponReach > bestWeapon.reach) bestWeapon = { reach: weaponReach, handIndex };
   });
-  return best.i;
+  return bestWeapon.handIndex;
 }
-function execAndRemove(p, i, c, tgt) {
-  const ok = execCard(p, i, c, tgt);
-  if (ok) {
-    removeC(p, i);
-    disc(c);
-    suzyCheck(p);
+function execAndRemove(player, handIndex, card, target) {
+  const cardResolved = execCard(player, handIndex, card, target);
+  if (cardResolved) {
+    removeC(player, handIndex);
+    disc(card);
+    suzyCheck(player);
     renderGame();
   }
   return ok;
 }
-function botUse(p, i, c) {
-  if (CARD_TYPES_REQUIRING_TARGET.includes(c.type)) {
-    const tgt = botTgt(p, c.type === "panic" ? "rich1" : "hostile");
-    if (!tgt) return false;
-    return execAndRemove(p, i, c, tgt) !== false;
+function botUse(botPlayer, handIndex, card) {
+  if (CARD_TYPES_REQUIRING_TARGET.includes(card.type)) {
+    const target = botTgt(botPlayer, card.type === "panic" ? "rich1" : "hostile");
+    if (!target) return false;
+    return execAndRemove(botPlayer, handIndex, card, target) !== false;
   }
-  return execAndRemove(p, i, c, null) !== false;
+  return execAndRemove(botPlayer, handIndex, card, null) !== false;
 }
-function botSkip(c, p) {
-  return shouldSkipCardForPlayer(c, p);
+function botSkip(card, player) {
+  return shouldSkipCardForPlayer(card, player);
 }
-function botTgt(p, strat) {
-  const al = alive().filter((t) => t !== p);
-  if (!al.length) return null;
+function botTgt(botPlayer, strategy) {
+  const others = alive().filter((candidate) => candidate !== botPlayer);
+  if (!others.length) return null;
   function hostile(target) {
-    const roleStrategy = ROLE_HOSTILITY_STRATEGY[p.role];
+    const roleStrategy = ROLE_HOSTILITY_STRATEGY[botPlayer.role];
     if (roleStrategy) return roleStrategy(target);
-    if (p.role === "renegade")
-      return al.length > 2 ? target.role === "outlaw" : true;
+    if (botPlayer.role === "renegade")
+      return others.length > 2 ? target.role === "outlaw" : true;
     return true;
   }
-  const hos = al.filter(hostile);
-  const pool = hos.length ? hos : al;
-  if (strat === "hostile" || strat === "strongest") {
-    const inR = pool.filter((t) => canShoot(p, t));
-    const cands = inR.length ? inR : pool;
-    return cands.reduce((b, t) => (t.life < b.life ? t : b), cands[0]);
+  const hostilePool = others.filter(hostile);
+  const candidatePool = hostilePool.length ? hostilePool : others;
+  if (strategy === "hostile" || strategy === "strongest") {
+    const inShootingRange = candidatePool.filter((candidate) => canShoot(botPlayer, candidate));
+    const lifePickPool = inShootingRange.length ? inShootingRange : candidatePool;
+    return lifePickPool.reduce(
+      (lowestLife, candidate) => (candidate.life < lowestLife.life ? candidate : lowestLife),
+      lifePickPool[0],
+    );
   }
-  if (strat === "rich1") {
-    const d1 = al.filter((t) => dist(p, t) <= 1);
-    if (!d1.length) return null;
-    return d1.reduce((b, t) => (t.hand.length > b.hand.length ? t : b), d1[0]);
+  if (strategy === "rich1") {
+    const atDistanceOne = others.filter((candidate) => dist(botPlayer, candidate) <= 1);
+    if (!atDistanceOne.length) return null;
+    return atDistanceOne.reduce(
+      (richest, candidate) =>
+        candidate.hand.length > richest.hand.length ? candidate : richest,
+      atDistanceOne[0],
+    );
   }
-  return pool[Math.floor(Math.random() * pool.length)];
+  return candidatePool[Math.floor(Math.random() * candidatePool.length)];
 }
 function botDiscard() {
-  const p = currentP();
-  if (!p.alive) {
+  const botPlayer = currentP();
+  if (!botPlayer.alive) {
     advTurn();
     return;
   }
-  while (p.hand.length > p.life) {
-    const mi = findC(p, "missed");
-    disc(removeC(p, mi >= 0 ? mi : p.hand.length - 1));
+  while (botPlayer.hand.length > botPlayer.life) {
+    const missedIdx = findC(botPlayer, "missed");
+    disc(removeC(botPlayer, missedIdx >= 0 ? missedIdx : botPlayer.hand.length - 1));
   }
-  addLog(`🤖 ${p.name} encerra o turno.`, "bot");
+  addLog(`🤖 ${botPlayer.name} encerra o turno.`, "bot");
   hideBotBar();
   setTimeout(advTurn, GAME_LIMITS.botEndDelayMs);
 }

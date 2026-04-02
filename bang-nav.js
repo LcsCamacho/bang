@@ -1,8 +1,8 @@
 // ═══ NAV ═══
-function goTo(id) {
+function goTo(screenElementId) {
   document
     .querySelectorAll(".screen")
-    .forEach((s) => s.classList.remove("active"));
-  const el = document.getElementById(id);
-  if (el) el.classList.add("active");
+    .forEach((screenEl) => screenEl.classList.remove("active"));
+  const targetScreen = document.getElementById(screenElementId);
+  if (targetScreen) targetScreen.classList.add("active");
 }

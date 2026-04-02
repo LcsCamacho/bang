@@ -1,15 +1,15 @@
-function addLog(msg, type = "") {
-  state.log.unshift({ msg, type });
+function addLog(logText, type = "") {
+  state.log.unshift({ msg: logText, type });
   if (state.log.length > GAME_LIMITS.logMaxEntries) state.log.pop();
 }
-function rLabel(r) {
-  return ROLE_LABELS[r] || r;
+function rLabel(roleId) {
+  return ROLE_LABELS[roleId] || roleId;
 }
-function rIcon(r) {
-  return ROLE_ICONS[r] || "?";
+function rIcon(roleId) {
+  return ROLE_ICONS[roleId] || "?";
 }
-function toast(msg) {
-  state.lastToast = msg;
+function toast(messageText) {
+  state.lastToast = messageText;
 }
 // ═══ ENGINE ═══ (estado local, turno, cartas, combate, loja — sem bots/UI de log)
 function createDefaultEquipment() {
@@ -115,38 +115,38 @@ function buildDeck() {
       weaponKey: "winchester",
     },
   ].forEach((w) => cards.push(w));
-  const sv = [];
-  SUITS.forEach((s) => VALUES.forEach((v) => sv.push({ s, v })));
-  shuffle(sv);
-  cards.forEach((c, i) => {
-    const x = sv[i % sv.length];
-    c.suit = x.s;
-    c.value = x.v;
+  const suitValuePairs = [];
+  SUITS.forEach((suit) => VALUES.forEach((value) => suitValuePairs.push({ suit, value })));
+  shuffle(suitValuePairs);
+  cards.forEach((card, cardIndex) => {
+    const pair = suitValuePairs[cardIndex % suitValuePairs.length];
+    card.suit = pair.suit;
+    card.value = pair.value;
   });
   return cards;
 }
-function shuffle(a) {
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+function shuffle(items) {
+  for (let lastIndex = items.length - 1; lastIndex > 0; lastIndex--) {
+    const swapIndex = Math.floor(Math.random() * (lastIndex + 1));
+    [items[lastIndex], items[swapIndex]] = [items[swapIndex], items[lastIndex]];
   }
-  return a;
+  return items;
 }
 
 // ═══ STATE ═══
-function buildRoles(n) {
-  return ROLE_SETUPS[n] || ROLE_SETUPS.default;
+function buildRoles(playerCount) {
+  return ROLE_SETUPS[playerCount] || ROLE_SETUPS.default;
 }
 function mkPlayer(id, name, role, char, isBot, diff) {
-  let ml = char.life + (role === "sheriff" ? 1 : 0);
-  ml = Math.min(ml, GAME_LIMITS.maxLifeCap);
+  let startingLife = char.life + (role === "sheriff" ? 1 : 0);
+  startingLife = Math.min(startingLife, GAME_LIMITS.maxLifeCap);
   return {
     id,
     name,
     role,
     char,
-    life: ml,
-    maxLife: ml,
+    life: startingLife,
+    maxLife: startingLife,
     hand: [],
     equipment: createDefaultEquipment(),
     alive: true,
@@ -207,9 +207,10 @@ function createRandomRolesAndChars(totalPlayers) {
 
 // ═══ SETUP SCREENS ═══
 function updateOffInfo() {
-  const n = parseInt(document.getElementById("off-n").value);
+  const totalPlayers = parseInt(document.getElementById("off-n").value);
+  const botCount = totalPlayers - 1;
   document.getElementById("off-info").textContent =
-    `Você + ${n - 1} bot${n - 1 > 1 ? "s" : ""} (${n} jogadores)`;
+    `Você + ${botCount} bot${botCount > 1 ? "s" : ""} (${totalPlayers} jogadores)`;
 }
 updateOffInfo();
 function updateHSNames() {
@@ -252,12 +253,12 @@ function launchGame(players, mode) {
 }
 
 // ═══ CARD OPS ═══
-function dealCard(p) {
+function dealCard(player) {
   if (state.drawPile.length === 0) reshuf();
   if (state.drawPile.length === 0) return null;
-  const c = state.drawPile.pop();
-  p.hand.push(c);
-  return c;
+  const drawnCard = state.drawPile.pop();
+  player.hand.push(drawnCard);
+  return drawnCard;
 }
 function reshuf() {
   if (state.discardPile.length === 0) return;
@@ -265,63 +266,63 @@ function reshuf() {
   state.discardPile = [];
   addLog("Baralho reembaralhado.");
 }
-function disc(c) {
-  if (c) state.discardPile.push(c);
+function disc(card) {
+  if (card) state.discardPile.push(card);
 }
-function findC(p, t) {
-  return p.hand.findIndex((c) => c.type === t);
+function findC(player, cardType) {
+  return player.hand.findIndex((card) => card.type === cardType);
 }
-function removeC(p, i) {
-  return p.hand.splice(i, 1)[0];
+function removeC(player, handIndex) {
+  return player.hand.splice(handIndex, 1)[0];
 }
 
 // ═══ DISTANCE ═══
 function alive() {
-  return state.players.filter((p) => p.alive);
+  return state.players.filter((player) => player.alive);
 }
-function dist(a, b) {
-  const al = alive();
-  const ai = al.indexOf(a),
-    bi = al.indexOf(b);
-  if (ai < 0 || bi < 0) return GAME_LIMITS.invalidDistance;
-  const n = al.length;
-  let d = Math.abs(ai - bi);
-  d = Math.min(d, n - d);
-  if (b.equipment.mustang || b.char.ability === "builtinMustang") d++;
-  if (a.equipment.scope) d--;
-  return Math.max(GAME_LIMITS.minimumDistance, d);
+function dist(fromPlayer, toPlayer) {
+  const aliveRing = alive();
+  const indexFrom = aliveRing.indexOf(fromPlayer);
+  const indexTo = aliveRing.indexOf(toPlayer);
+  if (indexFrom < 0 || indexTo < 0) return GAME_LIMITS.invalidDistance;
+  const aliveCount = aliveRing.length;
+  let distance = Math.abs(indexFrom - indexTo);
+  distance = Math.min(distance, aliveCount - distance);
+  if (toPlayer.equipment.mustang || toPlayer.char.ability === "builtinMustang") distance++;
+  if (fromPlayer.equipment.scope) distance--;
+  return Math.max(GAME_LIMITS.minimumDistance, distance);
 }
-function reach(p) {
-  return WEAPONS[p.equipment.weaponKey]?.reach || GAME_LIMITS.defaultWeaponReach;
+function reach(player) {
+  return WEAPONS[player.equipment.weaponKey]?.reach || GAME_LIMITS.defaultWeaponReach;
 }
-function canShoot(a, b) {
-  return dist(a, b) <= reach(a);
+function canShoot(attacker, defender) {
+  return dist(attacker, defender) <= reach(attacker);
 }
 
 // ═══ DRAW CHECK ═══
 function drawCheck() {
   if (state.drawPile.length === 0) reshuf();
-  const c = state.drawPile.pop();
-  disc(c);
-  return c;
+  const drawnCard = state.drawPile.pop();
+  disc(drawnCard);
+  return drawnCard;
 }
-function drawCheckLD(p) {
-  const c1 = drawCheck(),
-    c2 = drawCheck();
+function drawCheckLD(player) {
+  const firstDraw = drawCheck();
+  const secondDraw = drawCheck();
   addLog(
-    `${p.name} (Lucky Duke): ${c1.suit}${c1.value} e ${c2.suit}${c2.value}`,
+    `${player.name} (Lucky Duke): ${firstDraw.suit}${firstDraw.value} e ${secondDraw.suit}${secondDraw.value}`,
     "bot",
   );
-  return [c1, c2];
+  return [firstDraw, secondDraw];
 }
-function doDrawCheck(p) {
-  if (p.char.ability === "twoDraws") {
-    const [c1, c2] = drawCheckLD(p);
-    return c1;
+function doDrawCheck(player) {
+  if (player.char.ability === "twoDraws") {
+    const [firstDraw] = drawCheckLD(player);
+    return firstDraw;
   }
-  const c = drawCheck();
-  addLog(`Draw!: ${c.suit}${c.value}`);
-  return c;
+  const drawnCard = drawCheck();
+  addLog(`Draw!: ${drawnCard.suit}${drawnCard.value}`);
+  return drawnCard;
 }
 function isDynamiteExplosionCard(card) {
   return (
@@ -391,8 +392,8 @@ function drawTwoDefaultCards(player) {
 }
 
 // ═══ DAMAGE ═══
-function damage(target, attacker, amt = 1) {
-  for (let i = 0; i < amt; i++) {
+function damage(target, attacker, damageAmount = 1) {
+  for (let hitIndex = 0; hitIndex < damageAmount; hitIndex++) {
     if (target.life <= 0) break;
     target.life--;
     addLog(
@@ -406,11 +407,11 @@ function damage(target, attacker, amt = 1) {
       attacker.alive &&
       attacker.hand.length > 0
     ) {
-      const st = attacker.hand.splice(
+      const stolenCard = attacker.hand.splice(
         Math.floor(Math.random() * attacker.hand.length),
         1,
       )[0];
-      target.hand.push(st);
+      target.hand.push(stolenCard);
       addLog(`El Gringo (${target.name}) rouba de ${attacker.name}!`, "bot");
     }
     if (target.life <= 0) {
@@ -419,43 +420,48 @@ function damage(target, attacker, amt = 1) {
     }
   }
 }
-function heal(p, amt = 1) {
-  p.life = Math.min(p.life + amt, p.maxLife);
-  addLog(`❤️ ${p.name} +${amt} vida (${p.life}/${p.maxLife})`, "hl");
+function heal(player, amount = 1) {
+  player.life = Math.min(player.life + amount, player.maxLife);
+  addLog(`❤️ ${player.name} +${amount} vida (${player.life}/${player.maxLife})`, "hl");
 }
-function elim(p, killer) {
-  p.alive = false;
-  addLog(`💀 ${p.name} eliminado! (${rLabel(p.role)})`, "dth");
-  if (p.role === "outlaw" && killer && killer !== p && killer.alive) {
-    for (let i = 0; i < GAME_LIMITS.outlawKillRewardCards; i++) dealCard(killer);
+function elim(eliminated, killer) {
+  eliminated.alive = false;
+  addLog(`💀 ${eliminated.name} eliminado! (${rLabel(eliminated.role)})`, "dth");
+  if (eliminated.role === "outlaw" && killer && killer !== eliminated && killer.alive) {
+    for (let rewardIndex = 0; rewardIndex < GAME_LIMITS.outlawKillRewardCards; rewardIndex++)
+      dealCard(killer);
     addLog(`🎁 ${killer.name} recebe ${GAME_LIMITS.outlawKillRewardCards} cartas!`);
   }
-  if (p.role === "deputy" && killer && killer.role === "sheriff") {
+  if (eliminated.role === "deputy" && killer && killer.role === "sheriff") {
     killer.hand = [];
     killer.equipment = createDefaultEquipment();
     addLog(`⭐ Xerife matou o próprio deputado — perde tudo!`, "imp");
   }
-  state.players.forEach((pl) => {
-    if (pl.char.ability === "vultureSam" && pl.alive && pl !== p) {
-      p.hand.forEach((c) => pl.hand.push(c));
-      p.hand = [];
-      addLog(`🦅 Vulture Sam (${pl.name}) pega cartas de ${p.name}!`);
+  state.players.forEach((scavenger) => {
+    if (
+      scavenger.char.ability === "vultureSam" &&
+      scavenger.alive &&
+      scavenger !== eliminated
+    ) {
+      eliminated.hand.forEach((handCard) => scavenger.hand.push(handCard));
+      eliminated.hand = [];
+      addLog(`🦅 Vulture Sam (${scavenger.name}) pega cartas de ${eliminated.name}!`);
     }
   });
-  if (p.hand.length > 0) {
-    p.hand.forEach((c) => disc(c));
-    p.hand = [];
+  if (eliminated.hand.length > 0) {
+    eliminated.hand.forEach((handCard) => disc(handCard));
+    eliminated.hand = [];
   }
   checkWin();
 }
-function beerRescue(p) {
-  if (!p.alive && alive().length > 2) {
-    const bi = findC(p, "beer");
-    if (bi >= 0) {
-      disc(removeC(p, bi));
-      p.life = 1;
-      p.alive = true;
-      addLog(`🍺 ${p.name} bebe cerveja e sobrevive!`, "hl");
+function beerRescue(player) {
+  if (!player.alive && alive().length > 2) {
+    const beerIdx = findC(player, "beer");
+    if (beerIdx >= 0) {
+      disc(removeC(player, beerIdx));
+      player.life = 1;
+      player.alive = true;
+      addLog(`🍺 ${player.name} bebe cerveja e sobrevive!`, "hl");
     }
   }
 }
@@ -463,12 +469,20 @@ function beerRescue(p) {
 // ═══ WIN ═══
 function checkWin() {
   if (state.gameOver) return;
-  const sA = state.players.some((p) => p.role === "sheriff" && p.alive);
-  const oA = state.players.some((p) => p.role === "outlaw" && p.alive);
-  const rA = state.players.some((p) => p.role === "renegade" && p.alive);
-  const dA = state.players.some((p) => p.role === "deputy" && p.alive);
-  if (!sA) {
-    if (!oA && !dA && rA)
+  const sheriffAlive = state.players.some(
+    (player) => player.role === "sheriff" && player.alive,
+  );
+  const outlawAlive = state.players.some(
+    (player) => player.role === "outlaw" && player.alive,
+  );
+  const renegadeAlive = state.players.some(
+    (player) => player.role === "renegade" && player.alive,
+  );
+  const deputyAlive = state.players.some(
+    (player) => player.role === "deputy" && player.alive,
+  );
+  if (!sheriffAlive) {
+    if (!outlawAlive && !deputyAlive && renegadeAlive)
       return showWin(
         "🤠",
         "Renegado Vence!",
@@ -480,7 +494,7 @@ function checkWin() {
       "O Xerife foi abatido. A lei acabou!",
     );
   }
-  if (!oA && !rA)
+  if (!outlawAlive && !renegadeAlive)
     showWin("⭐", "Xerife Vence!", "A ordem foi restaurada no Velho Oeste!");
 }
 function showWin(icon, title, desc) {
@@ -491,23 +505,23 @@ function showWin(icon, title, desc) {
 // ═══ TURN ═══
 function beginTurn() {
   if (state.gameOver) return;
-  const p = currentP();
-  p.usedBang = false;
-  if (!resolveDynamiteAtTurnStart(p)) {
+  const activePlayer = currentP();
+  activePlayer.usedBang = false;
+  if (!resolveDynamiteAtTurnStart(activePlayer)) {
     advTurn();
     return;
   }
-  if (!p.alive) {
+  if (!activePlayer.alive) {
     advTurn();
     return;
   }
-  if (!resolveJailAtTurnStart(p)) {
+  if (!resolveJailAtTurnStart(activePlayer)) {
     advTurn();
     return;
   }
   state.phase = PHASES.draw;
   renderGame();
-  if (p.isBot) setTimeout(botDoTurn, GAME_LIMITS.botTurnDelayMs);
+  if (activePlayer.isBot) setTimeout(botDoTurn, GAME_LIMITS.botTurnDelayMs);
   else if (state.mode === "hotseat") showHotseat();
 }
 function doDraw() {
@@ -515,15 +529,15 @@ function doDraw() {
     BangNetwork.sendGameAction({ type: "draw" });
     return;
   }
-  const p = currentP();
+  const activePlayer = currentP();
   if (state.phase !== PHASES.draw) return;
   const drawStrategyKey =
-    p.char.ability === "discardDraw" && state.discardPile.length === 0
+    activePlayer.char.ability === "discardDraw" && state.discardPile.length === 0
       ? "default"
-      : p.char.ability;
+      : activePlayer.char.ability;
   const drawStrategy =
     DRAW_STRATEGIES[drawStrategyKey] || DRAW_STRATEGIES.default;
-  drawStrategy(p);
+  drawStrategy(activePlayer);
   state.phase = PHASES.play;
   renderGame();
 }
@@ -537,13 +551,13 @@ function endPlay() {
     renderGame();
   }
 }
-function doDiscard(i) {
+function doDiscard(handIndex) {
   if (state.mode === "online" && typeof BangNetwork !== "undefined") {
-    BangNetwork.sendGameAction({ type: "discard", index: i });
+    BangNetwork.sendGameAction({ type: "discard", index: handIndex });
     return;
   }
   if (state.phase !== PHASES.discard) return;
-  disc(currentP().hand.splice(i, 1)[0]);
+  disc(currentP().hand.splice(handIndex, 1)[0]);
   renderGame();
 }
 function endDiscard() {
@@ -551,9 +565,9 @@ function endDiscard() {
     BangNetwork.sendGameAction({ type: "endDiscard" });
     return;
   }
-  const p = currentP();
-  if (p.hand.length > p.life) {
-    toast(`Descarte até ${p.life} carta(s)!`);
+  const activePlayer = currentP();
+  if (activePlayer.hand.length > activePlayer.life) {
+    toast(`Descarte até ${activePlayer.life} carta(s)!`);
     return;
   }
   advTurn();
@@ -566,122 +580,125 @@ function advTurn() {
   renderGame();
   beginTurn();
 }
-function nextAlive(from) {
-  let n = (from + 1) % state.players.length,
-    s = 0;
-  while (!state.players[n].alive && s < state.players.length) {
-    n = (n + 1) % state.players.length;
-    s++;
+function nextAlive(fromSeatIndex) {
+  let cursor = (fromSeatIndex + 1) % state.players.length;
+  let stepsChecked = 0;
+  while (!state.players[cursor].alive && stepsChecked < state.players.length) {
+    cursor = (cursor + 1) % state.players.length;
+    stepsChecked++;
   }
-  return n;
+  return cursor;
 }
 function currentP() {
   return state.players[state.current];
 }
 
 // ═══ COMBAT ═══
-function resolveShot(atk, tgt) {
-  addLog(`🔫 ${atk.name} atira em ${tgt.name}!`);
+function resolveShot(attacker, target) {
+  addLog(`🔫 ${attacker.name} atira em ${target.name}!`);
   const hasBarrel =
-    tgt.equipment.barrel || tgt.char.ability === "builtinBarrel";
+    target.equipment.barrel || target.char.ability === "builtinBarrel";
   if (hasBarrel) {
-    const dc = doDrawCheck(tgt);
-    if (dc.suit === "♥") {
-      addLog(`🛢️ Barril salvou ${tgt.name}!`);
+    const barrelDraw = doDrawCheck(target);
+    if (barrelDraw.suit === "♥") {
+      addLog(`🛢️ Barril salvou ${target.name}!`);
       return;
     }
   }
-  const need = atk.char.ability === "doubleMissed" ? 2 : 1;
-  const avM = tgt.hand.filter((c) => c.type === "missed").length;
-  const avA =
-    tgt.char.ability === "bangMissed"
-      ? tgt.hand.filter((c) => c.type === "bang").length
+  const missesRequired = attacker.char.ability === "doubleMissed" ? 2 : 1;
+  const missedCount = target.hand.filter((card) => card.type === "missed").length;
+  const bangAsMissedCount =
+    target.char.ability === "bangMissed"
+      ? target.hand.filter((card) => card.type === "bang").length
       : 0;
-  if (avM + avA >= need) {
-    let r = need;
-    while (r > 0 && findC(tgt, "missed") >= 0) {
-      disc(removeC(tgt, findC(tgt, "missed")));
-      r--;
+  if (missedCount + bangAsMissedCount >= missesRequired) {
+    let remaining = missesRequired;
+    while (remaining > 0 && findC(target, "missed") >= 0) {
+      disc(removeC(target, findC(target, "missed")));
+      remaining--;
     }
     while (
-      r > 0 &&
-      tgt.char.ability === "bangMissed" &&
-      findC(tgt, "bang") >= 0
+      remaining > 0 &&
+      target.char.ability === "bangMissed" &&
+      findC(target, "bang") >= 0
     ) {
-      disc(removeC(tgt, findC(tgt, "bang")));
-      r--;
+      disc(removeC(target, findC(target, "bang")));
+      remaining--;
     }
-    addLog(`🙈 ${tgt.name} evitou o tiro!`);
+    addLog(`🙈 ${target.name} evitou o tiro!`);
   } else {
-    damage(tgt, atk);
-    beerRescue(tgt);
+    damage(target, attacker);
+    beerRescue(target);
   }
 }
-function resolveDuel(ch, df) {
-  addLog(`⚔️ DUELO: ${ch.name} vs ${df.name}!`);
-  let turn = df,
-    other = ch,
-    s = 0;
-  while (s++ < GAME_LIMITS.duelRoundLimit) {
-    const bi = findC(turn, "bang"),
-      mi = turn.char.ability === "bangMissed" ? findC(turn, "missed") : -1;
-    if (bi >= 0) {
-      disc(removeC(turn, bi));
-      addLog(`⚔️ ${turn.name} joga BANG!`);
-      [turn, other] = [other, turn];
-    } else if (mi >= 0) {
-      disc(removeC(turn, mi));
-      addLog(`⚔️ ${turn.name} (CJ) usa Errei!`);
-      [turn, other] = [other, turn];
+function resolveDuel(challenger, defender) {
+  addLog(`⚔️ DUELO: ${challenger.name} vs ${defender.name}!`);
+  let activeDuelist = defender;
+  let passiveDuelist = challenger;
+  let duelRound = 0;
+  while (duelRound++ < GAME_LIMITS.duelRoundLimit) {
+    const bangIdx = findC(activeDuelist, "bang");
+    const missedIdx =
+      activeDuelist.char.ability === "bangMissed" ? findC(activeDuelist, "missed") : -1;
+    if (bangIdx >= 0) {
+      disc(removeC(activeDuelist, bangIdx));
+      addLog(`⚔️ ${activeDuelist.name} joga BANG!`);
+      [activeDuelist, passiveDuelist] = [passiveDuelist, activeDuelist];
+    } else if (missedIdx >= 0) {
+      disc(removeC(activeDuelist, missedIdx));
+      addLog(`⚔️ ${activeDuelist.name} (CJ) usa Errei!`);
+      [activeDuelist, passiveDuelist] = [passiveDuelist, activeDuelist];
     } else {
-      addLog(`⚔️ ${turn.name} cede!`);
-      damage(turn, other);
-      beerRescue(turn);
+      addLog(`⚔️ ${activeDuelist.name} cede!`);
+      damage(activeDuelist, passiveDuelist);
+      beerRescue(activeDuelist);
       break;
     }
   }
 }
 
 // ═══ PLAY CARD ═══
-function playCard(idx) {
+function playCard(handIndex) {
   if (state.mode === "online" && typeof BangNetwork !== "undefined") {
-    BangNetwork.sendGameAction({ type: "playCard", index: idx });
+    BangNetwork.sendGameAction({ type: "playCard", index: handIndex });
     return;
   }
   if (state.gameOver || state.phase !== "play") return;
-  const p = currentP();
-  const c = p.hand[idx];
-  if (!c) return;
-  state.pendingCard = c;
-  state.pendingIdx = idx;
-  if (CARD_TYPES_REQUIRING_TARGET.includes(c.type)) {
-    const tgts = validTargets(c.type, p);
-    if (!tgts.length) {
+  const activePlayer = currentP();
+  const card = activePlayer.hand[handIndex];
+  if (!card) return;
+  state.pendingCard = card;
+  state.pendingIdx = handIndex;
+  if (CARD_TYPES_REQUIRING_TARGET.includes(card.type)) {
+    const targets = validTargets(card.type, activePlayer);
+    if (!targets.length) {
       toast("Nenhum alvo válido!");
       return;
     }
-    openModal(c.type, tgts, (tgt) => consumeExec(p, idx, c, tgt));
+    openModal(card.type, targets, (chosenTarget) =>
+      consumeExec(activePlayer, handIndex, card, chosenTarget),
+    );
     return;
   }
-  consumeExec(p, idx, c, null);
+  consumeExec(activePlayer, handIndex, card, null);
 }
-function consumeExec(p, idx, c, tgt) {
-  const ok = execCard(p, idx, c, tgt);
-  if (ok) {
-    removeC(p, idx);
-    disc(c);
-    suzyCheck(p);
+function consumeExec(player, handIndex, card, target) {
+  const cardResolved = execCard(player, handIndex, card, target);
+  if (cardResolved) {
+    removeC(player, handIndex);
+    disc(card);
+    suzyCheck(player);
     renderGame();
   }
 }
-function suzyCheck(p) {
+function suzyCheck(player) {
   if (
-    p.char.ability === "drawOnEmpty" &&
-    p.hand.length === 0 &&
+    player.char.ability === "drawOnEmpty" &&
+    player.hand.length === 0 &&
     state.phase === "play"
   ) {
-    dealCard(p);
-    addLog(`${p.name} (Suzy Lafayette) compra carta.`);
+    dealCard(player);
+    addLog(`${player.name} (Suzy Lafayette) compra carta.`);
   }
 }
 function executeMissedAsBang(player, cardIndex, card) {
@@ -805,27 +822,28 @@ function handleGeneralStoreCard(context) {
 function handleIndiansCard(context) {
   const { player } = context;
   addLog(`🏹 ${player.name} usa Índios!`);
-  state.players.forEach((tg) => {
-    if (!tg.alive || tg === player) return;
-    const bi = findC(tg, "bang"),
-      mi = tg.char.ability === "bangMissed" ? findC(tg, "missed") : -1;
-    if (bi >= 0) {
-      disc(removeC(tg, bi));
-      addLog(`${tg.name} descarta BANG!`);
-    } else if (mi >= 0) {
-      disc(removeC(tg, mi));
-      addLog(`${tg.name} (CJ) usa Errei!`);
+  state.players.forEach((victim) => {
+    if (!victim.alive || victim === player) return;
+    const bangIdx = findC(victim, "bang");
+    const missedIdx =
+      victim.char.ability === "bangMissed" ? findC(victim, "missed") : -1;
+    if (bangIdx >= 0) {
+      disc(removeC(victim, bangIdx));
+      addLog(`${victim.name} descarta BANG!`);
+    } else if (missedIdx >= 0) {
+      disc(removeC(victim, missedIdx));
+      addLog(`${victim.name} (CJ) usa Errei!`);
     } else {
-      damage(tg, player);
-      beerRescue(tg);
+      damage(victim, player);
+      beerRescue(victim);
     }
   });
   return true;
 }
 function handleSaloonCard() {
   addLog(`🥃 Saloon! Todos +1 vida.`);
-  state.players.forEach((tg) => {
-    if (tg.alive) heal(tg);
+  state.players.forEach((saloonPlayer) => {
+    if (saloonPlayer.alive) heal(saloonPlayer);
   });
   return true;
 }
@@ -887,26 +905,26 @@ const CARD_ACTION_HANDLERS = {
   scope: handleScopeCard,
 };
 
-function execCard(p, idx, c, tgt) {
+function execCard(player, handIndex, card, target) {
   const actionContext = {
-    player: p,
-    cardIndex: idx,
-    card: c,
-    target: tgt,
-    type: c.type,
+    player,
+    cardIndex: handIndex,
+    card,
+    target,
+    type: card.type,
   };
   const actionHandler =
-    CARD_ACTION_HANDLERS[c.type] ||
-    (WEAPON_CARD_TYPES.includes(c.type) ? handleWeaponCard : null);
+    CARD_ACTION_HANDLERS[card.type] ||
+    (WEAPON_CARD_TYPES.includes(card.type) ? handleWeaponCard : null);
   if (!actionHandler) return true;
   return actionHandler(actionContext);
 }
 
-function validTargets(type, atk) {
+function validTargets(type, attacker) {
   const targetValidator = TARGET_VALIDATORS[type] || TARGET_VALIDATORS.default;
-  return state.players.filter((t) => {
-    if (!t.alive || t === atk) return false;
-    return targetValidator(t, atk);
+  return state.players.filter((candidate) => {
+    if (!candidate.alive || candidate === attacker) return false;
+    return targetValidator(candidate, attacker);
   });
 }
 
@@ -914,21 +932,21 @@ function validTargets(type, atk) {
 function closeStoreModal() {}
 
 
-function resolveStore(p, idx, c) {
-  const al = alive();
+function resolveStore(player, handIndex, storeCard) {
+  const alivePlayers = alive();
   state.storeCards = [];
-  for (let i = 0; i < al.length; i++) {
+  for (let drawStep = 0; drawStep < alivePlayers.length; drawStep++) {
     if (state.drawPile.length === 0) reshuf();
     state.storeCards.push(state.drawPile.pop());
   }
-  removeC(p, idx);
-  disc(c);
-  addLog(`🏪 Loja Geral: ${al.length} cartas.`);
+  removeC(player, handIndex);
+  disc(storeCard);
+  addLog(`🏪 Loja Geral: ${alivePlayers.length} cartas.`);
   state.storeOrder = [];
-  let cur = state.current;
-  for (let i = 0; i < al.length; i++) {
-    if (state.players[cur].alive) state.storeOrder.push(cur);
-    cur = nextAlive(cur - 1);
+  let seatCursor = state.current;
+  for (let orderStep = 0; orderStep < alivePlayers.length; orderStep++) {
+    if (state.players[seatCursor].alive) state.storeOrder.push(seatCursor);
+    seatCursor = nextAlive(seatCursor - 1);
   }
   state.storePick = 0;
   processStore();
@@ -945,32 +963,35 @@ function processStore() {
   // Fecha e limpa antes de cada passo: evita botões antigos clicáveis enquanto bots escolhem (async).
   closeStoreModal();
 
-  const pi = state.storeOrder[state.storePick],
-    picker = state.players[pi];
+  const pickerSeatIndex = state.storeOrder[state.storePick];
+  const picker = state.players[pickerSeatIndex];
   if (picker.isBot) {
-    const best = state.storeCards.reduce(
-      (b, c, i) => {
-        const sc = STORE_CARD_PRIORITY[c.type] || GAME_LIMITS.defaultWeaponReach;
-        return sc > b.sc ? { sc, i } : b;
+    const bestPick = state.storeCards.reduce(
+      (acc, card, cardIndex) => {
+        const priorityScore =
+          STORE_CARD_PRIORITY[card.type] || GAME_LIMITS.defaultWeaponReach;
+        return priorityScore > acc.priorityScore
+          ? { priorityScore, cardIndex }
+          : acc;
       },
-      { sc: -1, i: 0 },
+      { priorityScore: -1, cardIndex: 0 },
     );
-    const ch = state.storeCards.splice(best.i, 1)[0];
-    picker.hand.push(ch);
-    addLog(`🤖 ${picker.name} pega ${ch.label}.`, "bot");
+    const chosenCard = state.storeCards.splice(bestPick.cardIndex, 1)[0];
+    picker.hand.push(chosenCard);
+    addLog(`🤖 ${picker.name} pega ${chosenCard.label}.`, "bot");
     state.storePick++;
     setTimeout(processStore, GAME_LIMITS.storeBotPickDelayMs);
     return;
   }
   document.getElementById("sm-desc").textContent =
     `${picker.name}, escolha uma carta:`;
-  const list = document.getElementById("sm-list");
+  const storeListEl = document.getElementById("sm-list");
   state.storeCards.forEach((card) => {
-    const btn = document.createElement("button");
-    btn.className = "tbtn";
-    btn.innerHTML = `${card.icon} ${card.label} <span class="td">${card.suit}${card.value}</span>`;
-    btn.onclick = () => {
-      if (state.storeOrder[state.storePick] !== pi) return;
+    const pickCardButton = document.createElement("button");
+    pickCardButton.className = "tbtn";
+    pickCardButton.innerHTML = `${card.icon} ${card.label} <span class="td">${card.suit}${card.value}</span>`;
+    pickCardButton.onclick = () => {
+      if (state.storeOrder[state.storePick] !== pickerSeatIndex) return;
       const cardIndex = state.storeCards.indexOf(card);
       if (cardIndex < 0) return;
       const taken = state.storeCards.splice(cardIndex, 1)[0];
@@ -980,7 +1001,7 @@ function processStore() {
       state.storePick++;
       processStore();
     };
-    list.appendChild(btn);
+    storeListEl.appendChild(pickCardButton);
   });
   document.getElementById("store-modal").classList.add("open");
 }

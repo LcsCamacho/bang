@@ -22,8 +22,8 @@ const repoRoot = path.join(__dirname, "..");
 app.use((req, res, next) => {
   if (CORS_ORIGIN) res.setHeader("Access-Control-Allow-Origin", CORS_ORIGIN);
   else {
-    const o = req.headers.origin;
-    if (o) res.setHeader("Access-Control-Allow-Origin", o);
+    const requestOrigin = req.headers.origin;
+    if (requestOrigin) res.setHeader("Access-Control-Allow-Origin", requestOrigin);
   }
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -45,17 +45,17 @@ const rooms = new RoomManager();
 const wsToId = new Map();
 let nextSocketId = 1;
 
-function getSocketId(ws) {
-  let id = wsToId.get(ws);
-  if (!id) {
-    id = `s${nextSocketId++}`;
-    wsToId.set(ws, id);
+function getSocketId(webSocketClient) {
+  let socketId = wsToId.get(webSocketClient);
+  if (!socketId) {
+    socketId = `s${nextSocketId++}`;
+    wsToId.set(webSocketClient, socketId);
   }
-  return id;
+  return socketId;
 }
 
-function sendJson(ws, obj) {
-  if (ws.readyState === 1) ws.send(JSON.stringify(obj));
+function sendJson(webSocketClient, payload) {
+  if (webSocketClient.readyState === 1) webSocketClient.send(JSON.stringify(payload));
 }
 
 function logIncomingMessage(socketId, payload) {
@@ -84,101 +84,111 @@ function roomPayloadFor(room, socketId) {
   };
 }
 
-function handleMessage(ws, msg) {
-  const socketId = getSocketId(ws);
-  const t = msg.type;
+function handleMessage(webSocketClient, message) {
+  const socketId = getSocketId(webSocketClient);
+  const messageType = message.type;
 
-  if (t === MESSAGE_TYPES.RECONNECT && msg.sessionToken && msg.roomId) {
-    const r = rooms.reconnectSocket(msg.roomId, msg.sessionToken, socketId);
-    if (r.error) return sendJson(ws, { type: MESSAGE_TYPES.ERROR, message: r.error });
-    const { room } = r;
-    sendJson(ws, { type: MESSAGE_TYPES.RECONNECTED, roomId: room.roomId });
-    sendJson(ws, roomPayloadFor(room, socketId));
+  if (messageType === MESSAGE_TYPES.RECONNECT && message.sessionToken && message.roomId) {
+    const reconnectOutcome = rooms.reconnectSocket(message.roomId, message.sessionToken, socketId);
+    if (reconnectOutcome.error)
+      return sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: reconnectOutcome.error });
+    const { room } = reconnectOutcome;
+    sendJson(webSocketClient, { type: MESSAGE_TYPES.RECONNECTED, roomId: room.roomId });
+    sendJson(webSocketClient, roomPayloadFor(room, socketId));
     if (room.started && room.engine) {
-      const snap = room.getSnapshotFor(socketId);
-      if (snap) sendJson(ws, { type: MESSAGE_TYPES.GAME_STATE, ...snap });
+      const gameSnapshot = room.getSnapshotFor(socketId);
+      if (gameSnapshot) sendJson(webSocketClient, { type: MESSAGE_TYPES.GAME_STATE, ...gameSnapshot });
     }
     return;
   }
 
-  if (t === MESSAGE_TYPES.CREATE_ROOM) {
-    const room = rooms.createRoom(socketId, msg.displayName || "Anfitrião");
-    return sendJson(ws, roomPayloadFor(room, socketId));
+  if (messageType === MESSAGE_TYPES.CREATE_ROOM) {
+    const room = rooms.createRoom(socketId, message.displayName || "Anfitrião");
+    return sendJson(webSocketClient, roomPayloadFor(room, socketId));
   }
 
-  if (t === MESSAGE_TYPES.JOIN_ROOM) {
-    const r = rooms.joinRoom(msg.roomId, socketId, msg.displayName);
-    if (r.error) return sendJson(ws, { type: MESSAGE_TYPES.ERROR, message: r.error });
-    broadcastToRoom(r.room, (sid) => roomPayloadFor(r.room, sid));
-    return sendJson(ws, roomPayloadFor(r.room, socketId));
+  if (messageType === MESSAGE_TYPES.JOIN_ROOM) {
+    const joinOutcome = rooms.joinRoom(message.roomId, socketId, message.displayName);
+    if (joinOutcome.error)
+      return sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: joinOutcome.error });
+    broadcastToRoom(joinOutcome.room, (recipientSocketId) =>
+      roomPayloadFor(joinOutcome.room, recipientSocketId),
+    );
+    return sendJson(webSocketClient, roomPayloadFor(joinOutcome.room, socketId));
   }
 
-  if (t === MESSAGE_TYPES.LEAVE_ROOM) {
+  if (messageType === MESSAGE_TYPES.LEAVE_ROOM) {
     const room = rooms.getRoomForSocket(socketId);
     rooms.leaveRoom(socketId);
-    if (room) broadcastToRoom(room, (sid) => roomPayloadFor(room, sid));
+    if (room)
+      broadcastToRoom(room, (recipientSocketId) => roomPayloadFor(room, recipientSocketId));
     return;
   }
 
-  if (t === MESSAGE_TYPES.START_GAME) {
+  if (messageType === MESSAGE_TYPES.START_GAME) {
     const room = rooms.getRoomForSocket(socketId);
-    if (!room) return sendJson(ws, { type: MESSAGE_TYPES.ERROR, message: "Não está em uma sala" });
-    const result = room.startGame(socketId);
-    if (result.error) return sendJson(ws, { type: MESSAGE_TYPES.ERROR, message: result.error });
-    broadcastToRoom(room, (sid) => roomPayloadFor(room, sid));
-    broadcastToRoom(room, (sid) => {
-      const snap = room.getSnapshotFor(sid);
-      return { type: MESSAGE_TYPES.GAME_STATE, ...snap };
+    if (!room) return sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: "Não está em uma sala" });
+    const startOutcome = room.startGame(socketId);
+    if (startOutcome.error)
+      return sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: startOutcome.error });
+    broadcastToRoom(room, (recipientSocketId) => roomPayloadFor(room, recipientSocketId));
+    broadcastToRoom(room, (recipientSocketId) => {
+      const gameSnapshot = room.getSnapshotFor(recipientSocketId);
+      return { type: MESSAGE_TYPES.GAME_STATE, ...gameSnapshot };
     });
     return;
   }
 
-  if (t === MESSAGE_TYPES.GAME_ACTION) {
+  if (messageType === MESSAGE_TYPES.GAME_ACTION) {
     const room = rooms.getRoomForSocket(socketId);
-    if (!room) return sendJson(ws, { type: MESSAGE_TYPES.ERROR, message: "Não está em uma sala" });
-    const res = room.applyGameAction(socketId, msg.action);
-    if (res.error) return sendJson(ws, { type: MESSAGE_TYPES.ERROR, message: res.error });
-    broadcastToRoom(room, (sid) => {
-      const snap = room.getSnapshotFor(sid);
-      return { type: MESSAGE_TYPES.GAME_STATE, ...snap };
+    if (!room) return sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: "Não está em uma sala" });
+    const actionOutcome = room.applyGameAction(socketId, message.action);
+    if (actionOutcome.error)
+      return sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: actionOutcome.error });
+    broadcastToRoom(room, (recipientSocketId) => {
+      const gameSnapshot = room.getSnapshotFor(recipientSocketId);
+      return { type: MESSAGE_TYPES.GAME_STATE, ...gameSnapshot };
     });
     return;
   }
 
-  sendJson(ws, { type: MESSAGE_TYPES.ERROR, message: "Tipo de mensagem desconhecido" });
+  sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: "Tipo de mensagem desconhecido" });
 }
 
-wss.on("connection", (ws) => {
-  const socketId = getSocketId(ws);
+wss.on("connection", (webSocketClient) => {
+  const socketId = getSocketId(webSocketClient);
   console.log(`[${new Date().toISOString()}] [ws:connect] socket=${socketId}`);
-  ws.on("message", (raw) => {
-    const sid = getSocketId(ws);
-    let msg;
+  webSocketClient.on("message", (rawData) => {
+    const messageSocketId = getSocketId(webSocketClient);
+    let parsedMessage;
     try {
-      msg = JSON.parse(raw.toString());
+      parsedMessage = JSON.parse(rawData.toString());
     } catch {
       console.warn(
-        `[${new Date().toISOString()}] [ws:invalid-json] socket=${sid} raw=${String(raw)}`,
+        `[${new Date().toISOString()}] [ws:invalid-json] socket=${messageSocketId} raw=${String(rawData)}`,
       );
-      return sendJson(ws, { type: MESSAGE_TYPES.ERROR, message: "JSON inválido" });
+      return sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: "JSON inválido" });
     }
-    logIncomingMessage(sid, msg);
-    if (msg.type === MESSAGE_TYPES.PING) {
-      return sendJson(ws, { type: MESSAGE_TYPES.PONG, t: Date.now() });
+    logIncomingMessage(messageSocketId, parsedMessage);
+    if (parsedMessage.type === MESSAGE_TYPES.PING) {
+      return sendJson(webSocketClient, { type: MESSAGE_TYPES.PONG, serverTimeMs: Date.now() });
     }
     try {
-      handleMessage(ws, msg);
-    } catch (e) {
-      console.error(e);
-      sendJson(ws, { type: MESSAGE_TYPES.ERROR, message: e.message || "Erro no servidor" });
+      handleMessage(webSocketClient, parsedMessage);
+    } catch (error) {
+      console.error(error);
+      sendJson(webSocketClient, {
+        type: MESSAGE_TYPES.ERROR,
+        message: error.message || "Erro no servidor",
+      });
     }
   });
-  ws.on("close", () => {
-    const id = wsToId.get(ws);
-    if (id) {
-      console.log(`[${new Date().toISOString()}] [ws:close] socket=${id}`);
-      rooms.handleDisconnect(id);
-      wsToId.delete(ws);
+  webSocketClient.on("close", () => {
+    const disconnectedSocketId = wsToId.get(webSocketClient);
+    if (disconnectedSocketId) {
+      console.log(`[${new Date().toISOString()}] [ws:close] socket=${disconnectedSocketId}`);
+      rooms.handleDisconnect(disconnectedSocketId);
+      wsToId.delete(webSocketClient);
     }
   });
 });

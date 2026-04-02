@@ -1,42 +1,42 @@
 // ═══ MODAL ═══
 // ═══ UI ═══ (modal, render, log/toast, lobby online)
-let _mcb = null;
-function openModal(type, targets, cb) {
-  _mcb = cb;
+let modalCallbackRef = null;
+function openModal(type, targets, onPickTarget) {
+  modalCallbackRef = onPickTarget;
   document.getElementById("m-title").textContent = MODAL_TITLES[type] || "Alvo";
   document.getElementById("m-desc").textContent =
     type === "bang" ? `Alcance da arma: ${reach(currentP())}.` : "";
-  const list = document.getElementById("m-list");
-  list.innerHTML = "";
-  targets.forEach((t) => {
-    const btn = document.createElement("button");
-    btn.className = "tbtn";
+  const targetListEl = document.getElementById("m-list");
+  targetListEl.innerHTML = "";
+  targets.forEach((targetPlayer) => {
+    const targetPickButton = document.createElement("button");
+    targetPickButton.className = "tbtn";
     const sheriffPrefix =
-      t.role === "sheriff" && type === "bang"
+      targetPlayer.role === "sheriff" && type === "bang"
         ? `<span style="color:var(--sheriff-gold);font-weight:700;margin-right:4px">${rLabel("sheriff")}</span> `
         : "";
-    btn.innerHTML = `${rIcon(t.role)} ${sheriffPrefix}${t.name} <small style="opacity:.6">(${t.char.name})</small> <span class="td">❤️${t.life} dist.${dist(currentP(), t)}</span>`;
-    btn.onclick = () => {
+    targetPickButton.innerHTML = `${rIcon(targetPlayer.role)} ${sheriffPrefix}${targetPlayer.name} <small style="opacity:.6">(${targetPlayer.char.name})</small> <span class="td">❤️${targetPlayer.life} dist.${dist(currentP(), targetPlayer)}</span>`;
+    targetPickButton.onclick = () => {
       closeModal();
-      cb(t);
+      onPickTarget(targetPlayer);
     };
-    list.appendChild(btn);
+    targetListEl.appendChild(targetPickButton);
   });
   document.getElementById("tgt-modal").classList.add("open");
 }
 function closeModal() {
   document.getElementById("tgt-modal").classList.remove("open");
-  _mcb = null;
+  modalCallbackRef = null;
 }
 
 // ═══ HOTSEAT ═══
 function showHotseat() {
-  const p = currentP();
-  document.getElementById("hc-name").textContent = `Vez de ${p.name}`;
+  const activePlayer = currentP();
+  document.getElementById("hc-name").textContent = `Vez de ${activePlayer.name}`;
   document.getElementById("hc-hint").textContent =
-    p.role === "sheriff"
+    activePlayer.role === "sheriff"
       ? "⭐ Você é o XERIFE (papel público)."
-      : `Papel secreto: ${rLabel(p.role)} — não mostre!`;
+      : `Papel secreto: ${rLabel(activePlayer.role)} — não mostre!`;
   document.getElementById("hcover").classList.add("open");
 }
 function revealTurn() {
@@ -61,30 +61,31 @@ function renderPlayers() {
     ring.innerHTML = "";
     if (LocalState.mode === "online" && typeof BangNetwork !== "undefined") {
       const myId = BangNetwork.myPlayerId;
-      LocalState.players.forEach((p, i) => {
-        if (p.id === myId) return;
+      LocalState.players.forEach((player, playerIndex) => {
+        if (player.id === myId) return;
         const div = document.createElement("div");
-        div.className = getPlayerCardClassName(p, i === LocalState.current) + " pcard-opp";
-        const bullets = renderPlayerLifeBullets(p);
-        const eq = renderPlayerEquipment(p);
-        const roleDisp = renderPlayerRoleIndicator(p);
-        div.innerHTML = `<div class="ph"><div class="pname">${p.name}</div><div class="prole">${roleDisp}</div></div><div class="pchar">${p.char.name}</div><div class="lbar">${bullets}</div><div class="erow">${eq}</div><div class="hcount">${p.alive ? `🂠 ${p.hand.length}` : "💀"}</div>${p.jailed ? '<div class="jail-banner">PRESO</div>' : ""}${p.hasDynamite ? '<div class="dyn-banner">💣</div>' : ""}`;
+        div.className =
+          getPlayerCardClassName(player, playerIndex === LocalState.current) + " pcard-opp";
+        const bullets = renderPlayerLifeBullets(player);
+        const equipmentRow = renderPlayerEquipment(player);
+        const roleDisp = renderPlayerRoleIndicator(player);
+        div.innerHTML = `<div class="ph"><div class="pname">${player.name}</div><div class="prole">${roleDisp}</div></div><div class="pchar">${player.char.name}</div><div class="lbar">${bullets}</div><div class="erow">${equipmentRow}</div><div class="hcount">${player.alive ? `🂠 ${player.hand.length}` : "💀"}</div>${player.jailed ? '<div class="jail-banner">PRESO</div>' : ""}${player.hasDynamite ? '<div class="dyn-banner">💣</div>' : ""}`;
         ring.appendChild(div);
       });
     }
   }
-  LocalState.players.forEach((p, i) => {
+  LocalState.players.forEach((player, playerIndex) => {
     const div = document.createElement("div");
-    div.className = getPlayerCardClassName(p, i === LocalState.current);
-    const bullets = renderPlayerLifeBullets(p);
-    const eq = renderPlayerEquipment(p);
-    const roleDisp = renderPlayerRoleIndicator(p);
-    const botTag = p.isBot ? `<span class="bot-tag">BOT</span>` : "";
+    div.className = getPlayerCardClassName(player, playerIndex === LocalState.current);
+    const bullets = renderPlayerLifeBullets(player);
+    const equipmentRow = renderPlayerEquipment(player);
+    const roleDisp = renderPlayerRoleIndicator(player);
+    const botTag = player.isBot ? `<span class="bot-tag">BOT</span>` : "";
     const thinking =
-      p.isBot &&
-      i === LocalState.current &&
+      player.isBot &&
+      playerIndex === LocalState.current &&
       (LocalState.phase === PHASES.draw || LocalState.phase === PHASES.play);
-    div.innerHTML = `<div class="ph"><div class="pname">${p.name}${botTag}</div><div class="prole">${roleDisp}</div></div><div class="pchar">${p.char.name}</div><div class="lbar">${bullets}</div><div class="erow">${eq}</div><div class="hcount">${p.alive ? `🂠 ${p.hand.length}` : "💀"}</div>${p.jailed ? '<div class="jail-banner">PRESO</div>' : ""}${p.hasDynamite ? '<div class="dyn-banner">💣</div>' : ""}${thinking ? '<div class="bot-thinking">🤔 pensando...</div>' : ""}`;
+    div.innerHTML = `<div class="ph"><div class="pname">${player.name}${botTag}</div><div class="prole">${roleDisp}</div></div><div class="pchar">${player.char.name}</div><div class="lbar">${bullets}</div><div class="erow">${equipmentRow}</div><div class="hcount">${player.alive ? `🂠 ${player.hand.length}` : "💀"}</div>${player.jailed ? '<div class="jail-banner">PRESO</div>' : ""}${player.hasDynamite ? '<div class="dyn-banner">💣</div>' : ""}${thinking ? '<div class="bot-thinking">🤔 pensando...</div>' : ""}`;
     grid.appendChild(div);
   });
 }
@@ -140,61 +141,65 @@ function renderPlayerRoleIndicator(player) {
   return "";
 }
 function renderHand() {
-  const p = currentP();
+  const activePlayer = currentP();
   const myId =
     LocalState.mode === "online" && typeof BangNetwork !== "undefined"
       ? BangNetwork.myPlayerId
       : null;
   const hideHand =
-    LocalState.mode === "online" && myId != null && p.id !== myId;
-  document.getElementById("h-title").textContent = p.isBot
-    ? `🤖 ${p.name}`
+    LocalState.mode === "online" && myId != null && activePlayer.id !== myId;
+  document.getElementById("h-title").textContent = activePlayer.isBot
+    ? `🤖 ${activePlayer.name}`
     : hideHand
-      ? `🂠 ${p.name} (oponente)`
-      : `Mão de ${p.name}`;
+      ? `🂠 ${activePlayer.name} (oponente)`
+      : `Mão de ${activePlayer.name}`;
   document.getElementById("h-meta").textContent =
-    `${p.char.name} · ❤️${p.life}/${p.maxLife} · ${WEAPONS[p.equipment.weaponKey].icon}${WEAPONS[p.equipment.weaponKey].label}`;
-  const ce = document.getElementById("h-cards"),
-    be = document.getElementById("h-btns");
-  ce.innerHTML = "";
-  be.innerHTML = "";
-  if (p.isBot || hideHand) {
-    for (let i = 0; i < p.hand.length; i++) {
-      const el = document.createElement("div");
-      el.className = "card disabled";
-      el.style.cssText =
+    `${activePlayer.char.name} · ❤️${activePlayer.life}/${activePlayer.maxLife} · ${WEAPONS[activePlayer.equipment.weaponKey].icon}${WEAPONS[activePlayer.equipment.weaponKey].label}`;
+  const handCardsEl = document.getElementById("h-cards");
+  const handButtonsEl = document.getElementById("h-btns");
+  handCardsEl.innerHTML = "";
+  handButtonsEl.innerHTML = "";
+  if (activePlayer.isBot || hideHand) {
+    for (let cardIndex = 0; cardIndex < activePlayer.hand.length; cardIndex++) {
+      const cardBackEl = document.createElement("div");
+      cardBackEl.className = "card disabled";
+      cardBackEl.style.cssText =
         "background:linear-gradient(135deg,#5c3a1e,#3a1f08);border-color:var(--sand);";
-      el.innerHTML =
+      cardBackEl.innerHTML =
         '<span style="font-size:1.8rem;color:var(--sand)">🂠</span>';
-      ce.appendChild(el);
+      handCardsEl.appendChild(cardBackEl);
     }
     return;
   }
   if (LocalState.phase === PHASES.draw) {
-    const b = document.createElement("button");
-    b.className = "btn btn-draw";
-    b.textContent = "🃏 Comprar Cartas";
-    b.onclick = doDraw;
-    be.appendChild(b);
-    p.hand.forEach((c, i) => ce.appendChild(mkCard(c, i, true)));
+    const drawButton = document.createElement("button");
+    drawButton.className = "btn btn-draw";
+    drawButton.textContent = "🃏 Comprar Cartas";
+    drawButton.onclick = doDraw;
+    handButtonsEl.appendChild(drawButton);
+    activePlayer.hand.forEach((card, cardIndex) =>
+      handCardsEl.appendChild(mkCard(card, cardIndex, true)),
+    );
     return;
   }
   if (LocalState.phase === PHASES.play) {
-    p.hand.forEach((c, i) => ce.appendChild(mkCard(c, i, cardDisabled(c, p))));
-    const eb = document.createElement("button");
-    eb.className = "btn btn-phase";
-    eb.textContent = "✓ Encerrar Turno";
-    eb.onclick = endPlay;
-    be.appendChild(eb);
+    activePlayer.hand.forEach((card, cardIndex) =>
+      handCardsEl.appendChild(mkCard(card, cardIndex, cardDisabled(card, activePlayer))),
+    );
+    const endPlayButton = document.createElement("button");
+    endPlayButton.className = "btn btn-phase";
+    endPlayButton.textContent = "✓ Encerrar Turno";
+    endPlayButton.onclick = endPlay;
+    handButtonsEl.appendChild(endPlayButton);
     if (
-      p.char.ability === "selfHeal" &&
-      p.hand.length >= PLAYER_ABILITY_RULES.sidKetchumDiscardCost &&
-      p.life < p.maxLife
+      activePlayer.char.ability === "selfHeal" &&
+      activePlayer.hand.length >= PLAYER_ABILITY_RULES.sidKetchumDiscardCost &&
+      activePlayer.life < activePlayer.maxLife
     ) {
-      const sb = document.createElement("button");
-      sb.className = "btn btn-phase";
-      sb.textContent = "💊 Descartar 2 → +1 vida";
-      sb.onclick = () => {
+      const sidKetchumButton = document.createElement("button");
+      sidKetchumButton.className = "btn btn-phase";
+      sidKetchumButton.textContent = "💊 Descartar 2 → +1 vida";
+      sidKetchumButton.onclick = () => {
         if (LocalState.mode === "online" && typeof BangNetwork !== "undefined") {
           BangNetwork.sendGameAction({ type: "sidKetchum" });
           return;
@@ -204,60 +209,60 @@ function renderHand() {
           discardIndex < PLAYER_ABILITY_RULES.sidKetchumDiscardCost;
           discardIndex++
         ) {
-          disc(p.hand.pop());
+          disc(activePlayer.hand.pop());
         }
-        heal(p);
-        addLog(`${p.name} (Sid Ketchum) usa habilidade!`);
+        heal(activePlayer);
+        addLog(`${activePlayer.name} (Sid Ketchum) usa habilidade!`);
         renderGame();
       };
-      be.appendChild(sb);
+      handButtonsEl.appendChild(sidKetchumButton);
     }
     return;
   }
   if (LocalState.phase === PHASES.discard) {
-    const need = p.life;
+    const maxHandWhileAlive = activePlayer.life;
     document.getElementById("h-meta").textContent +=
-      ` · Descarte até ${need} carta(s)`;
-    p.hand.forEach((c, i) => {
-      const el = mkCard(c, i, false);
-      el.onclick = () => doDiscard(i);
-      ce.appendChild(el);
+      ` · Descarte até ${maxHandWhileAlive} carta(s)`;
+    activePlayer.hand.forEach((card, cardIndex) => {
+      const cardEl = mkCard(card, cardIndex, false);
+      cardEl.onclick = () => doDiscard(cardIndex);
+      handCardsEl.appendChild(cardEl);
     });
-    if (p.hand.length <= need) {
-      const eb = document.createElement("button");
-      eb.className = "btn btn-end";
-      eb.textContent = "→ Próximo Turno";
-      eb.onclick = endDiscard;
-      be.appendChild(eb);
+    if (activePlayer.hand.length <= maxHandWhileAlive) {
+      const nextTurnButton = document.createElement("button");
+      nextTurnButton.className = "btn btn-end";
+      nextTurnButton.textContent = "→ Próximo Turno";
+      nextTurnButton.onclick = endDiscard;
+      handButtonsEl.appendChild(nextTurnButton);
     } else {
-      const h = document.createElement("span");
-      h.style.cssText =
+      const discardHint = document.createElement("span");
+      discardHint.style.cssText =
         "font-size:.71rem;color:rgba(255,200,100,.8);align-self:center;";
-      h.textContent = `Clique para descartar (${p.hand.length - need} demais)`;
-      be.appendChild(h);
+      discardHint.textContent = `Clique para descartar (${activePlayer.hand.length - maxHandWhileAlive} demais)`;
+      handButtonsEl.appendChild(discardHint);
     }
   }
 }
-function cardDisabled(c, p) {
-  return shouldSkipCardForPlayer(c, p);
+function cardDisabled(card, player) {
+  return shouldSkipCardForPlayer(card, player);
 }
-function mkCard(c, idx, disabled) {
-  const el = document.createElement("div");
-  if (c.type === "back") {
-    el.className = "card disabled";
-    el.setAttribute("data-type", "back");
-    el.style.cssText =
+function mkCard(card, handIndex, disabled) {
+  const cardElement = document.createElement("div");
+  if (card.type === "back") {
+    cardElement.className = "card disabled";
+    cardElement.setAttribute("data-type", "back");
+    cardElement.style.cssText =
       "background:linear-gradient(135deg,#5c3a1e,#3a1f08);border-color:var(--sand);";
-    el.innerHTML =
+    cardElement.innerHTML =
       '<span style="font-size:1.8rem;color:var(--sand)">🂠</span>';
-    return el;
+    return cardElement;
   }
-  el.className = "card" + (disabled ? " disabled" : "");
-  el.setAttribute("data-type", c.type);
-  el.title = CTIPS[c.type] || "";
-  el.innerHTML = `<span class="cs" style="color:${c.suit === "♥" || c.suit === "♦" ? "#c00" : "#111"}">${c.suit || ""}</span><span class="ci">${c.icon}</span><span class="cn">${c.label}</span><span class="cv">${c.value || ""}</span>`;
-  if (!disabled) el.onclick = () => playCard(idx);
-  return el;
+  cardElement.className = "card" + (disabled ? " disabled" : "");
+  cardElement.setAttribute("data-type", card.type);
+  cardElement.title = CTIPS[card.type] || "";
+  cardElement.innerHTML = `<span class="cs" style="color:${card.suit === "♥" || card.suit === "♦" ? "#c00" : "#111"}">${card.suit || ""}</span><span class="ci">${card.icon}</span><span class="cn">${card.label}</span><span class="cv">${card.value || ""}</span>`;
+  if (!disabled) cardElement.onclick = () => playCard(handIndex);
+  return cardElement;
 }
 const CTIPS = {
   bang: "Atira em jogador dentro do alcance.",
@@ -281,61 +286,64 @@ const CTIPS = {
   winchester: "Alcance 5.",
 };
 function renderSidebar() {
-  const p = currentP();
+  const activePlayer = currentP();
   document.getElementById("t-name").textContent =
-    `${p.isBot ? "🤖 " : "👤 "}${p.name}`;
+    `${activePlayer.isBot ? "🤖 " : "👤 "}${activePlayer.name}`;
   document.getElementById("t-char").textContent =
-    `${p.char.name} · ${p.char.desc}`;
+    `${activePlayer.char.name} · ${activePlayer.char.desc}`;
   [PHASES.draw, PHASES.play, PHASES.discard].forEach(
-    (ph) =>
-      (document.getElementById(`ph-${ph}`).className =
-        "pdot" + (LocalState.phase === ph ? " on" : "")),
+    (phaseKey) =>
+      (document.getElementById(`ph-${phaseKey}`).className =
+        "pdot" + (LocalState.phase === phaseKey ? " on" : "")),
   );
 }
 
 // ═══ LOG / HELPERS ═══
-function addLog(msg, type = "") {
-  LocalState.log.unshift({ msg, type });
+function addLog(logText, type = "") {
+  LocalState.log.unshift({ msg: logText, type });
   if (LocalState.log.length > GAME_LIMITS.logMaxEntries) LocalState.log.pop();
-  const el = document.getElementById("glog");
-  if (!el) return;
-  el.innerHTML = LocalState.log
+  const logPanel = document.getElementById("glog");
+  if (!logPanel) return;
+  logPanel.innerHTML = LocalState.log
     .slice(0, GAME_LIMITS.visibleLogEntries)
-    .map((l) => `<div class="ll ${l.type}">${l.msg}</div>`)
+    .map((entry) => `<div class="ll ${entry.type}">${entry.msg}</div>`)
     .join("");
 }
-function rLabel(r) {
-  return ROLE_LABELS[r] || r;
+function rLabel(roleId) {
+  return ROLE_LABELS[roleId] || roleId;
 }
-function rIcon(r) {
-  return ROLE_ICONS[r] || "?";
+function rIcon(roleId) {
+  return ROLE_ICONS[roleId] || "?";
 }
-function toast(msg) {
-  const el = document.getElementById("toast");
-  el.textContent = msg;
-  el.classList.add("show");
-  clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove("show"), GAME_LIMITS.toastDurationMs);
+function toast(messageText) {
+  const toastEl = document.getElementById("toast");
+  toastEl.textContent = messageText;
+  toastEl.classList.add("show");
+  clearTimeout(toastEl._toastHideTimerId);
+  toastEl._toastHideTimerId = setTimeout(
+    () => toastEl.classList.remove("show"),
+    GAME_LIMITS.toastDurationMs,
+  );
 }
 
 // ═══ ONLINE LOBBY ═══
-function renderLobby(msg) {
+function renderLobby(lobbyMessage) {
   const lobby = document.getElementById("on-lobby");
   if (!lobby) return;
   lobby.style.display = "block";
-  const rid = document.getElementById("on-rid");
-  if (rid) rid.textContent = msg.roomId;
-  const list = document.getElementById("on-plist");
-  if (list) {
-    list.innerHTML = "";
-    (msg.players || []).forEach((pl) => {
-      const li = document.createElement("li");
-      li.textContent = `${pl.displayName}${pl.isHost ? " ★ anfitrião" : ""}${pl.isYou ? " (você)" : ""}`;
-      list.appendChild(li);
+  const roomIdLabel = document.getElementById("on-rid");
+  if (roomIdLabel) roomIdLabel.textContent = lobbyMessage.roomId;
+  const playerList = document.getElementById("on-plist");
+  if (playerList) {
+    playerList.innerHTML = "";
+    (lobbyMessage.players || []).forEach((lobbyRow) => {
+      const lobbyListItem = document.createElement("li");
+      lobbyListItem.textContent = `${lobbyRow.displayName}${lobbyRow.isHost ? " ★ anfitrião" : ""}${lobbyRow.isYou ? " (você)" : ""}`;
+      playerList.appendChild(lobbyListItem);
     });
   }
   const startBtn = document.getElementById("on-start");
-  if (startBtn) startBtn.style.display = msg.youAreHost ? "block" : "none";
+  if (startBtn) startBtn.style.display = lobbyMessage.youAreHost ? "block" : "none";
 }
 
 function onlineCreateRoom() {

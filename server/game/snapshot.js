@@ -7,35 +7,39 @@ const { GAME_LIMITS } = require("./constants");
  * @param {number} viewerId - playerId do destinatário
  */
 function buildGameSnapshot(state, viewerId) {
-  const sheriffVisible = (r) => r === "sheriff";
-  const publicPlayers = state.players.map((p) => ({
-    id: p.id,
-    name: p.name,
-    alive: p.alive,
-    life: p.life,
-    maxLife: p.maxLife,
-    char: { name: p.char.name, ability: p.char.ability, desc: p.char.desc },
-    charName: p.char.name,
-    charAbility: p.char.ability,
-    handCount: p.hand.length,
-    jailed: p.jailed,
-    hasDynamite: p.hasDynamite,
-    usedBang: p.usedBang,
+  const sheriffVisible = (role) => role === "sheriff";
+  const publicPlayers = state.players.map((player) => ({
+    id: player.id,
+    name: player.name,
+    alive: player.alive,
+    life: player.life,
+    maxLife: player.maxLife,
+    char: {
+      name: player.char.name,
+      ability: player.char.ability,
+      desc: player.char.desc,
+    },
+    charName: player.char.name,
+    charAbility: player.char.ability,
+    handCount: player.hand.length,
+    jailed: player.jailed,
+    hasDynamite: player.hasDynamite,
+    usedBang: player.usedBang,
     role:
-      sheriffVisible(p.role) || p.id === viewerId ? p.role : "hidden",
+      sheriffVisible(player.role) || player.id === viewerId ? player.role : "hidden",
     equipment: {
-      weaponKey: p.equipment.weaponKey,
-      barrel: p.equipment.barrel || p.char.ability === "builtinBarrel",
-      mustang: p.equipment.mustang || p.char.ability === "builtinMustang",
-      scope: p.equipment.scope,
+      weaponKey: player.equipment.weaponKey,
+      barrel: player.equipment.barrel || player.char.ability === "builtinBarrel",
+      mustang: player.equipment.mustang || player.char.ability === "builtinMustang",
+      scope: player.equipment.scope,
     },
   }));
 
-  const viewer = state.players.find((x) => x.id === viewerId);
-  const priv = viewer
+  const viewer = state.players.find((player) => player.id === viewerId);
+  const privateSnapshot = viewer
     ? {
         playerId: viewerId,
-        hand: viewer.hand.map((c) => ({ ...c })),
+        hand: viewer.hand.map((card) => ({ ...card })),
         role: viewer.role,
       }
     : null;
@@ -54,7 +58,7 @@ function buildGameSnapshot(state, viewerId) {
       winInfo: state.winInfo,
       lastToast: state.lastToast,
     },
-    private: priv,
+    private: privateSnapshot,
   };
 }
 
