@@ -1511,11 +1511,11 @@ function openModal(type, targets, cb) {
   targets.forEach((t) => {
     const btn = document.createElement("button");
     btn.className = "tbtn";
-    const sheriffTag =
-      t.role === "sheriff"
-        ? ` <span style="color:var(--sheriff-gold);font-weight:700">${rLabel("sheriff")}</span>`
+    const sheriffPrefix =
+      t.role === "sheriff" && type === "bang"
+        ? `<span style="color:var(--sheriff-gold);font-weight:700;margin-right:4px">${rLabel("sheriff")}</span> `
         : "";
-    btn.innerHTML = `${rIcon(t.role)} ${t.name}${sheriffTag} <small style="opacity:.6">(${t.char.name})</small> <span class="td">❤️${t.life} dist.${dist(currentP(), t)}</span>`;
+    btn.innerHTML = `${rIcon(t.role)} ${sheriffPrefix}${t.name} <small style="opacity:.6">(${t.char.name})</small> <span class="td">❤️${t.life} dist.${dist(currentP(), t)}</span>`;
     btn.onclick = () => {
       closeModal();
       cb(t);
