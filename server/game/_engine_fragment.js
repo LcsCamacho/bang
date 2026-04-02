@@ -11,6 +11,7 @@ function rIcon(r) {
 function toast(msg) {
   state.lastToast = msg;
 }
+// ═══ ENGINE ═══ (estado local, turno, cartas, combate, loja — sem bots/UI de log)
 function createDefaultEquipment() {
   return { weaponKey: "colt45", barrel: false, mustang: false, scope: false };
 }
@@ -178,9 +179,6 @@ function createGameState(players, mode) {
     storeCards: [],
     storeOrder: [],
     storePick: 0,
-    pending: null,
-    lastToast: null,
-    winInfo: null,
   };
 }
 function dealInitialCards() {
@@ -205,10 +203,50 @@ function createRandomRolesAndChars(totalPlayers) {
   };
 }
 
-function launchNetworkGame(players) {
+
+
+// ═══ SETUP SCREENS ═══
+function updateOffInfo() {
+  const n = parseInt(document.getElementById("off-n").value);
+  document.getElementById("off-info").textContent =
+    `Você + ${n - 1} bot${n - 1 > 1 ? "s" : ""} (${n} jogadores)`;
+}
+updateOffInfo();
+function updateHSNames() {
+  const totalPlayers = parseInt(document.getElementById("hs-n").value);
+  const namesContainer = document.getElementById("hs-names");
+  namesContainer.innerHTML = "";
+  for (let playerIndex = 0; playerIndex < totalPlayers; playerIndex++) {
+    const playerInput = document.createElement("input");
+    playerInput.type = "text";
+    playerInput.id = `hn${playerIndex}`;
+    playerInput.placeholder = `Jogador ${playerIndex + 1}`;
+    playerInput.style.cssText =
+      "width:100%;padding:6px 9px;font-family:Special Elite,cursive;font-size:.81rem;border:2px solid #8b6914;background:#faf4e1;color:#3a1f08;border-radius:3px;";
+    namesContainer.appendChild(playerInput);
+  }
+}
+updateHSNames();
+document.getElementById("hs-n").addEventListener("input", updateHSNames);
+
+function startOffline() {
+  const totalPlayers = parseInt(document.getElementById("off-n").value);
+  const humanName =
+    document.getElementById("human-name").value.trim() || "Você";
+  const difficulty = document.querySelector("input[name=diff]:checked").value;
+  const players = createOfflinePlayers(totalPlayers, humanName, difficulty);
+  launchGame(players, "offline");
+}
+function startHotseat() {
+  const totalPlayers = parseInt(document.getElementById("hs-n").value);
+  const players = createHotseatPlayers(totalPlayers);
+  launchGame(players, "hotseat");
+}
+function launchGame(players, mode) {
   moveSheriffToFirst(players);
-  state = createGameState(players, "online");
+  state = createGameState(players, mode);
   dealInitialCards();
+  renderGameScreen();
   logPlayersAtGameStart();
   beginTurn();
 }
@@ -352,20 +390,6 @@ function drawTwoDefaultCards(player) {
   addLog(`${player.name} compra ${GAME_LIMITS.defaultDrawCount} cartas.`);
 }
 
-const DRAW_STRATEGIES = {
-  peekDraw: (player) => drawThreeKeepTwo(player),
-  blackJack: (player) => drawBlackJackCards(player),
-  discardDraw: (player) => drawFromDiscardThenDeck(player),
-  default: (player) => drawTwoDefaultCards(player),
-};
-const TARGET_VALIDATORS = {
-  bang: (target, attacker) => canShoot(attacker, target),
-  jail: (target) => target.role !== "sheriff",
-  panic: (target, attacker) =>
-    dist(attacker, target) <= 1 && canTargetBeLooted(target),
-  default: () => true,
-};
-
 // ═══ DAMAGE ═══
 function damage(target, attacker, amt = 1) {
   for (let i = 0; i < amt; i++) {
@@ -482,8 +506,15 @@ function beginTurn() {
     return;
   }
   state.phase = PHASES.draw;
+  renderGame();
+  if (p.isBot) setTimeout(botDoTurn, GAME_LIMITS.botTurnDelayMs);
+  else if (state.mode === "hotseat") showHotseat();
 }
 function doDraw() {
+  if (state.mode === "online" && typeof BangNetwork !== "undefined") {
+    BangNetwork.sendGameAction({ type: "draw" });
+    return;
+  }
   const p = currentP();
   if (state.phase !== PHASES.draw) return;
   const drawStrategyKey =
@@ -494,17 +525,32 @@ function doDraw() {
     DRAW_STRATEGIES[drawStrategyKey] || DRAW_STRATEGIES.default;
   drawStrategy(p);
   state.phase = PHASES.play;
+  renderGame();
 }
 function endPlay() {
+  if (state.mode === "online" && typeof BangNetwork !== "undefined") {
+    BangNetwork.sendGameAction({ type: "endPlay" });
+    return;
+  }
   if (state.phase === PHASES.play) {
     state.phase = PHASES.discard;
+    renderGame();
   }
 }
 function doDiscard(i) {
+  if (state.mode === "online" && typeof BangNetwork !== "undefined") {
+    BangNetwork.sendGameAction({ type: "discard", index: i });
+    return;
+  }
   if (state.phase !== PHASES.discard) return;
   disc(currentP().hand.splice(i, 1)[0]);
+  renderGame();
 }
 function endDiscard() {
+  if (state.mode === "online" && typeof BangNetwork !== "undefined") {
+    BangNetwork.sendGameAction({ type: "endDiscard" });
+    return;
+  }
   const p = currentP();
   if (p.hand.length > p.life) {
     toast(`Descarte até ${p.life} carta(s)!`);
@@ -516,6 +562,8 @@ function advTurn() {
   if (state.gameOver) return;
   state.current = nextAlive(state.current);
   state.phase = PHASES.start;
+  hideBotBar();
+  renderGame();
   beginTurn();
 }
 function nextAlive(from) {
@@ -596,28 +644,26 @@ function resolveDuel(ch, df) {
 
 // ═══ PLAY CARD ═══
 function playCard(idx) {
-  if (state.gameOver || state.phase !== "play") return { error: "Jogada inválida" };
+  if (state.mode === "online" && typeof BangNetwork !== "undefined") {
+    BangNetwork.sendGameAction({ type: "playCard", index: idx });
+    return;
+  }
+  if (state.gameOver || state.phase !== "play") return;
   const p = currentP();
   const c = p.hand[idx];
-  if (!c) return { error: "Carta inválida" };
+  if (!c) return;
   state.pendingCard = c;
   state.pendingIdx = idx;
   if (CARD_TYPES_REQUIRING_TARGET.includes(c.type)) {
     const tgts = validTargets(c.type, p);
     if (!tgts.length) {
       toast("Nenhum alvo válido!");
-      return { error: state.lastToast };
+      return;
     }
-    state.pending = {
-      kind: "chooseTarget",
-      playerId: p.id,
-      cardIndex: idx,
-      cardType: c.type,
-      validTargetIds: tgts.map((t) => t.id),
-    };
-    return { ok: true, pending: true };
+    openModal(c.type, tgts, (tgt) => consumeExec(p, idx, c, tgt));
+    return;
   }
-  return consumeExec(p, idx, c, null);
+  consumeExec(p, idx, c, null);
 }
 function consumeExec(p, idx, c, tgt) {
   const ok = execCard(p, idx, c, tgt);
@@ -625,10 +671,8 @@ function consumeExec(p, idx, c, tgt) {
     removeC(p, idx);
     disc(c);
     suzyCheck(p);
-    return { ok: true };
+    renderGame();
   }
-  if (state.pending) return { ok: true, pending: true };
-  return { ok: false, error: state.lastToast || "Jogada inválida" };
 }
 function suzyCheck(p) {
   if (
@@ -646,12 +690,14 @@ function executeMissedAsBang(player, cardIndex, card) {
     toast("Nenhum alvo!");
     return false;
   }
-  state.pending = {
-    kind: "missedAsBang",
-    playerId: player.id,
-    cardIndex,
-    validTargetIds: targets.map((t) => t.id),
-  };
+  openModal("bang", targets, (target) => {
+    removeC(player, cardIndex);
+    disc(card);
+    resolveShot(player, target);
+    player.usedBang = true;
+    suzyCheck(player);
+    renderGame();
+  });
   return false;
 }
 function executePanicCard(player, target) {
@@ -867,6 +913,7 @@ function validTargets(type, atk) {
 // ═══ GENERAL STORE ═══
 function closeStoreModal() {}
 
+
 function resolveStore(p, idx, c) {
   const al = alive();
   state.storeCards = [];
@@ -891,128 +938,49 @@ function processStore() {
     state.storePick >= state.storeOrder.length ||
     state.storeCards.length === 0
   ) {
-    state.pending = null;
+    closeStoreModal();
+    renderGame();
     return;
   }
+  // Fecha e limpa antes de cada passo: evita botões antigos clicáveis enquanto bots escolhem (async).
   closeStoreModal();
-  const pi = state.storeOrder[state.storePick];
-  const picker = state.players[pi];
-  state.pending = {
-    kind: "storePick",
-    pickerId: pi,
-    cards: state.storeCards.map((c) => ({ ...c })),
-  };
-}
 
-function createOnlinePlayers(names) {
-  const n = names.length;
-  const { roles, chars } = createRandomRolesAndChars(n);
-  return names.map((name, i) =>
-    mkPlayer(
-      i,
-      (name && String(name).trim()) || `Jogador ${i + 1}`,
-      roles[i],
-      chars[i],
-      false,
-      null,
-    ),
-  );
-}
-
-function finishChooseTarget(playerId, targetId) {
-  if (!state.pending || state.pending.kind !== "chooseTarget")
-    return { error: "Nada pendente" };
-  if (state.pending.playerId !== playerId) return { error: "Não é sua escolha" };
-  if (!state.pending.validTargetIds.includes(targetId)) return { error: "Alvo inválido" };
-  const p = state.players[playerId];
-  const idx = state.pending.cardIndex;
-  const c = p.hand[idx];
-  const tgt = state.players.find((x) => x.id === targetId);
-  if (!tgt) return { error: "Alvo inválido" };
-  state.pending = null;
-  return consumeExec(p, idx, c, tgt);
-}
-
-function finishMissedAsBang(playerId, targetId) {
-  if (!state.pending || state.pending.kind !== "missedAsBang")
-    return { error: "Nada pendente" };
-  if (state.pending.playerId !== playerId) return { error: "Não é sua escolha" };
-  if (!state.pending.validTargetIds.includes(targetId)) return { error: "Alvo inválido" };
-  const player = state.players[playerId];
-  const idx = state.pending.cardIndex;
-  const card = player.hand[idx];
-  const target = state.players.find((x) => x.id === targetId);
-  if (!target) return { error: "Alvo inválido" };
-  state.pending = null;
-  removeC(player, idx);
-  disc(card);
-  resolveShot(player, target);
-  player.usedBang = true;
-  suzyCheck(player);
-  return { ok: true };
-}
-
-function finishStorePick(playerId, cardIndex) {
-  if (!state.pending || state.pending.kind !== "storePick")
-    return { error: "Loja não está aguardando" };
-  if (state.pending.pickerId !== playerId) return { error: "Não é sua vez na loja" };
-  const cards = state.storeCards;
-  if (cardIndex < 0 || cardIndex >= cards.length) return { error: "Carta inválida" };
-  const taken = cards.splice(cardIndex, 1)[0];
-  const picker = state.players[playerId];
-  picker.hand.push(taken);
-  addLog(`🏪 ${picker.name} pega ${taken.label}.`);
-  state.storePick++;
-  state.pending = null;
-  processStore();
-  return { ok: true };
-}
-
-function applySidKetchum(playerId) {
-  if (state.phase !== PHASES.play) return { error: "Fase inválida" };
-  const p = currentP();
-  if (p.id !== playerId) return { error: "Não é seu turno" };
-  if (p.char.ability !== "selfHeal") return { error: "Habilidade indisponível" };
-  if (p.hand.length < PLAYER_ABILITY_RULES.sidKetchumDiscardCost)
-    return { error: "Cartas insuficientes" };
-  if (p.life >= p.maxLife) return { error: "Vida máxima" };
-  for (let i = 0; i < PLAYER_ABILITY_RULES.sidKetchumDiscardCost; i++) disc(p.hand.pop());
-  heal(p);
-  addLog(`${p.name} (Sid Ketchum) usa habilidade!`);
-  return { ok: true };
-}
-
-function applyAction(playerId, action) {
-  state.lastToast = null;
-  if (state.gameOver) return { error: "Partida encerrada" };
-  const t = action && action.type;
-  if (!t) return { error: "Ação inválida" };
-
-  if (t === "chooseTarget") return finishChooseTarget(playerId, action.targetId);
-  if (t === "missedAsBangTarget") return finishMissedAsBang(playerId, action.targetId);
-  if (t === "storePick") return finishStorePick(playerId, action.cardIndex);
-
-  if (state.current !== playerId) return { error: "Não é seu turno" };
-
-  switch (t) {
-    case "draw":
-      doDraw();
-      return { ok: true };
-    case "endPlay":
-      endPlay();
-      return { ok: true };
-    case "discard":
-      doDiscard(action.index);
-      return { ok: true };
-    case "endDiscard":
-      endDiscard();
-      return { ok: true };
-    case "playCard":
-      return playCard(action.index);
-    case "sidKetchum":
-      return applySidKetchum(playerId);
-    default:
-      return { error: "Ação desconhecida" };
+  const pi = state.storeOrder[state.storePick],
+    picker = state.players[pi];
+  if (picker.isBot) {
+    const best = state.storeCards.reduce(
+      (b, c, i) => {
+        const sc = STORE_CARD_PRIORITY[c.type] || GAME_LIMITS.defaultWeaponReach;
+        return sc > b.sc ? { sc, i } : b;
+      },
+      { sc: -1, i: 0 },
+    );
+    const ch = state.storeCards.splice(best.i, 1)[0];
+    picker.hand.push(ch);
+    addLog(`🤖 ${picker.name} pega ${ch.label}.`, "bot");
+    state.storePick++;
+    setTimeout(processStore, GAME_LIMITS.storeBotPickDelayMs);
+    return;
   }
+  document.getElementById("sm-desc").textContent =
+    `${picker.name}, escolha uma carta:`;
+  const list = document.getElementById("sm-list");
+  state.storeCards.forEach((card) => {
+    const btn = document.createElement("button");
+    btn.className = "tbtn";
+    btn.innerHTML = `${card.icon} ${card.label} <span class="td">${card.suit}${card.value}</span>`;
+    btn.onclick = () => {
+      if (state.storeOrder[state.storePick] !== pi) return;
+      const cardIndex = state.storeCards.indexOf(card);
+      if (cardIndex < 0) return;
+      const taken = state.storeCards.splice(cardIndex, 1)[0];
+      closeStoreModal();
+      picker.hand.push(taken);
+      addLog(`🏪 ${picker.name} pega ${taken.label}.`);
+      state.storePick++;
+      processStore();
+    };
+    list.appendChild(btn);
+  });
+  document.getElementById("store-modal").classList.add("open");
 }
-

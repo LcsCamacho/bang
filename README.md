@@ -8,8 +8,8 @@ Documentação do que foi implementado: **servidor autoritativo** para partidas 
 
 | Modo | Descrição | Onde roda a lógica |
 |------|-----------|-------------------|
-| **Offline** | Você vs bots | No navegador (`bang.js`) |
-| **Hotseat** | Vários jogadores no mesmo aparelho | No navegador (`bang.js`) |
+| **Offline** | Você vs bots | No navegador (`bang-engine.js` + bots/UI) |
+| **Hotseat** | Vários jogadores no mesmo aparelho | No navegador (`bang-engine.js` + bots/UI) |
 | **Online** | Jogadores em rede | **Servidor** (`server/game/engine.js`) — o cliente só aplica snapshots e envia ações |
 
 No **online**, o servidor é a fonte da verdade: baralho, mãos, turno e validação de jogadas. Cada cliente recebe apenas **sua mão** (payload privado) e um **estado público** dos demais (contagem de cartas, vida, equipamentos, etc.).
@@ -41,7 +41,11 @@ Fluxo típico:
 Bang/
 ├── bang.html          # Telas: menu, offline, hotseat, online (lobby), jogo
 ├── bang.css           # Layout da mesa, oponentes, mão (hand-dock), etc.
-├── bang.js            # Lógica offline/hotseat + render + hooks do modo online
+├── bang-nav.js        # Navegação entre telas (`goTo`)
+├── bang-data.js       # Constantes e tabelas (cartas, personagens, limites)
+├── bang-engine.js     # Estado local, turno, jogadas, combate, loja (offline/hotseat)
+├── bang-bots.js       # IA dos bots
+├── bang-ui.js         # Render, modal, log/toast, lobby online
 ├── bang-network.js    # WebSocket, merge de snapshot, envio de ações
 ├── server/
 │   ├── package.json
@@ -51,12 +55,12 @@ Bang/
 │   ├── protocol.js    # Nomes de mensagens / contrato (comentários)
 │   └── game/
 │       ├── constants.js
-│       ├── engine.js  # Motor (regras espelhadas do bang.js)
+│       ├── engine.js  # Motor (regras espelhadas de bang-engine.js)
 │       ├── snapshot.js
 │       └── engine.test.js
 ```
 
-Os arquivos estáticos (`bang.html`, `bang.css`, `bang.js`) são servidos a partir da **raiz do repositório** (não há pasta `public/` obrigatória).
+Os arquivos estáticos (`bang.html`, `bang.css`, `bang-*.js`) são servidos a partir da **raiz do repositório** (não há pasta `public/` obrigatória).
 
 ---
 
@@ -115,7 +119,7 @@ O **turno** no servidor usa `player.id` (0…n−1) e o índice `current` na mes
 
 ---
 
-## Cliente (`bang.js` + `bang-network.js`)
+## Cliente (`bang-nav.js` … `bang-ui.js` + `bang-network.js`)
 
 - **`LocalState.mode === 'online'`** — não muta estado local como no offline; atualiza a partir de `gameState`.
 - **`BangNetwork.mergeSnapshot`** — monta `LocalState` a partir de `public` + `private` (mão real só para o jogador local).
@@ -144,7 +148,7 @@ O **turno** no servidor usa `player.id` (0…n−1) e o índice `current` na mes
 ## Problemas comuns
 
 - **404 em recursos** — abrir o jogo pela mesma origem do servidor (ex.: `http://localhost:3000/bang.html` ou `/`), não misturar `file://` com `ws://localhost`.
-- **`LocalState.createGameState is not a function`** — no offline/hotseat, `createGameState` deve ser função global em `bang.js`; não deve ser anexada por engano a `LocalState`.
+- **`LocalState.createGameState is not a function`** — no offline/hotseat, `createGameState` deve ser função global (carregada com `bang-engine.js`); não deve ser anexada por engano a `LocalState`.
 
 ---
 
@@ -154,4 +158,4 @@ O plano original (fases 0–6) está descrito em um arquivo de plano no Cursor; 
 
 ---
 
-*Última atualização da documentação: alinhada ao código em `server/`, `bang.js`, `bang-network.js`, `bang.html` e `bang.css`.*
+*Última atualização da documentação: alinhada ao código em `server/`, `bang-*.js`, `bang-network.js`, `bang.html` e `bang.css`.*
