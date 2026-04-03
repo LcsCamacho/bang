@@ -3,15 +3,26 @@
   "version": "1.0.0",
   "private": true,
   "type": "commonjs",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "node --watch index.js",
-    "test": "node --test game/engine.test.js"
+    "build": "tsc",
+    "typecheck": "tsc && tsc -p tsconfig.scripts.json",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "test": "npm run build && node --test dist/game/engine.test.js",
+    "check:scripts": "tsc -p tsconfig.scripts.json",
+    "gen:fragment": "tsx scripts/generate-engine-fragment.ts"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
     "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.2"
   }
 }

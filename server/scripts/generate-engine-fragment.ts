@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 /**
  * Monta fragmento a partir de bang-engine.js (regras cliente até a loja, sem bots).
- * Saída: server/game/_engine_fragment.js (referência / diff com engine.js do servidor).
+ * Saída: server/game/_engine_fragment.js (referência / diff com `src/game/engine.ts` do servidor).
  */
-const fs = require("fs");
-const path = require("path");
+import * as fs from "fs";
+import * as path from "path";
+
 const enginePath = path.join(__dirname, "..", "..", "bang-engine.js");
 let body = fs.readFileSync(enginePath, "utf8");
 
@@ -51,5 +52,6 @@ body = body.replace(
   "function closeStoreModal() {}\n",
 );
 
-fs.writeFileSync(path.join(__dirname, "..", "game", "_engine_fragment.js"), body);
+const outPath = path.join(__dirname, "..", "game", "_engine_fragment.js");
+fs.writeFileSync(outPath, body);
 console.log("Wrote _engine_fragment.js", body.length);

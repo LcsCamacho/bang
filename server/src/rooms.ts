@@ -1,35 +1,51 @@
-"use strict";
+import crypto from "crypto";
+import { createBangEngine, type BangEngine } from "./game/engine";
+import { buildGameSnapshot } from "./game/snapshot";
+import { MESSAGE_TYPES } from "./protocol";
+import type { ClientGameAction } from "./game/types";
 
-const crypto = require("crypto");
-const { createBangEngine } = require("./game/engine");
-const { buildGameSnapshot } = require("./game/snapshot");
-const { MESSAGE_TYPES } = require("./protocol");
+export const MAX_PLAYERS = 7;
 
-const MAX_PLAYERS = 7;
-
-function createRoomId() {
+function createRoomId(): string {
   return crypto.randomBytes(4).toString("hex");
 }
 
-function createSessionToken() {
+function createSessionToken(): string {
   return crypto.randomBytes(16).toString("hex");
 }
 
-class Room {
-  constructor(hostSocketId, hostName) {
+export interface LobbySeat {
+  displayName: string;
+  playerId: number | null;
+  sessionToken: string;
+}
+
+export interface LobbyPlayerRow {
+  socketId: string;
+  displayName: string;
+  isHost: boolean;
+  isYou: boolean;
+  ready: boolean;
+}
+
+export class Room {
+  roomId: string;
+  hostId: string;
+  players = new Map<string, LobbySeat>();
+  engine: BangEngine | null = null;
+  started = false;
+
+  constructor(hostSocketId: string, hostName: string | undefined) {
     this.roomId = createRoomId();
     this.hostId = hostSocketId;
-    this.players = new Map(); // socketId -> { displayName, playerId, sessionToken }
     this.players.set(hostSocketId, {
       displayName: hostName || "Anfitrião",
       playerId: null,
       sessionToken: createSessionToken(),
     });
-    this.engine = null;
-    this.started = false;
   }
 
-  addPlayer(socketId, displayName) {
+  addPlayer(socketId: string, displayName: string | undefined): boolean {
     if (this.players.size >= MAX_PLAYERS) return false;
     if (this.started) return false;
     this.players.set(socketId, {
@@ -40,19 +56,19 @@ class Room {
     return true;
   }
 
-  removePlayer(socketId) {
+  removePlayer(socketId: string): void {
     this.players.delete(socketId);
     if (socketId === this.hostId && this.players.size > 0) {
-      this.hostId = this.players.keys().next().value;
+      this.hostId = this.players.keys().next().value!;
     }
   }
 
-  isHost(socketId) {
+  isHost(socketId: string): boolean {
     return socketId === this.hostId;
   }
 
-  getRoomUpdatePayload(forSocketId) {
-    const lobbyRows = [];
+  getRoomUpdatePayload(forSocketId: string | null | undefined) {
+    const lobbyRows: LobbyPlayerRow[] = [];
     for (const [socketId, seat] of this.players) {
       lobbyRows.push({
         socketId,
@@ -73,22 +89,22 @@ class Room {
     };
   }
 
-  startGame(hostSocketId) {
+  startGame(hostSocketId: string): { ok?: true; error?: string } {
     if (!this.isHost(hostSocketId)) return { error: "Apenas o anfitrião pode iniciar" };
     if (this.players.size < 4) return { error: "Mínimo 4 jogadores" };
     if (this.started) return { error: "Partida já iniciada" };
 
     const engine = createBangEngine();
-    const names = [];
-    const socketOrder = [];
+    const names: string[] = [];
+    const socketOrder: string[] = [];
     for (const [socketId, seat] of this.players) {
       socketOrder.push(socketId);
       names.push(seat.displayName);
     }
     const gamePlayers = engine.createOnlinePlayers(names);
     socketOrder.forEach((socketId, tableIndex) => {
-      const seat = this.players.get(socketId);
-      seat.playerId = gamePlayers[tableIndex].id;
+      const seat = this.players.get(socketId)!;
+      seat.playerId = gamePlayers[tableIndex]!.id;
     });
     engine.launchNetworkGame(gamePlayers);
     this.engine = engine;
@@ -96,24 +112,24 @@ class Room {
     return { ok: true };
   }
 
-  applyGameAction(socketId, action) {
+  applyGameAction(socketId: string, action: ClientGameAction) {
     if (!this.engine || !this.started) return { error: "Partida não iniciada" };
     const seat = this.players.get(socketId);
     if (!seat || seat.playerId == null) return { error: "Jogador não encontrado" };
     return this.engine.applyAction(seat.playerId, action);
   }
 
-  getSnapshotFor(socketId) {
+  getSnapshotFor(socketId: string) {
     if (!this.engine) return null;
     const seat = this.players.get(socketId);
     if (!seat || seat.playerId == null) return null;
     return buildGameSnapshot(this.engine.getState(), seat.playerId);
   }
 
-  /**
-   * @returns {{ ok: boolean, oldSocketId?: string }}
-   */
-  reconnectSession(sessionToken, newSocketId) {
+  reconnectSession(
+    sessionToken: string,
+    newSocketId: string,
+  ): { ok: true; oldSocketId?: string } | { ok: false } {
     for (const [previousSocketId, seat] of this.players) {
       if (seat.sessionToken === sessionToken) {
         if (previousSocketId === newSocketId) return { ok: true };
@@ -126,24 +142,25 @@ class Room {
     return { ok: false };
   }
 
-  getSessionToken(socketId) {
+  getSessionToken(socketId: string): string | undefined {
     return this.players.get(socketId)?.sessionToken;
   }
 }
 
-class RoomManager {
-  constructor() {
-    /** @type {Map<string, Room>} */
-    this.rooms = new Map();
-    /** @type {Map<string, string>} socketId -> roomId */
-    this.socketToRoom = new Map();
-  }
+export class RoomManager {
+  rooms = new Map<string, Room>();
+  /** socketId -> roomId */
+  socketToRoom = new Map<string, string>();
 
-  getRoomById(roomId) {
+  getRoomById(roomId: string): Room | undefined {
     return this.rooms.get(roomId);
   }
 
-  reconnectSocket(roomId, sessionToken, newSocketId) {
+  reconnectSocket(
+    roomId: string,
+    sessionToken: string,
+    newSocketId: string,
+  ): { room: Room } | { error: string } {
     const room = this.rooms.get(roomId);
     if (!room) return { error: "Sala não encontrada" };
     const sessionOutcome = room.reconnectSession(sessionToken, newSocketId);
@@ -153,7 +170,7 @@ class RoomManager {
     return { room };
   }
 
-  createRoom(hostSocketId, hostName) {
+  createRoom(hostSocketId: string, hostName: string | undefined): Room {
     this.leaveRoom(hostSocketId);
     const room = new Room(hostSocketId, hostName);
     this.rooms.set(room.roomId, room);
@@ -161,7 +178,11 @@ class RoomManager {
     return room;
   }
 
-  joinRoom(roomId, socketId, displayName) {
+  joinRoom(
+    roomId: string,
+    socketId: string,
+    displayName: string | undefined,
+  ): { room: Room } | { error: string } {
     const room = this.rooms.get(roomId);
     if (!room) return { error: "Sala não encontrada" };
     if (room.started) return { error: "Partida já em andamento" };
@@ -171,7 +192,7 @@ class RoomManager {
     return { room };
   }
 
-  leaveRoom(socketId) {
+  leaveRoom(socketId: string): void {
     const roomId = this.socketToRoom.get(socketId);
     if (!roomId) return;
     const room = this.rooms.get(roomId);
@@ -181,8 +202,8 @@ class RoomManager {
     if (room.players.size === 0) this.rooms.delete(roomId);
   }
 
-  /** Desconexão de rede: mantém assento se a partida já começou (reconexão). */
-  handleDisconnect(socketId) {
+  /** Desconexão: mantém assento se a partida já começou (reconexão). */
+  handleDisconnect(socketId: string): void {
     const roomId = this.socketToRoom.get(socketId);
     if (!roomId) return;
     const room = this.rooms.get(roomId);
@@ -190,29 +211,9 @@ class RoomManager {
     this.leaveRoom(socketId);
   }
 
-  getRoomForSocket(socketId) {
+  getRoomForSocket(socketId: string): Room | null {
     const roomId = this.socketToRoom.get(socketId);
     if (!roomId) return null;
-    return this.rooms.get(roomId);
-  }
-
-  broadcastRoom(room, sendFn) {
-    for (const socketId of room.players.keys()) {
-      sendFn(socketId, room.getRoomUpdatePayload());
-    }
-  }
-
-  broadcastGameState(room, sendFn) {
-    if (!room.engine) return;
-    for (const socketId of room.players.keys()) {
-      const gameSnapshot = room.getSnapshotFor(socketId);
-      if (!gameSnapshot) continue;
-      sendFn(socketId, {
-        type: MESSAGE_TYPES.GAME_STATE,
-        ...gameSnapshot,
-      });
-    }
+    return this.rooms.get(roomId) ?? null;
   }
 }
-
-module.exports = { RoomManager, MAX_PLAYERS };

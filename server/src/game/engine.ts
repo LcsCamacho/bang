@@ -1,12 +1,24 @@
-'use strict';
-const C = require("./constants");
-module.exports = { createBangEngine };
-function createBangEngine() {
-  let state;
+import * as C from "./constants";
+import type { ApplyResult, Card, CardActionContext, ClientGameAction, GameState, Player } from "./types";
+
+export function createBangEngine() {
+  let state!: GameState;
   const {
-    SUITS, VALUES, WEAPONS, CHARS, CARD_TYPES_REQUIRING_TARGET, WEAPON_CARD_TYPES,
-    STORE_CARD_PRIORITY, ROLE_SETUPS, GAME_LIMITS, CARD_SUITS, DYNAMITE_EXPLOSION_VALUES,
-    ROLE_LABELS, ROLE_ICONS, PHASES, PLAYER_ABILITY_RULES,
+    SUITS,
+    VALUES,
+    WEAPONS,
+    CHARS,
+    CARD_TYPES_REQUIRING_TARGET,
+    WEAPON_CARD_TYPES,
+    STORE_CARD_PRIORITY,
+    ROLE_SETUPS,
+    GAME_LIMITS,
+    CARD_SUITS,
+    DYNAMITE_EXPLOSION_VALUES,
+    ROLE_LABELS,
+    ROLE_ICONS,
+    PHASES,
+    PLAYER_ABILITY_RULES,
   } = C;
 function addLog(logText, type = "") {
   state.log.unshift({ msg: logText, type });
@@ -18,13 +30,10 @@ function rLabel(roleId) {
 function rIcon(roleId) {
   return ROLE_ICONS[roleId] || "?";
 }
-function toast(messageText) {
+function toast(messageText: string) {
   state.lastToast = messageText;
 }
-function createDefaultEquipment() {
-  return { weaponKey: "colt45", barrel: false, mustang: false, scope: false };
-}
-function canUseBang(player) {
+function canUseBang(player: Player) {
   return (
     !player.usedBang ||
     player.char.ability === "unlimitedBang" ||
@@ -69,9 +78,9 @@ function shouldSkipCardForPlayer(card, player) {
   return evaluateSkip ? evaluateSkip(player) : false;
 }
 
-function buildDeck() {
-  const cards = [];
-  const addCards = (type, label, icon, count) => {
+function buildDeck(): Card[] {
+  const cards: Card[] = [];
+  const addCards = (type: string, label: string, icon: string, count: number) => {
     for (let cardIndex = 0; cardIndex < count; cardIndex++)
       cards.push({ type, label, icon });
   };
@@ -124,17 +133,17 @@ function buildDeck() {
       weaponKey: "winchester",
     },
   ].forEach((w) => cards.push(w));
-  const suitValuePairs = [];
+  const suitValuePairs: { suit: string; value: string }[] = [];
   SUITS.forEach((suit) => VALUES.forEach((value) => suitValuePairs.push({ suit, value })));
   shuffle(suitValuePairs);
   cards.forEach((card, cardIndex) => {
-    const pair = suitValuePairs[cardIndex % suitValuePairs.length];
+    const pair = suitValuePairs[cardIndex % suitValuePairs.length]!;
     card.suit = pair.suit;
     card.value = pair.value;
   });
   return cards;
 }
-function shuffle(items) {
+function shuffle<T>(items: T[]): T[] {
   for (let lastIndex = items.length - 1; lastIndex > 0; lastIndex--) {
     const swapIndex = Math.floor(Math.random() * (lastIndex + 1));
     [items[lastIndex], items[swapIndex]] = [items[swapIndex], items[lastIndex]];
@@ -143,10 +152,18 @@ function shuffle(items) {
 }
 
 // ═══ STATE ═══
-function buildRoles(playerCount) {
-  return ROLE_SETUPS[playerCount] || ROLE_SETUPS.default;
+function buildRoles(playerCount: number): string[] {
+  const byCount = (ROLE_SETUPS as Record<number, string[] | undefined>)[playerCount];
+  return byCount ?? ROLE_SETUPS.default;
 }
-function mkPlayer(id, name, role, char, isBot, diff) {
+function mkPlayer(
+  id: number,
+  name: string,
+  role: string,
+  char: Player["char"],
+  isBot: boolean,
+  diff: string | null,
+): Player {
   let startingLife = char.life + (role === "sheriff" ? 1 : 0);
   startingLife = Math.min(startingLife, GAME_LIMITS.maxLifeCap);
   return {
@@ -157,7 +174,7 @@ function mkPlayer(id, name, role, char, isBot, diff) {
     life: startingLife,
     maxLife: startingLife,
     hand: [],
-    equipment: createDefaultEquipment(),
+    equipment: C.createDefaultEquipment(),
     alive: true,
     jailed: false,
     hasDynamite: false,
@@ -173,7 +190,7 @@ function moveSheriffToFirst(players) {
     players.unshift(sheriffPlayer);
   }
 }
-function createGameState(players, mode) {
+function createGameState(players: Player[], mode: string): GameState {
   return {
     players,
     mode,
@@ -224,10 +241,11 @@ function launchNetworkGame(players) {
 }
 
 // ═══ CARD OPS ═══
-function dealCard(player) {
+function dealCard(player: Player): Card | null {
   if (state.drawPile.length === 0) reshuf();
   if (state.drawPile.length === 0) return null;
   const drawnCard = state.drawPile.pop();
+  if (!drawnCard) return null;
   player.hand.push(drawnCard);
   return drawnCard;
 }
@@ -271,9 +289,10 @@ function canShoot(attacker, defender) {
 }
 
 // ═══ DRAW CHECK ═══
-function drawCheck() {
+function drawCheck(): Card {
   if (state.drawPile.length === 0) reshuf();
   const drawnCard = state.drawPile.pop();
+  if (!drawnCard) throw new Error("drawCheck: baralho vazio");
   disc(drawnCard);
   return drawnCard;
 }
@@ -286,19 +305,19 @@ function drawCheckLD(player) {
   );
   return [firstDraw, secondDraw];
 }
-function doDrawCheck(player) {
+function doDrawCheck(player: Player): Card {
   if (player.char.ability === "twoDraws") {
     const [firstDraw] = drawCheckLD(player);
-    return firstDraw;
+    return firstDraw!;
   }
   const drawnCard = drawCheck();
   addLog(`Draw!: ${drawnCard.suit}${drawnCard.value}`);
   return drawnCard;
 }
-function isDynamiteExplosionCard(card) {
+function isDynamiteExplosionCard(card: Card) {
   return (
     card.suit === CARD_SUITS.spades &&
-    DYNAMITE_EXPLOSION_VALUES.includes(card.value)
+    DYNAMITE_EXPLOSION_VALUES.includes(card.value as (typeof DYNAMITE_EXPLOSION_VALUES)[number])
   );
 }
 function resolveDynamiteAtTurnStart(player) {
@@ -329,20 +348,25 @@ function resolveJailAtTurnStart(player) {
   addLog(`🔓 ${player.name} escapou!`);
   return true;
 }
-function drawThreeKeepTwo(player) {
-  const topCards = [];
+function drawThreeKeepTwo(player: Player) {
+  const topCards: Card[] = [];
   for (let cardIndex = 0; cardIndex < GAME_LIMITS.kitCarlsonDrawCount; cardIndex++) {
     if (state.drawPile.length === 0) reshuf();
-    topCards.push(state.drawPile.pop());
+    const c = state.drawPile.pop();
+    if (c) topCards.push(c);
   }
-  state.drawPile.push(topCards[GAME_LIMITS.kitCarlsonKeepCount]);
-  player.hand.push(topCards[0]);
-  player.hand.push(topCards[1]);
+  const returnCard = topCards[GAME_LIMITS.kitCarlsonKeepCount];
+  if (returnCard) state.drawPile.push(returnCard);
+  const keep0 = topCards[0];
+  const keep1 = topCards[1];
+  if (keep0) player.hand.push(keep0);
+  if (keep1) player.hand.push(keep1);
   addLog(`${player.name} (Kit Carlson) escolhe 2 de 3.`);
 }
-function drawBlackJackCards(player) {
+function drawBlackJackCards(player: Player) {
   const firstCard = dealCard(player);
   const secondCard = dealCard(player);
+  if (!firstCard || !secondCard) return;
   addLog(
     `${player.name} compra: ${firstCard.suit}${firstCard.value}, ${secondCard.suit}${secondCard.value}`,
   );
@@ -351,9 +375,9 @@ function drawBlackJackCards(player) {
     addLog(`Black Jack +1 carta extra!`);
   }
 }
-function drawFromDiscardThenDeck(player) {
+function drawFromDiscardThenDeck(player: Player) {
   const topDiscardCard = state.discardPile.pop();
-  player.hand.push(topDiscardCard);
+  if (topDiscardCard) player.hand.push(topDiscardCard);
   dealCard(player);
   addLog(`${player.name} (Pedro Ramirez) compra do descarte + baralho.`);
 }
@@ -368,11 +392,11 @@ const DRAW_STRATEGIES = {
   discardDraw: (player) => drawFromDiscardThenDeck(player),
   default: (player) => drawTwoDefaultCards(player),
 };
-const TARGET_VALIDATORS = {
-  bang: (target, attacker) => canShoot(attacker, target),
+const TARGET_VALIDATORS: Record<string, (target: Player, attacker?: Player) => boolean> = {
+  bang: (target, attacker) => canShoot(attacker!, target),
   jail: (target) => target.role !== "sheriff",
   panic: (target, attacker) =>
-    dist(attacker, target) <= 1 && canTargetBeLooted(target),
+    attacker != null && dist(attacker, target) <= 1 && canTargetBeLooted(target),
   default: () => true,
 };
 
@@ -419,7 +443,7 @@ function elim(eliminated, killer) {
   }
   if (eliminated.role === "deputy" && killer && killer.role === "sheriff") {
     killer.hand = [];
-    killer.equipment = createDefaultEquipment();
+    killer.equipment = C.createDefaultEquipment();
     addLog(`⭐ Xerife matou o próprio deputado — perde tudo!`, "imp");
   }
   state.players.forEach((scavenger) => {
@@ -626,7 +650,7 @@ function playCard(handIndex) {
   if (!card) return { error: "Carta inválida" };
   state.pendingCard = card;
   state.pendingIdx = handIndex;
-  if (CARD_TYPES_REQUIRING_TARGET.includes(card.type)) {
+  if ((CARD_TYPES_REQUIRING_TARGET as readonly string[]).includes(card.type)) {
     const targets = validTargets(card.type, activePlayer);
     if (!targets.length) {
       toast("Nenhum alvo válido!");
@@ -876,13 +900,13 @@ function execCard(player, handIndex, card, target) {
   };
   const actionHandler =
     CARD_ACTION_HANDLERS[card.type] ||
-    (WEAPON_CARD_TYPES.includes(card.type) ? handleWeaponCard : null);
+    ((WEAPON_CARD_TYPES as readonly string[]).includes(card.type) ? handleWeaponCard : null);
   if (!actionHandler) return true;
   return actionHandler(actionContext);
 }
 
-function validTargets(type, attacker) {
-  const targetValidator = TARGET_VALIDATORS[type] || TARGET_VALIDATORS.default;
+function validTargets(type: string, attacker: Player) {
+  const targetValidator = TARGET_VALIDATORS[type] ?? TARGET_VALIDATORS.default;
   return state.players.filter((candidate) => {
     if (!candidate.alive || candidate === attacker) return false;
     return targetValidator(candidate, attacker);
@@ -897,7 +921,8 @@ function resolveStore(player, handIndex, storeCard) {
   state.storeCards = [];
   for (let drawStep = 0; drawStep < alivePlayers.length; drawStep++) {
     if (state.drawPile.length === 0) reshuf();
-    state.storeCards.push(state.drawPile.pop());
+    const drawn = state.drawPile.pop();
+    if (drawn) state.storeCards.push(drawn);
   }
   removeC(player, handIndex);
   disc(storeCard);
@@ -922,6 +947,10 @@ function processStore() {
   closeStoreModal();
   const pickerSeatIndex = state.storeOrder[state.storePick];
   const picker = state.players[pickerSeatIndex];
+  if (!picker) {
+    state.pending = null;
+    return;
+  }
   state.pending = {
     kind: "storePick",
     pickerId: picker.id,
@@ -950,10 +979,11 @@ function finishChooseTarget(playerId, targetId) {
   if (state.pending.playerId !== playerId) return { error: "Não é sua escolha" };
   if (!state.pending.validTargetIds.includes(targetId)) return { error: "Alvo inválido" };
   const actor = state.players.find((player) => player.id === playerId);
+  if (!actor) return { error: "Jogador não encontrado" };
   const pendingHandIndex = state.pending.cardIndex;
   const playedCard = actor.hand[pendingHandIndex];
   const targetPlayer = state.players.find((player) => player.id === targetId);
-  if (!targetPlayer) return { error: "Alvo inválido" };
+  if (!targetPlayer || !playedCard) return { error: "Alvo inválido" };
   state.pending = null;
   return consumeExec(actor, pendingHandIndex, playedCard, targetPlayer);
 }
@@ -964,10 +994,11 @@ function finishMissedAsBang(playerId, targetId) {
   if (state.pending.playerId !== playerId) return { error: "Não é sua escolha" };
   if (!state.pending.validTargetIds.includes(targetId)) return { error: "Alvo inválido" };
   const player = state.players.find((candidate) => candidate.id === playerId);
+  if (!player) return { error: "Jogador não encontrado" };
   const pendingCardIndex = state.pending.cardIndex;
   const card = player.hand[pendingCardIndex];
   const target = state.players.find((candidate) => candidate.id === targetId);
-  if (!target) return { error: "Alvo inválido" };
+  if (!target || !card) return { error: "Alvo inválido" };
   state.pending = null;
   removeC(player, pendingCardIndex);
   disc(card);
@@ -985,6 +1016,7 @@ function finishStorePick(playerId, cardIndex) {
   if (cardIndex < 0 || cardIndex >= cards.length) return { error: "Carta inválida" };
   const taken = cards.splice(cardIndex, 1)[0];
   const picker = state.players.find((candidate) => candidate.id === playerId);
+  if (!picker || !taken) return { error: "Estado inválido" };
   picker.hand.push(taken);
   addLog(`🏪 ${picker.name} pega ${taken.label}.`);
   state.storePick++;
@@ -1013,16 +1045,18 @@ function isCurrentPlayer(playerId) {
   return currentPlayer && currentPlayer.id === playerId;
 }
 
-function applyAction(playerId, action) {
+function applyAction(playerId: number, action: ClientGameAction): ApplyResult {
   state.lastToast = null;
   if (state.gameOver) return { error: "Partida encerrada" };
-  const actionType = action && action.type;
+  const actionType = action?.type;
   if (!actionType) return { error: "Ação inválida" };
 
-  if (actionType === "chooseTarget") return finishChooseTarget(playerId, action.targetId);
+  if (actionType === "chooseTarget")
+    return finishChooseTarget(playerId, (action as { targetId: number }).targetId);
   if (actionType === "missedAsBangTarget")
-    return finishMissedAsBang(playerId, action.targetId);
-  if (actionType === "storePick") return finishStorePick(playerId, action.cardIndex);
+    return finishMissedAsBang(playerId, (action as { targetId: number }).targetId);
+  if (actionType === "storePick")
+    return finishStorePick(playerId, (action as { cardIndex: number }).cardIndex);
 
   if (!isCurrentPlayer(playerId)) return { error: "Não é seu turno" };
 
@@ -1034,13 +1068,13 @@ function applyAction(playerId, action) {
       endPlay();
       return { ok: true };
     case "discard":
-      doDiscard(action.index);
+      doDiscard((action as { index: number }).index);
       return { ok: true };
     case "endDiscard":
       endDiscard();
       return { ok: true };
     case "playCard":
-      return playCard(action.index);
+      return playCard((action as { index: number }).index);
     case "sidKetchum":
       return applySidKetchum(playerId);
     default:
@@ -1053,8 +1087,10 @@ function applyAction(playerId, action) {
     applyAction,
     launchNetworkGame,
     createOnlinePlayers,
-    _setState(nextState) {
+    _setState(nextState: GameState) {
       state = nextState;
     },
   };
 }
+
+export type BangEngine = ReturnType<typeof createBangEngine>;

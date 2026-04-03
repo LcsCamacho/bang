@@ -1,13 +1,8 @@
-"use strict";
+import { GAME_LIMITS } from "./constants";
+import type { GameState } from "./types";
 
-const { GAME_LIMITS } = require("./constants");
-
-/**
- * @param {object} state - estado completo do motor
- * @param {number} viewerId - playerId do destinatário
- */
-function buildGameSnapshot(state, viewerId) {
-  const sheriffVisible = (role) => role === "sheriff";
+export function buildGameSnapshot(state: GameState, viewerId: number) {
+  const sheriffVisible = (role: string) => role === "sheriff";
   const publicPlayers = state.players.map((player) => ({
     id: player.id,
     name: player.name,
@@ -61,5 +56,3 @@ function buildGameSnapshot(state, viewerId) {
     private: privateSnapshot,
   };
 }
-
-module.exports = { buildGameSnapshot };

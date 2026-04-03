@@ -1,25 +1,25 @@
-"use strict";
-
-const http = require("http");
-const path = require("path");
-const express = require("express");
-const { WebSocketServer } = require("ws");
-const { RoomManager } = require("./rooms");
-const { MESSAGE_TYPES } = require("./protocol");
+import http from "http";
+import path from "path";
+import express, { type Request, type Response, type NextFunction } from "express";
+import { WebSocketServer, type WebSocket } from "ws";
+import { config as dotenvConfig } from "dotenv";
+import { RoomManager, type Room } from "./rooms";
+import { MESSAGE_TYPES } from "./protocol";
 
 try {
-  require("dotenv").config({ path: path.join(__dirname, ".env") });
+  dotenvConfig({ path: path.join(__dirname, "..", ".env") });
 } catch {
-  /* optional */
+  /* opcional */
 }
 
 const PORT = Number(process.env.PORT) || 3777;
 const CORS_ORIGIN = process.env.CORS_ORIGIN;
 
 const app = express();
-const repoRoot = path.join(__dirname, "..");
+/** Raiz do repositório (bang.html, assets) — `dist/index.js` → sobe dois níveis até a raiz do jogo */
+const repoRoot = path.join(__dirname, "..", "..");
 
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   if (CORS_ORIGIN) res.setHeader("Access-Control-Allow-Origin", CORS_ORIGIN);
   else {
     const requestOrigin = req.headers.origin;
@@ -33,7 +33,7 @@ app.use((req, res, next) => {
 
 app.use(express.static(repoRoot));
 
-app.get("/", (_req, res) => {
+app.get("/", (_req: Request, res: Response) => {
   res.sendFile(path.join(repoRoot, "bang.html"));
 });
 
@@ -41,11 +41,10 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 const rooms = new RoomManager();
 
-/** @type {Map<object, string>} */
-const wsToId = new Map();
+const wsToId = new Map<WebSocket, string>();
 let nextSocketId = 1;
 
-function getSocketId(webSocketClient) {
+function getSocketId(webSocketClient: WebSocket): string {
   let socketId = wsToId.get(webSocketClient);
   if (!socketId) {
     socketId = `s${nextSocketId++}`;
@@ -54,11 +53,11 @@ function getSocketId(webSocketClient) {
   return socketId;
 }
 
-function sendJson(webSocketClient, payload) {
+function sendJson(webSocketClient: WebSocket, payload: object): void {
   if (webSocketClient.readyState === 1) webSocketClient.send(JSON.stringify(payload));
 }
 
-function logIncomingMessage(socketId, payload) {
+function logIncomingMessage(socketId: string, payload: unknown): void {
   const now = new Date().toISOString();
   let serializedPayload = "";
   try {
@@ -69,28 +68,37 @@ function logIncomingMessage(socketId, payload) {
   console.log(`[${now}] [ws:incoming] socket=${socketId} payload=${serializedPayload}`);
 }
 
-function broadcastToRoom(room, makePayload) {
+type ClientMessage = {
+  type?: string;
+  sessionToken?: string;
+  roomId?: string;
+  displayName?: string;
+  action?: unknown;
+};
+
+function broadcastToRoom(room: Room, makePayload: (recipientSocketId: string) => object): void {
   for (const socketId of room.players.keys()) {
     wss.clients.forEach((client) => {
-      if (wsToId.get(client) === socketId) sendJson(client, makePayload(socketId));
+      const ws = client as WebSocket;
+      if (wsToId.get(ws) === socketId) sendJson(ws, makePayload(socketId));
     });
   }
 }
 
-function roomPayloadFor(room, socketId) {
+function roomPayloadFor(room: Room, socketId: string) {
   return {
     ...room.getRoomUpdatePayload(socketId),
     sessionToken: room.getSessionToken(socketId),
   };
 }
 
-function handleMessage(webSocketClient, message) {
+function handleMessage(webSocketClient: WebSocket, message: ClientMessage): void {
   const socketId = getSocketId(webSocketClient);
   const messageType = message.type;
 
   if (messageType === MESSAGE_TYPES.RECONNECT && message.sessionToken && message.roomId) {
     const reconnectOutcome = rooms.reconnectSocket(message.roomId, message.sessionToken, socketId);
-    if (reconnectOutcome.error)
+    if ("error" in reconnectOutcome)
       return sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: reconnectOutcome.error });
     const { room } = reconnectOutcome;
     sendJson(webSocketClient, { type: MESSAGE_TYPES.RECONNECTED, roomId: room.roomId });
@@ -108,8 +116,8 @@ function handleMessage(webSocketClient, message) {
   }
 
   if (messageType === MESSAGE_TYPES.JOIN_ROOM) {
-    const joinOutcome = rooms.joinRoom(message.roomId, socketId, message.displayName);
-    if (joinOutcome.error)
+    const joinOutcome = rooms.joinRoom(message.roomId!, socketId, message.displayName);
+    if ("error" in joinOutcome)
       return sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: joinOutcome.error });
     broadcastToRoom(joinOutcome.room, (recipientSocketId) =>
       roomPayloadFor(joinOutcome.room, recipientSocketId),
@@ -127,7 +135,8 @@ function handleMessage(webSocketClient, message) {
 
   if (messageType === MESSAGE_TYPES.START_GAME) {
     const room = rooms.getRoomForSocket(socketId);
-    if (!room) return sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: "Não está em uma sala" });
+    if (!room)
+      return sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: "Não está em uma sala" });
     const startOutcome = room.startGame(socketId);
     if (startOutcome.error)
       return sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: startOutcome.error });
@@ -141,9 +150,13 @@ function handleMessage(webSocketClient, message) {
 
   if (messageType === MESSAGE_TYPES.GAME_ACTION) {
     const room = rooms.getRoomForSocket(socketId);
-    if (!room) return sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: "Não está em uma sala" });
-    const actionOutcome = room.applyGameAction(socketId, message.action);
-    if (actionOutcome.error)
+    if (!room)
+      return sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: "Não está em uma sala" });
+    const actionOutcome = room.applyGameAction(
+      socketId,
+      message.action as import("./game/types").ClientGameAction,
+    );
+    if (actionOutcome.error != null && actionOutcome.error !== "")
       return sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: actionOutcome.error });
     broadcastToRoom(room, (recipientSocketId) => {
       const gameSnapshot = room.getSnapshotFor(recipientSocketId);
@@ -155,14 +168,14 @@ function handleMessage(webSocketClient, message) {
   sendJson(webSocketClient, { type: MESSAGE_TYPES.ERROR, message: "Tipo de mensagem desconhecido" });
 }
 
-wss.on("connection", (webSocketClient) => {
+wss.on("connection", (webSocketClient: WebSocket) => {
   const socketId = getSocketId(webSocketClient);
   console.log(`[${new Date().toISOString()}] [ws:connect] socket=${socketId}`);
   webSocketClient.on("message", (rawData) => {
     const messageSocketId = getSocketId(webSocketClient);
-    let parsedMessage;
+    let parsedMessage: ClientMessage;
     try {
-      parsedMessage = JSON.parse(rawData.toString());
+      parsedMessage = JSON.parse(rawData.toString()) as ClientMessage;
     } catch {
       console.warn(
         `[${new Date().toISOString()}] [ws:invalid-json] socket=${messageSocketId} raw=${String(rawData)}`,
@@ -175,11 +188,12 @@ wss.on("connection", (webSocketClient) => {
     }
     try {
       handleMessage(webSocketClient, parsedMessage);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
+      const messageText = error instanceof Error ? error.message : "Erro no servidor";
       sendJson(webSocketClient, {
         type: MESSAGE_TYPES.ERROR,
-        message: error.message || "Erro no servidor",
+        message: messageText,
       });
     }
   });

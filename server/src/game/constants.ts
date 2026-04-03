@@ -1,16 +1,16 @@
-"use strict";
+export const SUITS = ["♥", "♦", "♣", "♠"] as const;
+export const VALUES = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"] as const;
 
-const SUITS = ["♥", "♦", "♣", "♠"];
-const VALUES = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-const WEAPONS = {
+export const WEAPONS = {
   colt45: { label: "Colt .45", reach: 1, icon: "🔫" },
   volcanic: { label: "Volcanic", reach: 1, icon: "🔥" },
   schofield: { label: "Schofield", reach: 2, icon: "🔫" },
   remington: { label: "Remington", reach: 3, icon: "🏹" },
   carabine: { label: "Carabine", reach: 4, icon: "🪖" },
   winchester: { label: "Winchester", reach: 5, icon: "🎯" },
-};
-const CHARS = [
+} as const;
+
+export const CHARS = [
   { name: "Willy the Kid", ability: "unlimitedBang", desc: "Pode jogar BANG!s ilimitados.", life: 4 },
   { name: "Slab the Killer", ability: "doubleMissed", desc: "Alvos precisam de 2 Errei!.", life: 4 },
   { name: "Jesse Jones", ability: "stealDraw", desc: "Pode comprar da mão de alguém.", life: 4 },
@@ -25,10 +25,12 @@ const CHARS = [
   { name: "Black Jack", ability: "blackJack", desc: "2ª carta comprada: ♥/♦ = +1 carta.", life: 4 },
   { name: "Sid Ketchum", ability: "selfHeal", desc: "Descarta 2 cartas → ganha 1 vida.", life: 4 },
   { name: "Pedro Ramirez", ability: "discardDraw", desc: "Pode comprar a 1ª carta do descarte.", life: 4 },
-];
-const CARD_TYPES_REQUIRING_TARGET = ["bang", "duel", "panic", "catbalou", "jail"];
-const WEAPON_CARD_TYPES = ["volcanic", "schofield", "remington", "carabine", "winchester"];
-const STORE_CARD_PRIORITY = {
+] as const;
+
+export const CARD_TYPES_REQUIRING_TARGET = ["bang", "duel", "panic", "catbalou", "jail"] as const;
+export const WEAPON_CARD_TYPES = ["volcanic", "schofield", "remington", "carabine", "winchester"] as const;
+
+export const STORE_CARD_PRIORITY: Record<string, number> = {
   bang: 5,
   missed: 4,
   beer: 3,
@@ -45,13 +47,15 @@ const STORE_CARD_PRIORITY = {
   carabine: 3,
   winchester: 4,
 };
-const ROLE_SETUPS = {
+
+export const ROLE_SETUPS: Record<number | "default", string[]> = {
   4: ["sheriff", "outlaw", "outlaw", "renegade"],
   5: ["sheriff", "outlaw", "outlaw", "renegade", "deputy"],
   6: ["sheriff", "outlaw", "outlaw", "outlaw", "renegade", "deputy"],
   default: ["sheriff", "outlaw", "outlaw", "outlaw", "renegade", "deputy", "deputy"],
 };
-const GAME_LIMITS = {
+
+export const GAME_LIMITS = {
   maxLifeCap: 5,
   invalidDistance: 999,
   minimumDistance: 1,
@@ -65,38 +69,25 @@ const GAME_LIMITS = {
   duelRoundLimit: 30,
   logMaxEntries: 80,
   visibleLogEntries: 35,
-};
-const CARD_SUITS = { hearts: "♥", diamonds: "♦", spades: "♠" };
-const DYNAMITE_EXPLOSION_VALUES = ["2", "3", "4", "5", "6", "7", "8", "9"];
-const ROLE_LABELS = {
+} as const;
+
+export const CARD_SUITS = { hearts: "♥", diamonds: "♦", spades: "♠" } as const;
+export const DYNAMITE_EXPLOSION_VALUES = ["2", "3", "4", "5", "6", "7", "8", "9"] as const;
+export const ROLE_LABELS: Record<string, string> = {
   sheriff: "Xerife",
   outlaw: "Fora-da-Lei",
   renegade: "Renegado",
   deputy: "Deputado",
 };
-const ROLE_ICONS = { sheriff: "⭐", outlaw: "💀", renegade: "🤠", deputy: "🔵" };
-const PHASES = { start: "start", draw: "draw", play: "play", discard: "discard" };
-const PLAYER_ABILITY_RULES = { sidKetchumDiscardCost: 2 };
+export const ROLE_ICONS: Record<string, string> = {
+  sheriff: "⭐",
+  outlaw: "💀",
+  renegade: "🤠",
+  deputy: "🔵",
+};
+export const PHASES = { start: "start", draw: "draw", play: "play", discard: "discard" } as const;
+export const PLAYER_ABILITY_RULES = { sidKetchumDiscardCost: 2 } as const;
 
-function createDefaultEquipment() {
+export function createDefaultEquipment() {
   return { weaponKey: "colt45", barrel: false, mustang: false, scope: false };
 }
-
-module.exports = {
-  SUITS,
-  VALUES,
-  WEAPONS,
-  CHARS,
-  CARD_TYPES_REQUIRING_TARGET,
-  WEAPON_CARD_TYPES,
-  STORE_CARD_PRIORITY,
-  ROLE_SETUPS,
-  GAME_LIMITS,
-  CARD_SUITS,
-  DYNAMITE_EXPLOSION_VALUES,
-  ROLE_LABELS,
-  ROLE_ICONS,
-  PHASES,
-  PLAYER_ABILITY_RULES,
-  createDefaultEquipment,
-};

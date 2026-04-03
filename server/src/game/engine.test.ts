@@ -1,12 +1,11 @@
-"use strict";
+import test from "node:test";
+import assert from "node:assert/strict";
+import { createBangEngine } from "./engine";
+import type { BangEngine } from "./engine";
 
-const test = require("node:test");
-const assert = require("node:assert/strict");
-const { createBangEngine } = require("./engine");
-
-function currentPlayerId(engine) {
+function currentPlayerId(engine: BangEngine): number {
   const state = engine.getState();
-  return state.players[state.current].id;
+  return state.players[state.current]!.id;
 }
 
 test("inicia partida e compra (draw)", () => {
@@ -28,14 +27,14 @@ test("BANG com alvo válido", () => {
   const currentId = currentPlayerId(engine);
   engine.applyAction(currentId, { type: "draw" });
   const state = engine.getState();
-  const currentPlayer = state.players[state.current];
+  const currentPlayer = state.players[state.current]!;
   const bangIdx = currentPlayer.hand.findIndex((card) => card.type === "bang");
   if (bangIdx < 0) return;
   const playBangResult = engine.applyAction(currentId, { type: "playCard", index: bangIdx });
   assert.ok(playBangResult.ok && playBangResult.pending);
   const pending = engine.getState().pending;
-  assert.equal(pending.kind, "chooseTarget");
-  const targetId = pending.validTargetIds[0];
+  assert.equal(pending!.kind, "chooseTarget");
+  const targetId = pending!.validTargetIds[0]!;
   const chooseTargetResult = engine.applyAction(currentId, {
     type: "chooseTarget",
     targetId,
@@ -49,15 +48,15 @@ test("Loja geral: ordem de escolha (primeiro picker)", () => {
   const currentId = currentPlayerId(engine);
   engine.applyAction(currentId, { type: "draw" });
   const state = engine.getState();
-  const storeIdx = state.players[state.current].hand.findIndex(
+  const storeIdx = state.players[state.current]!.hand.findIndex(
     (card) => card.type === "generalstore",
   );
   if (storeIdx < 0) return;
   const playStoreResult = engine.applyAction(currentId, { type: "playCard", index: storeIdx });
   assert.ok(playStoreResult.ok && playStoreResult.pending);
   const stateAfterStore = engine.getState();
-  assert.equal(stateAfterStore.pending.kind, "storePick");
-  const pickerId = stateAfterStore.pending.pickerId;
+  assert.equal(stateAfterStore.pending!.kind, "storePick");
+  const pickerId = stateAfterStore.pending!.pickerId;
   const storePickResult = engine.applyAction(pickerId, { type: "storePick", cardIndex: 0 });
   assert.ok(storePickResult.ok);
 });
