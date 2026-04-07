@@ -167,6 +167,7 @@ function createGameState(players, mode) {
     storeCards: [],
     storeOrder: [],
     storePick: 0,
+    playerHitFlashUntil: {},
   };
 }
 function dealInitialCards() {
@@ -426,6 +427,9 @@ function damage(target, attacker, damageAmount = 1) {
   for (let hitIndex = 0; hitIndex < damageAmount; hitIndex++) {
     if (target.life <= 0) break;
     target.life--;
+    if (typeof LocalState.playerHitFlashUntil !== "object" || LocalState.playerHitFlashUntil === null)
+      LocalState.playerHitFlashUntil = {};
+    LocalState.playerHitFlashUntil[target.id] = Date.now() + 700;
     addLog(
       `💔 ${target.name} perde 1 vida (${target.life}/${target.maxLife})`,
       "dmg",
@@ -664,8 +668,9 @@ function resolveShot(attacker, target) {
       disc(removeC(target, findC(target, "bang")));
       remaining--;
     }
-    addLog(`🙈 ${target.name} evitou o tiro!`);
+    addLog(`🙈 ${target.name} esquivou do BANG! de ${attacker.name}!`);
   } else {
+    addLog(`💥 ${target.name} foi atingido pelo BANG! de ${attacker.name}!`, "dmg");
     damage(target, attacker);
     beerRescue(target);
   }

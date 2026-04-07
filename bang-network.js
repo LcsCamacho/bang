@@ -61,6 +61,11 @@
     LocalState.storeOrder = [];
     LocalState.storePick = 0;
 
+    const prevLifeById = {};
+    (LocalState.players || []).forEach((p) => {
+      if (p && p.id != null) prevLifeById[p.id] = p.life;
+    });
+
     LocalState.players = publicSnapshot.players.map((publicPlayer) => {
       const isMe =
         myPlayerId != null && Number(publicPlayer.id) === Number(myPlayerId);
@@ -107,6 +112,14 @@
         isBot: false,
         difficulty: null,
       };
+    });
+
+    const hitNow = Date.now();
+    if (!LocalState.playerHitFlashUntil || typeof LocalState.playerHitFlashUntil !== "object")
+      LocalState.playerHitFlashUntil = {};
+    LocalState.players.forEach((p) => {
+      const prevLife = prevLifeById[p.id];
+      if (prevLife !== undefined && p.life < prevLife) LocalState.playerHitFlashUntil[p.id] = hitNow + 700;
     });
 
     if (publicSnapshot.winInfo) {

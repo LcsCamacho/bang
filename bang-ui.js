@@ -45,8 +45,26 @@ function revealTurn() {
 }
 
 // ═══ RENDER ═══
+function prunePlayerHitFlash() {
+  const until = LocalState.playerHitFlashUntil;
+  if (!until || typeof until !== "object") return;
+  const t = Date.now();
+  Object.keys(until).forEach((id) => {
+    if (until[id] <= t) delete until[id];
+  });
+}
+
+function hitFlashExtraClass(player, playerIndex) {
+  const until = LocalState.playerHitFlashUntil;
+  if (!until || typeof until !== "object") return "";
+  const exp = until[player.id];
+  if (exp == null || Date.now() >= exp) return "";
+  return playerIndex === LocalState.current ? " pcard-hit-flash--active" : " pcard-hit-flash";
+}
+
 function renderGame() {
   if (LocalState.gameOver && LocalState.mode !== "online") return;
+  prunePlayerHitFlash();
   renderPlayers();
   renderHand();
   renderSidebar();
@@ -66,7 +84,9 @@ function renderPlayers() {
         if (myId != null && Number(player.id) === Number(myId)) return;
         const div = document.createElement("div");
         div.className =
-          getPlayerCardClassName(player, playerIndex === LocalState.current) + " pcard-opp";
+          getPlayerCardClassName(player, playerIndex === LocalState.current) +
+          hitFlashExtraClass(player, playerIndex) +
+          " pcard-opp";
         const bullets = renderPlayerLifeBullets(player);
         const equipmentRow = renderPlayerEquipment(player);
         const roleDisp = renderPlayerRoleIndicator(player);
@@ -77,7 +97,9 @@ function renderPlayers() {
   }
   LocalState.players.forEach((player, playerIndex) => {
     const div = document.createElement("div");
-    div.className = getPlayerCardClassName(player, playerIndex === LocalState.current);
+    div.className =
+      getPlayerCardClassName(player, playerIndex === LocalState.current) +
+      hitFlashExtraClass(player, playerIndex);
     const bullets = renderPlayerLifeBullets(player);
     const equipmentRow = renderPlayerEquipment(player);
     const roleDisp = renderPlayerRoleIndicator(player);

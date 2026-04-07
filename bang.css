@@ -92,6 +92,34 @@ body{font-family:'Special Elite',cursive;background:var(--deep-leather);color:va
 .pcard.is-sheriff{border-color:var(--red);}
 .pcard.dead{opacity:.4;filter:grayscale(1);transform:none!important;}
 .pcard.bot-c{background:#f0e8d8;}
+
+/* Feedback ao perder vida (BANG!, duelo, índios, etc.) */
+@keyframes pcard-hit-shake{
+  0%,100%{transform:translateX(0);}
+  15%{transform:translateX(-6px);}
+  30%{transform:translateX(6px);}
+  45%{transform:translateX(-4px);}
+  60%{transform:translateX(4px);}
+  75%{transform:translateX(-2px);}
+}
+@keyframes pcard-hit-shake-active{
+  0%,100%{transform:translateY(-4px) scale(1.02) translateX(0);}
+  15%{transform:translateY(-4px) scale(1.02) translateX(-6px);}
+  30%{transform:translateY(-4px) scale(1.02) translateX(6px);}
+  45%{transform:translateY(-4px) scale(1.02) translateX(-4px);}
+  60%{transform:translateY(-4px) scale(1.02) translateX(4px);}
+  75%{transform:translateY(-4px) scale(1.02) translateX(-2px);}
+}
+.pcard.pcard-hit-flash{
+  animation:pcard-hit-shake .55s ease-out;
+  border-color:#b71c1c!important;
+  box-shadow:0 0 14px rgba(200,40,40,.88),3px 3px 8px rgba(0,0,0,.45)!important;
+}
+.pcard.pcard-hit-flash--active{
+  animation:pcard-hit-shake-active .55s ease-out;
+  border-color:#b71c1c!important;
+  box-shadow:0 0 20px rgba(255,60,60,.9),0 0 18px rgba(240,192,64,.4)!important;
+}
 .ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px;}
 .pname{font-family:'Rye',serif;font-size:.7rem;color:var(--leather);line-height:1.2;}
 .prole{font-size:.95rem;}

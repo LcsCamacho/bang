@@ -610,8 +610,9 @@ function resolveShot(attacker, target) {
       disc(removeC(target, findC(target, "bang")));
       remaining--;
     }
-    addLog(`🙈 ${target.name} evitou o tiro!`);
+    addLog(`🙈 ${target.name} esquivou do BANG! de ${attacker.name}!`);
   } else {
+    addLog(`💥 ${target.name} foi atingido pelo BANG! de ${attacker.name}!`, "dmg");
     damage(target, attacker);
     beerRescue(target);
   }
