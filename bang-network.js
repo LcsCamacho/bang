@@ -43,7 +43,8 @@
 
   function mergeSnapshot(publicSnapshot, privateSnapshot) {
     if (!publicSnapshot) return;
-    myPlayerId = privateSnapshot ? privateSnapshot.playerId : myPlayerId;
+    if (privateSnapshot != null && privateSnapshot.playerId != null)
+      myPlayerId = Number(privateSnapshot.playerId);
     document.querySelectorAll(".screen").forEach((screenEl) => screenEl.classList.remove("active"));
     const gameScreenEl = document.getElementById("game-screen");
     if (gameScreenEl) gameScreenEl.style.display = "block";
@@ -61,7 +62,8 @@
     LocalState.storePick = 0;
 
     LocalState.players = publicSnapshot.players.map((publicPlayer) => {
-      const isMe = publicPlayer.id === myPlayerId;
+      const isMe =
+        myPlayerId != null && Number(publicPlayer.id) === Number(myPlayerId);
       const role =
         isMe && privateSnapshot && privateSnapshot.role
           ? privateSnapshot.role
@@ -138,7 +140,11 @@
   function handlePendingModals() {
     const pendingAction = LocalState.pending;
     if (!pendingAction || LocalState.gameOver) return;
-    if (pendingAction.kind === "chooseTarget" && pendingAction.playerId === myPlayerId) {
+    if (
+      pendingAction.kind === "chooseTarget" &&
+      myPlayerId != null &&
+      Number(pendingAction.playerId) === Number(myPlayerId)
+    ) {
       const validTargets = LocalState.players.filter(
         (player) =>
           pendingAction.validTargetIds && pendingAction.validTargetIds.includes(player.id),
@@ -147,7 +153,11 @@
         sendGameAction({ type: "chooseTarget", targetId: chosenTarget.id });
       });
     }
-    if (pendingAction.kind === "missedAsBang" && pendingAction.playerId === myPlayerId) {
+    if (
+      pendingAction.kind === "missedAsBang" &&
+      myPlayerId != null &&
+      Number(pendingAction.playerId) === Number(myPlayerId)
+    ) {
       const validTargets = LocalState.players.filter(
         (player) =>
           pendingAction.validTargetIds && pendingAction.validTargetIds.includes(player.id),
@@ -156,9 +166,17 @@
         sendGameAction({ type: "missedAsBangTarget", targetId: chosenTarget.id });
       });
     }
-    if (pendingAction.kind === "storePick" && pendingAction.pickerId === myPlayerId) {
+    if (
+      pendingAction.kind === "storePick" &&
+      myPlayerId != null &&
+      Number(pendingAction.pickerId) === Number(myPlayerId)
+    ) {
       const storeListEl = document.getElementById("sm-list");
-      document.getElementById("sm-desc").textContent = "Escolha uma carta:";
+      const remaining = (pendingAction.cards || []).length;
+      document.getElementById("sm-desc").textContent =
+        remaining > 0
+          ? `Loja Geral — sua vez. Escolha 1 das ${remaining} carta(s) na mesa.`
+          : "Escolha uma carta:";
       storeListEl.innerHTML = "";
       (pendingAction.cards || []).forEach((card, cardIndex) => {
         const pickCardButton = document.createElement("button");

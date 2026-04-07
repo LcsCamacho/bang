@@ -59,10 +59,10 @@ function renderPlayers() {
   const ring = document.getElementById("opponents-ring");
   if (ring) {
     ring.innerHTML = "";
-    if (LocalState.mode === "online" && typeof BangNetwork !== "undefined") {
+      if (LocalState.mode === "online" && typeof BangNetwork !== "undefined") {
       const myId = BangNetwork.myPlayerId;
       LocalState.players.forEach((player, playerIndex) => {
-        if (player.id === myId) return;
+        if (myId != null && Number(player.id) === Number(myId)) return;
         const div = document.createElement("div");
         div.className =
           getPlayerCardClassName(player, playerIndex === LocalState.current) + " pcard-opp";
@@ -124,9 +124,11 @@ function renderPlayerRoleIndicator(player) {
       when: () =>
         LocalState.mode === "online" &&
         typeof BangNetwork !== "undefined" &&
-        player.id === BangNetwork.myPlayerId &&
+        BangNetwork.myPlayerId != null &&
+        Number(player.id) === Number(BangNetwork.myPlayerId) &&
         player.role !== "hidden",
-      render: () => `<span style="font-size:.68rem">${rIcon(player.role)}</span>`,
+      render: () =>
+        `<span style="font-size:.65rem" title="${rLabel(player.role)}">${rIcon(player.role)} ${rLabel(player.role)}</span>`,
     },
     {
       when: () => LocalState.mode === "offline" && player.isBot,
@@ -147,7 +149,9 @@ function renderHand() {
       ? BangNetwork.myPlayerId
       : null;
   const hideHand =
-    LocalState.mode === "online" && myId != null && activePlayer.id !== myId;
+    LocalState.mode === "online" &&
+    myId != null &&
+    Number(activePlayer.id) !== Number(myId);
   document.getElementById("h-title").textContent = activePlayer.isBot
     ? `🤖 ${activePlayer.name}`
     : hideHand
@@ -291,6 +295,28 @@ function renderSidebar() {
     `${activePlayer.isBot ? "🤖 " : "👤 "}${activePlayer.name}`;
   document.getElementById("t-char").textContent =
     `${activePlayer.char.name} · ${activePlayer.char.desc}`;
+  const myRoleEl = document.getElementById("t-my-role");
+  if (myRoleEl) {
+    if (
+      LocalState.mode === "online" &&
+      typeof BangNetwork !== "undefined" &&
+      BangNetwork.myPlayerId != null
+    ) {
+      const me = LocalState.players.find(
+        (p) => Number(p.id) === Number(BangNetwork.myPlayerId),
+      );
+      if (me && me.role && me.role !== "hidden") {
+        myRoleEl.style.display = "block";
+        myRoleEl.innerHTML = `Seu papel (secreto): <b>${rLabel(me.role)}</b> ${rIcon(me.role)}`;
+      } else {
+        myRoleEl.style.display = "none";
+        myRoleEl.textContent = "";
+      }
+    } else {
+      myRoleEl.style.display = "none";
+      myRoleEl.textContent = "";
+    }
+  }
   [PHASES.draw, PHASES.play, PHASES.discard].forEach(
     (phaseKey) =>
       (document.getElementById(`ph-${phaseKey}`).className =

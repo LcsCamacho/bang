@@ -977,19 +977,24 @@ function closeStoreModal() {
 
 function resolveStore(player, handIndex, storeCard) {
   const alivePlayers = alive();
+  const aliveCount = alivePlayers.length;
   LocalState.storeCards = [];
-  for (let drawStep = 0; drawStep < alivePlayers.length; drawStep++) {
+  for (let drawStep = 0; drawStep < aliveCount; drawStep++) {
     if (LocalState.drawPile.length === 0) reshuf();
     LocalState.storeCards.push(LocalState.drawPile.pop());
   }
   removeC(player, handIndex);
   disc(storeCard);
-  addLog(`🏪 Loja Geral: ${alivePlayers.length} cartas.`);
+  addLog(`🏪 Loja Geral: ${aliveCount} cartas.`);
   LocalState.storeOrder = [];
+  let added = 0;
   let seatCursor = LocalState.current;
-  for (let orderStep = 0; orderStep < alivePlayers.length; orderStep++) {
-    if (LocalState.players[seatCursor].alive) LocalState.storeOrder.push(seatCursor);
-    seatCursor = nextAlive(seatCursor - 1);
+  while (added < aliveCount) {
+    if (LocalState.players[seatCursor].alive) {
+      LocalState.storeOrder.push(seatCursor);
+      added++;
+    }
+    seatCursor = nextAlive(seatCursor);
   }
   LocalState.storePick = 0;
   processStore();

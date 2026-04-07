@@ -57,6 +57,18 @@ test("Loja geral: ordem de escolha (primeiro picker)", () => {
   const stateAfterStore = engine.getState();
   assert.equal(stateAfterStore.pending!.kind, "storePick");
   const pickerId = stateAfterStore.pending!.pickerId;
+  assert.equal(
+    pickerId,
+    currentId,
+    "quem jogou a Loja Geral deve escolher primeiro",
+  );
   const storePickResult = engine.applyAction(pickerId, { type: "storePick", cardIndex: 0 });
   assert.ok(storePickResult.ok);
+  const stateAfterFirstPick = engine.getState();
+  assert.equal(stateAfterFirstPick.pending!.kind, "storePick");
+  assert.notEqual(
+    stateAfterFirstPick.pending!.pickerId,
+    pickerId,
+    "após a 1ª escolha, outro jogador deve ser o picker",
+  );
 });

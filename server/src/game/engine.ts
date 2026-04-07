@@ -918,20 +918,27 @@ function closeStoreModal() {}
 
 function resolveStore(player, handIndex, storeCard) {
   const alivePlayers = alive();
+  const aliveCount = alivePlayers.length;
   state.storeCards = [];
-  for (let drawStep = 0; drawStep < alivePlayers.length; drawStep++) {
+  for (let drawStep = 0; drawStep < aliveCount; drawStep++) {
     if (state.drawPile.length === 0) reshuf();
     const drawn = state.drawPile.pop();
     if (drawn) state.storeCards.push(drawn);
   }
   removeC(player, handIndex);
   disc(storeCard);
-  addLog(`🏪 Loja Geral: ${alivePlayers.length} cartas.`);
+  addLog(`🏪 Loja Geral: ${aliveCount} cartas.`);
+  // Ordem: quem jogou a carta (current) escolhe primeiro, depois sentido horário (nextAlive).
+  // Não usar nextAlive(seat-1): isso repete o mesmo assento e um jogador ficava com todas as escolhas.
   state.storeOrder = [];
+  let added = 0;
   let seatCursor = state.current;
-  for (let orderStep = 0; orderStep < alivePlayers.length; orderStep++) {
-    if (state.players[seatCursor].alive) state.storeOrder.push(seatCursor);
-    seatCursor = nextAlive(seatCursor - 1);
+  while (added < aliveCount) {
+    if (state.players[seatCursor].alive) {
+      state.storeOrder.push(seatCursor);
+      added++;
+    }
+    seatCursor = nextAlive(seatCursor);
   }
   state.storePick = 0;
   processStore();
