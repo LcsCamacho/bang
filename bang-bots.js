@@ -164,7 +164,7 @@ function execAndRemove(player, handIndex, card, target) {
     suzyCheck(player);
     renderGame();
   }
-  return ok;
+  return Boolean(cardResolved);
 }
 function botUse(botPlayer, handIndex, card) {
   if (CARD_TYPES_REQUIRING_TARGET.includes(card.type)) {
