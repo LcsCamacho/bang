@@ -50,6 +50,7 @@ function renderGame() {
   renderPlayers();
   renderHand();
   renderSidebar();
+  syncLogPanel();
   document.getElementById("draw-n").textContent = LocalState.drawPile.length;
   document.getElementById("disc-n").textContent = LocalState.discardPile.length;
 }
@@ -325,15 +326,25 @@ function renderSidebar() {
 }
 
 // ═══ LOG / HELPERS ═══
+/** Atualiza o painel #glog a partir de `LocalState.log` (offline via addLog; online via snapshot). */
+function syncLogPanel() {
+  const logPanel = document.getElementById("glog");
+  if (!logPanel) return;
+  const entries = Array.isArray(LocalState.log) ? LocalState.log : [];
+  logPanel.innerHTML = entries
+    .slice(0, GAME_LIMITS.visibleLogEntries)
+    .map((entry) => {
+      const typeClass = entry && entry.type ? String(entry.type) : "";
+      const msg = entry && entry.msg != null ? String(entry.msg) : "";
+      return `<div class="ll ${typeClass}">${msg}</div>`;
+    })
+    .join("");
+}
+
 function addLog(logText, type = "") {
   LocalState.log.unshift({ msg: logText, type });
   if (LocalState.log.length > GAME_LIMITS.logMaxEntries) LocalState.log.pop();
-  const logPanel = document.getElementById("glog");
-  if (!logPanel) return;
-  logPanel.innerHTML = LocalState.log
-    .slice(0, GAME_LIMITS.visibleLogEntries)
-    .map((entry) => `<div class="ll ${entry.type}">${entry.msg}</div>`)
-    .join("");
+  syncLogPanel();
 }
 function rLabel(roleId) {
   return ROLE_LABELS[roleId] || roleId;
