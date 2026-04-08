@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Modern Frontier Market</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Work+Sans:wght@300;400;500;600&amp;family=Inter:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#d9b9ff",
+                        "secondary": "#efbc9e",
+                        "outline": "#a18d7d",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "error-container": "#93000a",
+                        "surface-container-lowest": "#110d0a",
+                        "on-tertiary-fixed": "#28074c",
+                        "on-secondary-fixed": "#2f1403",
+                        "on-primary-fixed": "#2d1600",
+                        "surface-container": "#231f1b",
+                        "surface-bright": "#3e3834",
+                        "error": "#ffb4ab",
+                        "secondary-fixed-dim": "#efbc9e",
+                        "on-primary-fixed-variant": "#6b3b00",
+                        "outline-variant": "#534437",
+                        "primary-fixed": "#ffdcc0",
+                        "on-background": "#ebe1da",
+                        "surface-dim": "#17130f",
+                        "surface-tint": "#ffb875",
+                        "on-tertiary-container": "#3c1e5f",
+                        "on-surface": "#ebe1da",
+                        "primary-fixed-dim": "#ffb875",
+                        "on-surface-variant": "#d9c2b1",
+                        "primary-container": "#d48228",
+                        "on-tertiary": "#3e2162",
+                        "on-tertiary-fixed-variant": "#56387a",
+                        "tertiary-fixed": "#eedbff",
+                        "surface-variant": "#39342f",
+                        "tertiary": "#d9b9ff",
+                        "primary": "#ffb875",
+                        "surface-container-highest": "#39342f",
+                        "surface-container-high": "#2e2925",
+                        "on-primary-container": "#472600",
+                        "on-primary": "#4b2800",
+                        "on-secondary-container": "#dcab8e",
+                        "secondary-fixed": "#ffdbc8",
+                        "secondary-container": "#623e28",
+                        "on-secondary": "#482914",
+                        "on-secondary-fixed-variant": "#623e28",
+                        "tertiary-container": "#a887cf",
+                        "inverse-on-surface": "#352f2b",
+                        "surface": "#17130f",
+                        "surface-container-low": "#1f1b17",
+                        "background": "#17130f",
+                        "inverse-primary": "#8d4f00",
+                        "inverse-surface": "#ebe1da"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Work Sans"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+body {
+    font-family: "Work Sans", sans-serif;
+    background-color: #17130f;
+    color: #ebe1da
+    }
+.font-headline {
+    font-family: "Space Grotesk", sans-serif
+    }
+.glass-panel {
+    background: rgba(35, 31, 27, 0.7);
+    backdrop-filter: blur(12px)
+    }
+.grainy-overlay {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuAXPMraL9qap1r_2FKCPES7V9BManockUOi-KjNU8YQ_PGPbWZzmvIbQFP5QgvYPyTA2YL2WW3lFf8g-WqFkHiyVCnTMZ5i2o2IRLwZOWdybv3VjQmhBdSClNUlk1mxTUZwy5_KAq0HgzD3KNQZ90vZ-1j5Ku8Lr1gFfLKN3tlP6tJRRJcBOju2EFAKcz6-GKY-pHPXS19k3YhcG50arXsrfyz-f449p-1Z5jpxxBMSMfp90eePQKbSIobGZ9MChPhmQuQ9ZZq1saU);
+    opacity: 0.05;
+    pointer-events: none
+    }</style>
+</head>
+<body class="bg-surface-dim selection:bg-primary selection:text-on-primary-container">
+<div class="fixed inset-0 grainy-overlay z-[100]"></div>
+<!-- TopAppBar -->
+<header class="bg-stone-950/80 backdrop-blur-md text-orange-400 font-['Space_Grotesk'] tracking-tight flex justify-between items-center w-full px-6 py-4 fixed top-0 z-50 shadow-2xl shadow-orange-900/10">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-bold uppercase italic text-orange-400">Modern Frontier</span>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-stone-400 hover:text-stone-200 transition-colors" href="#">Lobby</a>
+<a class="text-stone-400 hover:text-stone-200 transition-colors" href="#">Regras</a>
+<a class="text-stone-400 hover:text-stone-200 transition-colors" href="#">Estábulo</a>
+<a class="text-orange-400 border-b-2 border-orange-400 pb-1" href="#">Loja</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-stone-800/50 rounded-lg transition-transform active:scale-95 duration-150">
+<span class="material-symbols-outlined text-orange-400">account_balance_wallet</span>
+</button>
+<button class="p-2 hover:bg-stone-800/50 rounded-lg transition-transform active:scale-95 duration-150">
+<span class="material-symbols-outlined text-orange-400">settings</span>
+</button>
+<div class="w-10 h-10 rounded-full border-2 border-primary overflow-hidden">
+<img alt="Outlaw Profile" class="w-full h-full object-cover" data-alt="Portrait of a rugged cowboy with a weathered face and dark hat in cinematic desert lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6bMk0D9DMTk7T3BgvMRGWU4A8GzQnXjTws1gtpQtqkezAZj9N_aIcqFHTfDuS5xJN5YK_hsKbopienK4j7VpmhQ0YhFj0jWw57EbjbEtHZAXFG_7PHm-coqRO_kauB4OYGbyodI1XUQTYfii1v_VweGkIvrRtGiQ0ZlSVoIEn4ZaZsqg7UnN3Nm7daNuhg4KR0OMY9MbPzepr9tuaqT_BmNX_1xaitdGT4vjy6ZXSNL_b0Ov5lcphV05ZmTZ3hlfzSpvzJQKl8Bc"/>
+</div>
+</div>
+</header>
+<div class="pt-20 flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-20 h-[calc(100vh-5rem)] flex flex-col p-4 bg-stone-900 w-64 z-40">
+<div class="mb-8 px-2">
+<h2 class="text-orange-400 font-bold font-headline uppercase text-lg">Blackwood Market</h2>
+<p class="text-stone-500 text-xs font-headline uppercase tracking-widest">Premium Goods</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 p-3 bg-stone-800 text-orange-400 rounded-md border-r-4 border-orange-400 transition-all translate-x-1 font-headline font-medium uppercase text-xs" href="#">
+<span class="material-symbols-outlined">person</span>
+                    Character Skins
+                </a>
+<a class="flex items-center gap-3 p-3 text-stone-500 hover:text-stone-300 hover:bg-stone-800/30 transition-all font-headline font-medium uppercase text-xs" href="#">
+<span class="material-symbols-outlined">flare</span>
+                    Bang Animations
+                </a>
+<a class="flex items-center gap-3 p-3 text-stone-500 hover:text-stone-300 hover:bg-stone-800/30 transition-all font-headline font-medium uppercase text-xs" href="#">
+<span class="material-symbols-outlined">handyman</span>
+                    Weapon Skins
+                </a>
+<a class="flex items-center gap-3 p-3 text-stone-500 hover:text-stone-300 hover:bg-stone-800/30 transition-all font-headline font-medium uppercase text-xs" href="#">
+<span class="material-symbols-outlined">dashboard_customize</span>
+                    Customizations
+                </a>
+</nav>
+<button class="mt-auto mb-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold py-3 rounded-xl transition-transform active:scale-95 shadow-lg shadow-primary/20">
+                COMPRAR OURO
+            </button>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 p-8">
+<!-- Oferta do Dia (Hero Section) -->
+<section class="relative rounded-2xl overflow-hidden mb-12 h-64 flex items-center group">
+<div class="absolute inset-0 z-0">
+<img alt="Hero background" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Dark mysterious desert landscape at midnight with a glowing campfire in the distance and a starry sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTVTnJYc9myyia-TlzvYU49eeqTsfFkQ-KYg5nKUc-45X3uqT4zM2_mZZmyk2aIAI-L9U0YV4Osnd7aGvenWkJA2ruciUMsi1_O676SUu_E60PP-0mbohVA-0VRMc7t5AViIo4T6wKQIvVlYYZ8x7xozU2mj8cY4yswdGbq83jR_dRDzhvp3ZwTF6Y_Ic2pAeeuqpXe_5afhdIL86Y_N24bvQEB6hJCOIXOq9PyWjzRm5E_Nls187xNN2WB0s1jRTscwKzNR62l_g"/>
+<div class="absolute inset-0 bg-gradient-to-r from-surface-container-lowest via-surface-container-lowest/40 to-transparent"></div>
+</div>
+<div class="relative z-10 p-10 max-w-lg">
+<span class="bg-primary text-on-primary-container px-3 py-1 rounded-full text-xs font-bold uppercase tracking-tighter mb-4 inline-block">Oferta do Dia</span>
+<h1 class="text-4xl font-headline font-extrabold text-on-surface mb-2 leading-none uppercase italic">Gatuno Fantasmagórico</h1>
+<p class="text-on-surface-variant font-body mb-6 text-sm">Uma skin que desaparece nas sombras do cânion. Inclui rastro de fumaça exclusivo.</p>
+<div class="flex items-center gap-4">
+<span class="text-2xl font-headline font-bold text-primary">2.200 Ouro</span>
+<button class="bg-primary hover:bg-primary-container text-on-primary px-8 py-2 rounded-lg font-bold transition-all active:scale-95">REIVINDICAR</button>
+</div>
+</div>
+</section>
+<!-- Store Grid Section -->
+<div class="flex items-end justify-between mb-8 border-b border-outline-variant/15 pb-4">
+<div>
+<h3 class="text-2xl font-headline font-bold text-on-surface">Mercado de Itens</h3>
+<p class="text-stone-500 font-label text-sm uppercase tracking-widest">Equipamento de elite para a fronteira moderna</p>
+</div>
+<div class="flex gap-4">
+<div class="bg-surface-container-high px-4 py-2 rounded-lg flex items-center gap-2 border border-outline-variant/10">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+<span class="text-xs uppercase font-headline">Filtros</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Item 1: Legendária -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden group border border-transparent hover:border-primary/20 transition-all">
+<div class="h-48 relative overflow-hidden bg-surface-container-highest">
+<img alt="Item preview" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Mechanical iron sheriff badge with detailed gear-work and glowing orange sparks on a dark metallic surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuVds5zk8Sy9bc3-VP0GCbKd0ZVOiCWEB9ZteRLW07PhxENEs7Z7_8PrZ7Xz0r6n4_hO6fUpxvnZQSilwuuSA8WkHtiraKwyTsrkcZZyKRuyb8vqTSeIT31wNkLloSdgl5__yGkoH0dyb3FPs0lmzpfsVGL4q8CeK2vVuDJUCysBxw4Bx1_1svMOW1LOFUjFrzyyeu6kWU50GN4J9G2kRnDKu7YFZ9abFPpBbEU6Bh1zyjXprKMxyXqSuevX5GYIUKzcOzQdj5wZ0"/>
+<div class="absolute top-2 right-2 bg-amber-500/90 text-black text-[10px] font-black px-2 py-0.5 rounded uppercase">Lendária</div>
+</div>
+<div class="p-5">
+<h4 class="font-headline font-bold text-lg text-on-surface mb-1">Xerife de Ferro</h4>
+<p class="text-stone-500 text-xs mb-4 font-body">Skin de Personagem</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm">payments</span>
+<span class="font-headline font-bold">1500</span>
+</div>
+<button class="bg-surface-container-highest hover:bg-primary hover:text-on-primary text-on-surface text-xs font-bold px-4 py-2 rounded-lg transition-all active:scale-95 uppercase">Comprar</button>
+</div>
+</div>
+</div>
+<!-- Item 2: Rara -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden group border border-transparent hover:border-primary/20 transition-all">
+<div class="h-48 relative overflow-hidden bg-surface-container-highest">
+<img alt="Item preview" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Cinematic burst of golden dust and gunpowder particles against a pitch black background with high contrast lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJnzdY4Yrv01s-ztg5e8HRY0PrPATvWS26mwxuQ9CoUyIbtaPk93gAMo41_FVZTZmBHD50rsTBPpvw2Tp4azkv8v0rGyHnZKrMzoHteDFttk5UEria72owSH8iUIL-_oRh8CO-IElM_SBvGv3iK6FatpzBV8Y6Jzczta5El7ZnNVoWemSfFL3Aoz8Z6xzQ6wy9P3zswsvxBjOekJwAma4Gbet8VwNGVSgmluy4boS12IFN9tgdXJL4hx81WY8vbwi0ywcaqjzUBt0"/>
+<div class="absolute top-2 right-2 bg-blue-500/90 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase">Rara</div>
+</div>
+<div class="p-5">
+<h4 class="font-headline font-bold text-lg text-on-surface mb-1">Explosão de Pólvora</h4>
+<p class="text-stone-500 text-xs mb-4 font-body">Animação Bang</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm">payments</span>
+<span class="font-headline font-bold">500</span>
+</div>
+<button class="bg-surface-container-highest hover:bg-primary hover:text-on-primary text-on-surface text-xs font-bold px-4 py-2 rounded-lg transition-all active:scale-95 uppercase">Comprar</button>
+</div>
+</div>
+</div>
+<!-- Item 3: Épica -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden group border border-transparent hover:border-primary/20 transition-all">
+<div class="h-48 relative overflow-hidden bg-surface-container-highest">
+<img alt="Item preview" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Exquisite gold-plated revolvers with intricate floral engravings sitting on a dark velvet cloth with dramatic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzTH9-Y8oSEp5s-9q5n7XHLz1GMuiyt0WxKByqJq6GxBxhmpqhfjaw9-3aJN4IbNqB1FYx8Ww7T2h7IEp1Pwcp6ujBek02pE-fkuyZZNM9pshkHUm1Cq5OPMLlYA_VNOwmut7yMDHUDGoSSSxFh_xaImFgJBDkrmG6IZn-4TP_JMapKXo0S6WySw7-W0g0P3ngLztKaM6XRTpLeAltIlL2H66BghjBPLjlnkaCMbqDZPnESvPxfJm9BTrlniMg3mkDcjXQWNvkuyc"/>
+<div class="absolute top-2 right-2 bg-purple-500/90 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase">Épica</div>
+</div>
+<div class="p-5">
+<h4 class="font-headline font-bold text-lg text-on-surface mb-1">Revólver Banhado a Ouro</h4>
+<p class="text-stone-500 text-xs mb-4 font-body">Skin de Arma</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm">payments</span>
+<span class="font-headline font-bold">1000</span>
+</div>
+<button class="bg-surface-container-highest hover:bg-primary hover:text-on-primary text-on-surface text-xs font-bold px-4 py-2 rounded-lg transition-all active:scale-95 uppercase">Comprar</button>
+</div>
+</div>
+</div>
+<!-- Item 4: Comum -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden group border border-transparent hover:border-primary/20 transition-all">
+<div class="h-48 relative overflow-hidden bg-surface-container-highest">
+<img alt="Item preview" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Weathered playing card back featuring a stylized desert skull emblem in sepia tones with cracked texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOvUz7vtKLvO-kJjlM2WG_ICX479BT6Gi5mrIeTFY-X5t1w1IA-hDkPNtvRt92ZdVwiGo_8kyrsVLDxj86m6DQW2HAUAaLXQ3UZpvxGHEZRE3DGZv7ECs8E4LkcsaL4iCTKTAnJmFD3hRUeoWMOIbwDhiWRNEtowHNyZWaNxAobkJYP47dhKkDLvoICdv9qZFB0idHBOvjE53O-X1QIcEt2zmsMvwPmjtPj8XLd_JPC-NbB8nisUkOZuWTzelh-ys307SjVuRvdIg"/>
+<div class="absolute top-2 right-2 bg-stone-500/90 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase">Comum</div>
+</div>
+<div class="p-5">
+<h4 class="font-headline font-bold text-lg text-on-surface mb-1">Crânio do Deserto</h4>
+<p class="text-stone-500 text-xs mb-4 font-body">Verso de Carta</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm">payments</span>
+<span class="font-headline font-bold">200</span>
+</div>
+<button class="bg-surface-container-highest hover:bg-primary hover:text-on-primary text-on-surface text-xs font-bold px-4 py-2 rounded-lg transition-all active:scale-95 uppercase">Comprar</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Promotion Bento Area -->
+<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="md:col-span-2 bg-gradient-to-br from-secondary-container/30 to-surface-container-high p-8 rounded-2xl border border-outline-variant/10 flex flex-col justify-center">
+<h2 class="text-3xl font-headline font-black text-secondary uppercase mb-2">Novo Passe de Temporada</h2>
+<p class="text-on-surface-variant font-body mb-6 max-w-md">Desbloqueie 50 níveis de equipamentos exclusivos inspirados nas Lendas da Poeira Vermelha.</p>
+<div class="flex gap-4">
+<button class="bg-secondary text-on-secondary-container px-6 py-3 rounded-xl font-bold font-headline transition-transform active:scale-95">VER DETALHES</button>
+<button class="border border-secondary text-secondary px-6 py-3 rounded-xl font-bold font-headline transition-transform active:scale-95">RESGATAR GRÁTIS</button>
+</div>
+</div>
+<div class="bg-surface-container-highest rounded-2xl p-6 border border-outline-variant/10 flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-5xl text-primary mb-4" style="font-variation-settings: 'FILL' 1;">stars</span>
+<h3 class="font-headline font-bold text-xl text-on-surface">Clã Premium</h3>
+<p class="text-stone-500 text-xs mb-6 px-4">Junte-se à elite e receba 10% de bônus em todas as compras.</p>
+<button class="w-full bg-surface-container-low py-3 rounded-xl text-primary font-bold border border-primary/20 hover:bg-primary/5 transition-colors">SAIBA MAIS</button>
+</div>
+</div>
+</main>
+</div>
+<!-- Floating Action for Mobile context (Suppressed as per rules for detailed store page, but using for quick wallet view if needed) -->
+<!-- Suppressing FAB on Details/Transaction focused screens as per instruction -->
+<!-- Mobile Nav Anchor -->
+<footer class="md:hidden fixed bottom-0 left-0 right-0 glass-panel border-t border-outline-variant/10 z-50 px-6 py-3 flex justify-between items-center">
+<div class="flex flex-col items-center gap-1 text-stone-400">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-headline uppercase">Lobby</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-orange-400">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="text-[10px] font-headline uppercase">Loja</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-stone-400">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-headline uppercase">Perfil</span>
+</div>
+</footer>
+</body></html>

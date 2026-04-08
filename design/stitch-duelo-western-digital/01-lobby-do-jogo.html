@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Work+Sans:wght@300;400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#472600",
+                    "surface-container-lowest": "#110d0a",
+                    "surface-container-low": "#1f1b17",
+                    "primary-container": "#d48228",
+                    "inverse-primary": "#8d4f00",
+                    "inverse-on-surface": "#352f2b",
+                    "tertiary-fixed-dim": "#d9b9ff",
+                    "surface-dim": "#17130f",
+                    "on-secondary-container": "#dcab8e",
+                    "on-error": "#690005",
+                    "on-secondary-fixed": "#2f1403",
+                    "on-secondary-fixed-variant": "#623e28",
+                    "surface-variant": "#39342f",
+                    "on-tertiary": "#3e2162",
+                    "error-container": "#93000a",
+                    "on-secondary": "#482914",
+                    "tertiary-container": "#a887cf",
+                    "secondary": "#efbc9e",
+                    "on-tertiary-fixed-variant": "#56387a",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-highest": "#39342f",
+                    "on-primary-fixed-variant": "#6b3b00",
+                    "primary-fixed-dim": "#ffb875",
+                    "error": "#ffb4ab",
+                    "surface-container-high": "#2e2925",
+                    "primary-fixed": "#ffdcc0",
+                    "background": "#17130f",
+                    "on-primary-fixed": "#2d1600",
+                    "outline": "#a18d7d",
+                    "on-background": "#ebe1da",
+                    "surface-bright": "#3e3834",
+                    "surface-container": "#231f1b",
+                    "tertiary": "#d9b9ff",
+                    "outline-variant": "#534437",
+                    "surface-tint": "#ffb875",
+                    "on-surface-variant": "#d9c2b1",
+                    "inverse-surface": "#ebe1da",
+                    "on-surface": "#ebe1da",
+                    "on-primary": "#4b2800",
+                    "secondary-container": "#623e28",
+                    "on-tertiary-container": "#3c1e5f",
+                    "on-tertiary-fixed": "#28074c",
+                    "primary": "#ffb875",
+                    "secondary-fixed-dim": "#efbc9e",
+                    "surface": "#17130f",
+                    "secondary-fixed": "#ffdbc8",
+                    "tertiary-fixed": "#eedbff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Work Sans"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .wood-texture {
+        background-color: #17130f;
+        background-image: radial-gradient(circle at 2px 2px, rgba(255,184,117,0.05) 1px, transparent 0);
+        background-size: 40px 40px;
+      }
+      .parchment-glow {
+        box-shadow: inset 0 0 100px rgba(0,0,0,0.4), 0 0 20px rgba(255,184,117,0.05);
+      }
+    </style>
+</head>
+<body class="bg-surface-container-lowest font-body text-on-background selection:bg-primary/30 min-h-screen overflow-x-hidden wood-texture">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-stone-900/80 backdrop-blur-md shadow-2xl shadow-stone-950/50 flex justify-between items-center w-full px-6 py-4 max-w-full">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-bold text-orange-400 drop-shadow-sm font-headline tracking-tight uppercase">Modern Frontier</span>
+<nav class="hidden md:flex items-center gap-6 font-headline tracking-tight uppercase">
+<a class="text-orange-400 border-b-2 border-orange-400 pb-1 hover:bg-stone-800/50 transition-colors duration-300" href="#">Lobby</a>
+<a class="text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-colors duration-300" href="#">Placar</a>
+<a class="text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-colors duration-300" href="#">Estábulo</a>
+<a class="text-stone-400 hover:text-stone-200 hover:bg-stone-800/50 transition-colors duration-300" href="#">Loja</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-orange-300 hover:bg-stone-800/50 transition-colors duration-300 p-2 rounded-xl active:scale-95 duration-150 ease-in-out">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+</button>
+<button class="text-orange-300 hover:bg-stone-800/50 transition-colors duration-300 p-2 rounded-xl active:scale-95 duration-150 ease-in-out">
+<span class="material-symbols-outlined" data-icon="stars">stars</span>
+</button>
+<img alt="Outlaw Portrait" class="w-10 h-10 rounded-full border-2 border-orange-400/30" data-alt="close-up of a rugged digital painting of a western outlaw with a weathered hat and bandana in warm amber lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQTeK_aBqRqzRQeCNIW57jA4yMj0MkhdcFuwF-yRzUa4SzP6MIeBaJbmO_B-PWAFHfJtv3f98NFozxkC39MwfLGCDFXkzxAI-6N_vuLo5GwoQs_08ZOooTXhGjH_NLj6NnmTzRv5R8kn1TTnwJFWs1-aN6xB1j6XcBUwydpOaxjqyqY-FuFB4e6d36NXO9SuidRGnrWvD57yhcaGGVdgxkmlpgKXakUiitkYV3tyWFzNgaCdHcA5-1WX7P8-DCuXf6azJit3IFZIQ"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-24 px-4 md:px-12 max-w-7xl mx-auto min-h-screen">
+<!-- Hero Header -->
+<div class="mb-12 relative">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h1 class="text-5xl md:text-7xl font-headline font-black text-primary tracking-tighter uppercase mb-2">O Saloon</h1>
+<p class="text-secondary max-w-md font-body leading-relaxed opacity-80">Puxe uma cadeira, forasteiro. As cartas foram dadas e as apostas são altas. Encontre uma sala ou comece sua própria lenda.</p>
+</div>
+<div class="flex gap-4">
+<button class="group px-8 py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold uppercase tracking-wider rounded-xl shadow-lg shadow-primary/10 transition-all hover:scale-105 active:scale-95">Entrada Rápida</button>
+<button class="group px-8 py-4 bg-surface-container-high border border-outline-variant/15 text-primary font-headline font-bold uppercase tracking-wider rounded-xl transition-all hover:bg-surface-container-highest active:scale-95">Criar Sala</button>
+</div>
+</div>
+</div>
+<!-- Room List Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Filter Sidebar (Bento Style) -->
+<aside class="lg:col-span-3 space-y-6">
+<div class="bg-surface-container-low rounded-xl p-6 border-l-4 border-primary/20 parchment-glow">
+<h3 class="font-headline font-bold uppercase text-primary mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-sm" data-icon="filter_alt">filter_alt</span> FILTROS</h3>
+<div class="space-y-4 font-label text-xs uppercase tracking-widest text-on-surface-variant">
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-lg hover:bg-surface-container-high transition-colors cursor-pointer">
+<span>Padrão 5v5</span>
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check_circle">check_circle</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-lg hover:bg-surface-container-high transition-colors cursor-pointer">
+<span>Altas Apostas</span>
+<span class="material-symbols-outlined text-stone-600 text-sm" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-lg hover:bg-surface-container-high transition-colors cursor-pointer">
+<span>Jogo Rápido</span>
+<span class="material-symbols-outlined text-stone-600 text-sm" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl overflow-hidden relative group">
+<img class="w-full h-48 object-cover opacity-50 group-hover:scale-110 transition-transform duration-700" data-alt="dramatic wide angle shot of a desert landscape at midnight with a glowing purple mystical energy in the air" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsAkhpU2he-81HpXcy9O17IyhoQsrF-1EP1lMqSVJqyH8S5sAK1vSL43h-1vLX0cb7s5tVpOJl_Trs-khv3yzlsk3GGDOyFNVC5L4-lLacWk053y2YR9WETm3QHZ3bYJabqkacqOv7wE23-Tk3dZ6JQWK6SUPBL4D8LtSUE7AGJpID6pruCweH9gliZchtkuEKVHlYN_WfUha2fe7DbgT_UTY1w6uLwCD23jA51JnGipRFYko1RxpQnjedzV74ctmYlTBUQz6Wr6k"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low via-transparent to-transparent"></div>
+<div class="absolute bottom-4 left-4 right-4">
+<span class="text-[10px] uppercase font-label tracking-widest text-tertiary">Evento Ativo</span>
+<h4 class="font-headline font-bold text-white uppercase">Recompensa do Crepúsculo</h4>
+</div>
+</div>
+</aside>
+<!-- Scrollable Room Cards Area -->
+<section class="lg:col-span-9 space-y-4 max-h-[716px] overflow-y-auto pr-2 custom-scrollbar">
+<!-- Room Card 1 -->
+<div class="group relative bg-surface-container-low rounded-xl p-1 transition-all hover:translate-x-1">
+<div class="flex flex-col md:flex-row items-center justify-between bg-surface-container-low border border-outline-variant/10 p-6 rounded-lg gap-6">
+<div class="flex items-center gap-6 w-full md:w-auto">
+<div class="w-16 h-16 rounded-xl bg-surface-container-highest flex items-center justify-center text-primary border border-primary/20">
+<span class="material-symbols-outlined text-3xl" data-icon="playing_cards">playing_cards</span>
+</div>
+<div>
+<h3 class="text-xl font-headline font-bold text-on-surface uppercase tracking-tight">Saloon Espora Quebrada</h3>
+<div class="flex items-center gap-3 mt-1">
+<span class="px-2 py-0.5 rounded bg-orange-400/10 text-orange-400 text-[10px] font-label font-bold uppercase tracking-widest">Pública</span>
+<span class="text-stone-500 text-xs font-body">Aposta Mín: 50 Ouro</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-8 w-full md:w-auto justify-between md:justify-end">
+<div class="flex flex-col items-end">
+<span class="text-[10px] font-label uppercase text-stone-500 tracking-widest mb-1">Jogadores</span>
+<div class="flex items-center gap-2">
+<span class="text-lg font-headline font-bold text-primary">3 / 7</span>
+<div class="flex -space-x-2">
+<img alt="Player" class="w-6 h-6 rounded-full border border-surface-container-low" data-alt="avatar icon of a character with a western hat" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALP23wN4cnK456rR_AZzGzzdwxpULJgfQI_NEjZX6bBebqnM7Wsi38lE9X-4qlSXaeeabbjDXBzltBfvDvT2QWKxoWQOFDbHkKdIyoYouQW75bhrfKPHIiyW2pRLsv60G5L-a49sjrZlWFOJQeJcZaPqUrhPqVNdEIO49fBP_52uXbv35RH1kh-3Jds6DPsMfcMjUfY4xJsJs9nOIxlC-cVZ9crdImgGrS9aFEL4XR90496QpC7J8Pz3xjZ_bb2IaQ4w8Bfk6V_rE"/>
+<img alt="Player" class="w-6 h-6 rounded-full border border-surface-container-low" data-alt="avatar icon of a character with a western hat" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtzP6G6yj6QX2HCrX-hDqB1TLvFHPNiqSw5IN_CNOaEpBQ0hvi8SbypP5B6UynZGUBZPpEKhdt6KmJO6XqoANmQitj_Gud-sbz3qQ-wW69HziZKg97_m67FHpFvg6qPyv6ztmuF8KqVxbiFbOMYhbTjQZirU7pIN-BrxrmJe6yLh8OE1T2KM0QqVtyBOCmTK4aKcZiSGJPeAfQ3Kr4FoVf6QgD3GUUXQ-qvKixW-T87_WJjfQ-GgeQjNL3V_1idPSNiVnitRiJEm8"/>
+<img alt="Player" class="w-6 h-6 rounded-full border border-surface-container-low" data-alt="avatar icon of a character with a western hat" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlE5Ol8VYFfAcpdzbegDMiSNYQndwLFsbTLR6pmHG0hCv4eWZLeVWtOv_p4IqOyAvMh8r_MjtcdnWs1rijOEUPBYY7fBNGk2YX15bkyGVWk831iiiTSOdi9wHzSQtNjk39FWnjjCROwX9vpiDX5oOzOidUwtdpkgzMNOvZ_y3cfXojDVVx4zY1JBDtMyj0f2wziK7VnFa5HjKFjrCJzGlVFutCGAplCCOa56j-dOJzyzpecI2TrDrau2TjME9qXXp0aW-mY0lnlB4"/>
+</div>
+</div>
+</div>
+<button class="h-12 w-12 md:w-32 bg-surface-container-highest rounded-lg flex items-center justify-center text-primary font-headline font-bold uppercase hover:bg-primary hover:text-on-primary-container transition-all">
+<span class="md:hidden material-symbols-outlined" data-icon="login">login</span>
+<span class="hidden md:block">Sentar</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Room Card 2 -->
+<div class="group relative bg-surface-container-low rounded-xl p-1 transition-all hover:translate-x-1">
+<div class="flex flex-col md:flex-row items-center justify-between bg-surface-container-low border border-outline-variant/10 p-6 rounded-lg gap-6">
+<div class="flex items-center gap-6 w-full md:w-auto">
+<div class="w-16 h-16 rounded-xl bg-surface-container-highest flex items-center justify-center text-tertiary border border-tertiary/20">
+<span class="material-symbols-outlined text-3xl" data-icon="token">token</span>
+</div>
+<div>
+<h3 class="text-xl font-headline font-bold text-on-surface uppercase tracking-tight">Mão do Morto</h3>
+<div class="flex items-center gap-3 mt-1">
+<span class="px-2 py-0.5 rounded bg-tertiary/10 text-tertiary text-[10px] font-label font-bold uppercase tracking-widest">Privada</span>
+<span class="text-stone-500 text-xs font-body">Mesa Trancada</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-8 w-full md:w-auto justify-between md:justify-end">
+<div class="flex flex-col items-end">
+<span class="text-[10px] font-label uppercase text-stone-500 tracking-widest mb-1">Jogadores</span>
+<div class="flex items-center gap-2">
+<span class="text-lg font-headline font-bold text-tertiary">5 / 5</span>
+<span class="text-stone-500 material-symbols-outlined text-sm" data-icon="lock">lock</span>
+</div>
+</div>
+<button class="h-12 w-12 md:w-32 opacity-50 cursor-not-allowed bg-surface-container-highest rounded-lg flex items-center justify-center text-stone-500 font-headline font-bold uppercase">
+<span class="md:hidden material-symbols-outlined" data-icon="block">block</span>
+<span class="hidden md:block">Lotada</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Room Card 3 -->
+<div class="group relative bg-surface-container-low rounded-xl p-1 transition-all hover:translate-x-1">
+<div class="flex flex-col md:flex-row items-center justify-between bg-surface-container-low border border-outline-variant/10 p-6 rounded-lg gap-6">
+<div class="flex items-center gap-6 w-full md:w-auto">
+<div class="w-16 h-16 rounded-xl bg-surface-container-highest flex items-center justify-center text-primary border border-primary/20">
+<span class="material-symbols-outlined text-3xl" data-icon="military_tech">military_tech</span>
+</div>
+<div>
+<h3 class="text-xl font-headline font-bold text-on-surface uppercase tracking-tight">Clássico do Riacho Poeirento</h3>
+<div class="flex items-center gap-3 mt-1">
+<span class="px-2 py-0.5 rounded bg-orange-400/10 text-orange-400 text-[10px] font-label font-bold uppercase tracking-widest">Pública</span>
+<span class="text-stone-500 text-xs font-body">Aposta Mín: 10 Ouro</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-8 w-full md:w-auto justify-between md:justify-end">
+<div class="flex flex-col items-end">
+<span class="text-[10px] font-label uppercase text-stone-500 tracking-widest mb-1">Jogadores</span>
+<div class="flex items-center gap-2">
+<span class="text-lg font-headline font-bold text-primary">1 / 4</span>
+<div class="flex -space-x-2">
+<img alt="Player" class="w-6 h-6 rounded-full border border-surface-container-low" data-alt="avatar icon of a character with a western hat" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyIVvg6GAzSWATo6WuJwOxYZdAawwoBtXE5pvSTb5psOY2_s9NF3Fq1jMCYWQKPbVu0zaI_RSyU3YgYYQQqfg3E6miwv9iC1JkOaSYqUsDSnSpDTuHN8zMMXME1gwU7gwCQas6GgkU_I2gcJRd3ea4qQSPozzXe6U0cjOQuSSv04yHgAmTeqhK9CVYYtMXsR3VmhkTO8-lGFVmsKspgfYEFhfao25GbcpW4RD0hX0ytrm5_fGYiu7X4yoY84wTojJcV53YjYrhD68"/>
+</div>
+</div>
+</div>
+<button class="h-12 w-12 md:w-32 bg-surface-container-highest rounded-lg flex items-center justify-center text-primary font-headline font-bold uppercase hover:bg-primary hover:text-on-primary-container transition-all">
+<span class="md:hidden material-symbols-outlined" data-icon="login">login</span>
+<span class="hidden md:block">Sentar</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Room Card 4 -->
+<div class="group relative bg-surface-container-low rounded-xl p-1 transition-all hover:translate-x-1">
+<div class="flex flex-col md:flex-row items-center justify-between bg-surface-container-low border border-outline-variant/10 p-6 rounded-lg gap-6">
+<div class="flex items-center gap-6 w-full md:w-auto">
+<div class="w-16 h-16 rounded-xl bg-surface-container-highest flex items-center justify-center text-primary border border-primary/20">
+<span class="material-symbols-outlined text-3xl" data-icon="storefront">storefront</span>
+</div>
+<div>
+<h3 class="text-xl font-headline font-bold text-on-surface uppercase tracking-tight">A Recompensa do Mercador</h3>
+<div class="flex items-center gap-3 mt-1">
+<span class="px-2 py-0.5 rounded bg-orange-400/10 text-orange-400 text-[10px] font-label font-bold uppercase tracking-widest">Pública</span>
+<span class="text-stone-500 text-xs font-body">Aposta Mín: 250 Ouro</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-8 w-full md:w-auto justify-between md:justify-end">
+<div class="flex flex-col items-end">
+<span class="text-[10px] font-label uppercase text-stone-500 tracking-widest mb-1">Jogadores</span>
+<div class="flex items-center gap-2">
+<span class="text-lg font-headline font-bold text-primary">6 / 8</span>
+<div class="flex -space-x-2">
+<img alt="Player" class="w-6 h-6 rounded-full border border-surface-container-low" data-alt="avatar icon of a character with a western hat" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4J1V4QUnfuHjLKiljuRs96bQHbN7RLeFrqQelrlG8ws_N8tbDfXrbKavRBlAcFU5n6NySPyI6RFxDlN9hPRTTm_jTazZ9FLUj_W40OEpmF5VoPUJ6yQsLBXVsPugwObOYj8MAMSey0bs1g_KijuZu8jY54XH3h6QZ5jJwgSFmNOO3yEjUzZ-SUG0BZs54ib1JWAvzbzQ6UxxHEDlYyOQOWMSRzg2ZJ0kF3TgGNLVSduh4WMxnw_PEgjrrz4vBlxE-3_bUDhvRYoM"/>
+<img alt="Player" class="w-6 h-6 rounded-full border border-surface-container-low" data-alt="avatar icon of a character with a western hat" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfvtNK9jzt7OtRhFatnEHn-Z5yKATgVgK4HyZP58pESNSlPKlj7omELmdxJ_sXGydp1Svxd81SNxhh4eH6E4y0X9ZcOEmurzJoDNx1F0T0iPjoBSRjgXD7IEu-IjTw6fgNZXDnxqVeHO_aCF7e6ishmN5z81Wl1Ru3GlSOZ2jTNS2K9KwglSUW7jf1Hf6L8mJA1lyknAJR9vqZD_KZafSX24PIVrpOk4YKI49D9xPMjLX9DMrFPOUYskacT4p-xAeOUNjTtHiP56s"/>
+<img alt="Player" class="w-6 h-6 rounded-full border border-surface-container-low" data-alt="avatar icon of a character with a western hat" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCM5jdCKV7BcXTfOGj-DB7i5ODWGXZMgHo1BZ_BklcN5OdLFCQ_NdEuIGDkY5iSgDW3QIbw2OQxsllDqkhHnIjPz4SC6uj0qNiecQUtd1iUjBzrztSZ2KPTTzUhngr74-vCKhM0t3_IK__yQRFXYyUuaU3HA9FK6XygFlmdsRA30of08IkZQQV7V-3x1YEgBri9I12wwCAsSs17yVoANV08tWTK9a-DdFbvsQpUenT0FAl730VOdjjes-QHVp93VRUxnZeusi8Pio"/>
+<img alt="Player" class="w-6 h-6 rounded-full border border-surface-container-low" data-alt="avatar icon of a character with a western hat" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGULPjjSX-P9wLojP_eHkN5vQRRnITR4JMQG7z-8R9xTwK85m-BmkAnOqGf4cxKX_xCDHW-MK6wn490cge2pgfF9AFQ-Sq_KTuGsTWwopm6wptGf1cfZKNhexZ7uBlndqWHc7vpYNFdM1X_QszsKOIaJM37o_418iBXIeH73kvN5Lzngu3vH0GhI0jsVLlC5EOv1TZV7j_bZ2yQ96Jl4AZnLu-FLDu5ncgvSp03ztLQE69jfxiIc011k1-jfTyz1nLswWN-WQnsjA"/>
+</div>
+</div>
+</div>
+<button class="h-12 w-12 md:w-32 bg-surface-container-highest rounded-lg flex items-center justify-center text-primary font-headline font-bold uppercase hover:bg-primary hover:text-on-primary-container transition-all">
+<span class="md:hidden material-symbols-outlined" data-icon="login">login</span>
+<span class="hidden md:block">Sentar</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<footer class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe bg-stone-950/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.6)] rounded-t-xl md:hidden">
+<div class="flex flex-col items-center justify-center bg-orange-400/10 text-orange-400 rounded-xl p-2 scale-110 duration-200">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-body text-[10px] font-semibold uppercase">Início</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-orange-200 transition-colors">
+<span class="material-symbols-outlined" data-icon="style">style</span>
+<span class="font-body text-[10px] font-semibold uppercase">Baralhos</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-orange-200 transition-colors">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-body text-[10px] font-semibold uppercase">Social</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-orange-200 transition-colors">
+<span class="material-symbols-outlined" data-icon="local_mall">local_mall</span>
+<span class="font-body text-[10px] font-semibold uppercase">Loja</span>
+</div>
+</footer>
+</body></html>

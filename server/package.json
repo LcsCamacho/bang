@@ -11,7 +11,8 @@
     "dev": "tsx watch src/index.ts",
     "test": "npm run build && node --test dist/game/engine.test.js",
     "check:scripts": "tsc -p tsconfig.scripts.json",
-    "gen:fragment": "tsx scripts/generate-engine-fragment.ts"
+    "gen:fragment": "tsx scripts/generate-engine-fragment.ts",
+    "stitch:download": "node scripts/download-stitch-screens.mjs"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
@@ -19,6 +20,7 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@google/stitch-sdk": "^0.1.0",
     "@types/express": "^5.0.6",
     "@types/node": "^25.5.0",
     "@types/ws": "^8.18.1",

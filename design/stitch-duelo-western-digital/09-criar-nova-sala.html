@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Work+Sans:wght@300;400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#472600",
+                    "surface-container-lowest": "#110d0a",
+                    "surface-container-low": "#1f1b17",
+                    "primary-container": "#d48228",
+                    "inverse-primary": "#8d4f00",
+                    "inverse-on-surface": "#352f2b",
+                    "tertiary-fixed-dim": "#d9b9ff",
+                    "surface-dim": "#17130f",
+                    "on-secondary-container": "#dcab8e",
+                    "on-error": "#690005",
+                    "on-secondary-fixed": "#2f1403",
+                    "on-secondary-fixed-variant": "#623e28",
+                    "surface-variant": "#39342f",
+                    "on-tertiary": "#3e2162",
+                    "error-container": "#93000a",
+                    "on-secondary": "#482914",
+                    "tertiary-container": "#a887cf",
+                    "secondary": "#efbc9e",
+                    "on-tertiary-fixed-variant": "#56387a",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-highest": "#39342f",
+                    "on-primary-fixed-variant": "#6b3b00",
+                    "primary-fixed-dim": "#ffb875",
+                    "error": "#ffb4ab",
+                    "surface-container-high": "#2e2925",
+                    "primary-fixed": "#ffdcc0",
+                    "background": "#17130f",
+                    "on-primary-fixed": "#2d1600",
+                    "outline": "#a18d7d",
+                    "on-background": "#ebe1da",
+                    "surface-bright": "#3e3834",
+                    "surface-container": "#231f1b",
+                    "tertiary": "#d9b9ff",
+                    "outline-variant": "#534437",
+                    "surface-tint": "#ffb875",
+                    "on-surface-variant": "#d9c2b1",
+                    "inverse-surface": "#ebe1da",
+                    "on-surface": "#ebe1da",
+                    "on-primary": "#4b2800",
+                    "secondary-container": "#623e28",
+                    "on-tertiary-container": "#3c1e5f",
+                    "on-tertiary-fixed": "#28074c",
+                    "primary": "#ffb875",
+                    "secondary-fixed-dim": "#efbc9e",
+                    "surface": "#17130f",
+                    "secondary-fixed": "#ffdbc8",
+                    "tertiary-fixed": "#eedbff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Work Sans"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+.parchment-texture {
+    background-color: #f4e4bc;
+    background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0) 100%), url(https://lh3.googleusercontent.com/aida-public/AB6AXuBJwW5U6pF8o86iKBSd_bxeWRI4vR7zQASw16LDadhA5aIi0ZaqoZoxzhGb69Ua5AbuJwiSWUNoUaHsVeXLKUQNZe3svBMsxuK_Np90kwibUCMQemzWEkFMBSHDXmYi_4SOq777RLv4PBAjtKVxmYIOGbBqHabdJPdCq_ii9pbLQAJ594fZZZ66YmlNBfLAc_baEZ_XBTlcc7uf9fWh-xNk4RuxBtfnSkt_yLsOFi8a_Hk2PCZqNsTostj-Z16shxz_R7HsRX2nzGE)
+    }
+.wood-frame {
+    box-shadow: inset 0 0 15px #2d1600, 0 10px 30px rgba(0, 0, 0, 0.8);
+    border: 12px solid #2d1600
+    }</style>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col relative overflow-hidden">
+<!-- Blurred Lobby Background -->
+<div class="fixed inset-0 z-0">
+<div class="absolute inset-0 bg-black/60 z-10"></div>
+<img class="w-full h-full object-cover blur-md scale-110" data-alt="Blurred cinematic view of a smoky western saloon lobby with warm golden lighting, wooden tables, and dusty atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDn8OqdaH2a74cXEJKXs63U_bsTQKCGyXgGwk-LzqRoTVSXVZr_L0iusBHLNnnDzgfaBdKC8aH5mpp9iH0FnB8Sc_ZblwqM9CQWl7hZqoA_fEUer7Z5cnumAQeTeyiuYkh84ZJolK12ZGsXf4D6yWG3NgQOZPjmYuwed268iJxzTJJ0JEhpzh8s8km3e2d4A6sfMWUaLrgkrlfoG2_Tm4AY_S4NT0A2lLygrA4jQEULpvsQYcGBTDkF9MUtIE9wwWl3iMtbFDAL3Xs"/>
+</div>
+<!-- Navigation Shell (TopAppBar) -->
+<nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 py-4 max-w-full bg-stone-900/80 backdrop-blur-md shadow-2xl shadow-stone-950/50 font-headline tracking-tight uppercase">
+<div class="text-2xl font-bold text-orange-400 drop-shadow-sm">Modern Frontier</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-orange-400 border-b-2 border-orange-400 pb-1" href="#">Lobby</a>
+<a class="text-stone-400 hover:text-stone-200 transition-colors duration-300" href="#">Placar</a>
+<a class="text-stone-400 hover:text-stone-200 transition-colors duration-300" href="#">Estábulo</a>
+<a class="text-stone-400 hover:text-stone-200 transition-colors duration-300" href="#">Loja</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-orange-300 hover:bg-stone-800/50 p-2 transition-colors duration-300 flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="text-sm font-label font-bold tracking-normal lowercase">1,250</span>
+</button>
+<button class="text-orange-300 hover:bg-stone-800/50 p-2 transition-colors duration-300">
+<span class="material-symbols-outlined" data-icon="stars">stars</span>
+</button>
+<div class="w-10 h-10 rounded-xl overflow-hidden ring-2 ring-orange-400/30">
+<img class="w-full h-full object-cover" data-alt="Close-up portrait of a rugged outlaw with a leather hat and weathered skin, cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYlkqmchvPDt7-urMXRgvLGifUPwg-mHDnRHuFJKouWK4mfWCdybQl_wz_JipVmXczQZCWLGHq14npSHNIWAoAboaTfDqWjbP1rBAVOeNx80Tx60qtDqLzUJJeYzI-48iDFhWFvYZ2d4D7buJc5R7hc9f7z-CnsVGzZVeQHwN1Vy5JXzL1ZTlRaiJO4euhnK_5UoEQr2Bv3tkZjior9aU3osJl8kGfMqjNDtrQ0ynLGLXU3RTg-EZcz9Eu41zzPHRlDQMPaGRG8rY"/>
+</div>
+</div>
+</nav>
+<!-- Main Content Area / Modal Screen -->
+<main class="relative z-20 flex-1 flex items-center justify-center p-4 pt-24 pb-20">
+<!-- Create Room Modal -->
+<div class="w-full max-w-lg relative">
+<!-- Decorative Header Accent -->
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 z-30 bg-primary-container px-6 py-1 rounded-full shadow-lg border-2 border-on-primary-container">
+<span class="font-headline text-on-primary-container font-bold text-sm tracking-widest uppercase">NOVA EXPEDIÇÃO</span>
+</div>
+<!-- Form Container (Wood Frame & Parchment) -->
+<div class="wood-frame parchment-texture rounded-xl overflow-hidden relative">
+<!-- Inner Shadow Layer for "Depth" -->
+<div class="absolute inset-0 pointer-events-none shadow-[inset_0_0_100px_rgba(0,0,0,0.15)]"></div>
+<div class="p-8 md:p-12 space-y-8 relative z-10">
+<!-- Title -->
+<div class="text-center space-y-1">
+<h1 class="font-headline text-4xl font-extrabold text-on-primary-container tracking-tight uppercase">CRIAR SALA</h1>
+<p class="font-body text-on-primary-container/70 text-sm italic font-medium">Defina os termos do seu duelo, forasteiro.</p>
+</div>
+<!-- Form Fields -->
+<div class="space-y-6">
+<!-- Room Name -->
+<div class="space-y-2">
+<label class="block font-label text-xs font-black text-on-primary-container/60 uppercase tracking-tighter">Room Name</label>
+<div class="relative group">
+<input class="w-full bg-black/5 border-b-2 border-on-primary-container/20 focus:border-on-primary-container focus:ring-0 text-on-primary-container font-headline text-lg placeholder:text-on-primary-container/30 transition-all duration-300 py-3 px-1" placeholder="Digite o nome da sala..." type="text"/>
+<div class="absolute right-2 top-1/2 -translate-y-1/2 text-on-primary-container/40">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</div>
+</div>
+</div>
+<!-- Max Players & Room Type Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Max Players -->
+<div class="space-y-2">
+<label class="block font-label text-xs font-black text-on-primary-container/60 uppercase tracking-tighter">Max Players</label>
+<div class="relative">
+<select class="w-full appearance-none bg-black/5 border-b-2 border-on-primary-container/20 focus:border-on-primary-container focus:ring-0 text-on-primary-container font-headline text-lg transition-all duration-300 py-3 px-4 rounded-none cursor-pointer">
+<option>4 Players</option>
+<option>5 Players</option>
+<option>6 Players</option>
+<option>7 Players</option>
+<option>8 Players</option>
+</select>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-primary-container/60">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+</div>
+</div>
+</div>
+<!-- Room Type Toggle -->
+<div class="space-y-2">
+<label class="block font-label text-xs font-black text-on-primary-container/60 uppercase tracking-tighter">Visibility</label>
+<div class="flex items-center h-[54px] bg-on-primary-container/10 rounded-xl p-1 gap-1">
+<button class="flex-1 h-full flex items-center justify-center gap-2 rounded-lg bg-on-primary-container text-primary-fixed-dim font-headline text-sm font-bold transition-all"><span class="material-symbols-outlined text-[18px]" data-icon="public">public</span> PÚBLICA</button>
+<button class="flex-1 h-full flex items-center justify-center gap-2 rounded-lg text-on-primary-container/60 hover:bg-black/5 font-headline text-sm font-bold transition-all"><span class="material-symbols-outlined text-[18px]" data-icon="lock">lock</span> PRIVADA</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Action -->
+<div class="pt-4">
+<button class="w-full group relative overflow-hidden bg-gradient-to-r from-primary-container to-inverse-primary p-4 rounded-xl shadow-[0_4px_20px_rgba(212,130,40,0.4)] active:scale-95 transition-all duration-150">
+<div class="relative z-10 flex items-center justify-center gap-3">
+<span class="font-headline text-on-primary-container text-xl font-black tracking-widest uppercase">CRIAR E ENTRAR</span>
+<span class="material-symbols-outlined text-on-primary-container animate-pulse" data-icon="arrow_forward">arrow_forward</span>
+</div>
+<div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+</button>
+<p class="text-center mt-4 font-label text-[10px] text-on-primary-container/40 uppercase tracking-widest font-bold">TAXAS PADRÃO DE SERVIÇO DE FRONTEIRA PODEM SER APLICADAS</p>
+</div>
+</div>
+<!-- Decorative Corners -->
+<div class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-on-primary-container/20 rounded-tl-lg m-2"></div>
+<div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-on-primary-container/20 rounded-tr-lg m-2"></div>
+<div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-on-primary-container/20 rounded-bl-lg m-2"></div>
+<div class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-on-primary-container/20 rounded-br-lg m-2"></div>
+</div>
+</div>
+</main>
+<!-- Side Navigation (Suppressed for focused modal context, but included per JSON if requested/needed - suppressed here for UX Goal: "Focused Journey") -->
+<!-- Mobile Bottom Navigation Shell -->
+<div class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe bg-stone-950/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.6)] rounded-t-xl">
+<div class="flex flex-col items-center justify-center bg-orange-400/10 text-orange-400 rounded-xl p-2 scale-110 duration-200">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-body text-[10px] font-semibold uppercase">Início</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-orange-200">
+<span class="material-symbols-outlined" data-icon="style">style</span>
+<span class="font-body text-[10px] font-semibold uppercase">Baralhos</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-orange-200">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-body text-[10px] font-semibold uppercase">Social</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-orange-200">
+<span class="material-symbols-outlined" data-icon="local_mall">local_mall</span>
+<span class="font-body text-[10px] font-semibold uppercase">Loja</span>
+</div>
+</div>
+</body></html>

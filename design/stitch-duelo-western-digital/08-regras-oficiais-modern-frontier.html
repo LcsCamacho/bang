@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Regras | MODERN FRONTIER</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Work+Sans:wght@300;400;500;600;700&amp;family=Inter:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#eedbff",
+                        "surface-dim": "#17130f",
+                        "on-primary-container": "#472600",
+                        "tertiary-container": "#a887cf",
+                        "error": "#ffb4ab",
+                        "surface-tint": "#ffb875",
+                        "surface-container-highest": "#39342f",
+                        "secondary-container": "#623e28",
+                        "on-surface": "#ebe1da",
+                        "inverse-surface": "#ebe1da",
+                        "secondary-fixed": "#ffdbc8",
+                        "on-background": "#ebe1da",
+                        "tertiary-fixed-dim": "#d9b9ff",
+                        "on-error-container": "#ffdad6",
+                        "outline-variant": "#534437",
+                        "surface-variant": "#39342f",
+                        "on-tertiary": "#3e2162",
+                        "on-tertiary-fixed": "#28074c",
+                        "on-surface-variant": "#d9c2b1",
+                        "on-secondary-fixed": "#2f1403",
+                        "on-primary": "#4b2800",
+                        "primary-fixed-dim": "#ffb875",
+                        "surface-container-lowest": "#110d0a",
+                        "secondary": "#efbc9e",
+                        "on-tertiary-container": "#3c1e5f",
+                        "secondary-fixed-dim": "#efbc9e",
+                        "surface-container-low": "#1f1b17",
+                        "primary-container": "#d48228",
+                        "background": "#17130f",
+                        "primary": "#ffb875",
+                        "surface-container-high": "#2e2925",
+                        "on-primary-fixed": "#2d1600",
+                        "tertiary": "#d9b9ff",
+                        "on-secondary-fixed-variant": "#623e28",
+                        "inverse-primary": "#8d4f00",
+                        "inverse-on-surface": "#352f2b",
+                        "primary-fixed": "#ffdcc0",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#56387a",
+                        "surface-container": "#231f1b",
+                        "on-secondary": "#482914",
+                        "surface": "#17130f",
+                        "on-primary-fixed-variant": "#6b3b00",
+                        "on-error": "#690005",
+                        "surface-bright": "#3e3834",
+                        "outline": "#a18d7d",
+                        "on-secondary-container": "#dcab8e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Work Sans"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: "Work Sans", sans-serif;
+            background-color: #17130f;
+            color: #ebe1da
+        }
+        .font-space-grotesk {
+            font-family: "Space Grotesk", sans-serif
+        }
+        .font-work-sans {
+            font-family: "Work Sans", sans-serif
+        }
+        .material-symbols-outlined {
+            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+        }
+        .grain-texture {
+            background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCRPcOV7UK7c27mToB4uQRXM4AhNB-jxRdu53LS8HgGQX18CO_l_GlygKXl2Qtf0ECknQd82TTv0eDSbFnNoEUvb8D1MWcbEcQ3TlP-xF7fQLCZsLyKzBPoZA1gRSGJLJe-Llegmlk_huk_OaoV9PD7C-DL44471pgAlsR6m5q73eh3fEkLJFdGRlE0NO7UDoXFYEWs2BmCo_QtZoQ4cuef4CDmzFuAz6rfw1R798l3eCFWk2JwPTISXqwJ5xQxzmt3uZ431vmnSDA);
+            opacity: 0.03;
+            pointer-events: none
+        }
+    </style>
+</head>
+<body class="selection:bg-primary selection:text-on-primary">
+<!-- Grain Overlay -->
+<div class="fixed inset-0 grain-texture z-[100]"></div>
+<!-- TopAppBar -->
+<header class="bg-neutral-900/80 backdrop-blur-md text-orange-400 font-space-grotesk font-bold tracking-tight uppercase docked full-width top-0 sticky z-50 bg-neutral-800/40 shadow-[0_4px_20px_-5px_rgba(0,0,0,0.3)] shadow-xl flex justify-between items-center px-8 py-4 w-full">
+<div class="text-2xl font-black text-orange-400 tracking-tighter">MODERN FRONTIER</div>
+<nav class="hidden md:flex gap-8">
+<a class="text-neutral-400 font-medium hover:text-orange-200 transition-all duration-300" href="#">Lobby</a>
+<a class="text-orange-400 border-b-2 border-orange-400 pb-1 hover:text-orange-200 transition-all duration-300" href="#">Regras</a>
+<a class="text-neutral-400 font-medium hover:text-orange-200 transition-all duration-300" href="#">Estábulo</a>
+<a class="text-neutral-400 font-medium hover:text-orange-200 transition-all duration-300" href="#">Loja</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-orange-400 hover:text-orange-200 transition-all duration-300" data-icon="account_circle">account_circle</button>
+<button class="material-symbols-outlined text-orange-400 hover:text-orange-200 transition-all duration-300" data-icon="settings">settings</button>
+</div>
+</header>
+<main class="max-w-6xl mx-auto px-6 py-12 space-y-24 mb-24">
+<!-- Hero Section: Objetivo -->
+<section class="relative overflow-hidden rounded-xl bg-surface-container-low p-8 md:p-16 border-l-4 border-primary">
+<div class="relative z-10 grid md:grid-cols-2 gap-12 items-center">
+<div class="space-y-6">
+<h1 class="text-5xl md:text-7xl font-headline font-black text-primary leading-none uppercase italic">Objetivo do Jogo</h1>
+<p class="text-lg text-on-surface-variant font-body leading-relaxed max-w-lg">
+                        Nas planícies empoeiradas da fronteira moderna, a justiça é decidida pela estratégia e pelo gatilho. O <span class="text-primary font-bold">Xerife</span> e seus <span class="text-secondary font-bold">Vices</span> devem eliminar todos os <span class="text-error font-bold">Foras-da-Lei</span> e o perigoso <span class="text-tertiary font-bold">Renegado</span>. Já os Foras-da-Lei buscam apenas a cabeça do Xerife. O Renegado, porém, joga para ser o último homem de pé.
+                    </p>
+<div class="inline-flex items-center gap-3 bg-primary/10 px-4 py-2 rounded-lg border border-primary/20">
+<span class="material-symbols-outlined text-primary" data-icon="gavel">gavel</span>
+<span class="font-headline font-bold text-sm tracking-widest uppercase">Sobrevivência ou Justiça</span>
+</div>
+</div>
+<div class="relative h-64 md:h-96 w-full">
+<img alt="Western gunfight silhouette" class="absolute inset-0 w-full h-full object-cover rounded-xl grayscale contrast-125 opacity-40 mix-blend-screen" data-alt="Dramatic silhouette of two cowboys in a standoff at sunset with dusty atmosphere and sharp lighting contrast" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBc4amG3n22UPJ5Jj893qkenBRN_vJWMvUfWxEQKG4buuni2VDTFsrI_2fBGLSUSZAQRXw5kyjgJdbGi_gAKt9qIw4zpUwjjcUjeiHzCVnminUA5hwz2FWHbQb_OMfA7_pCyBcIaucfu8CGSPRRKJCulvHpIM0XYXOgICOOHhY4R-NiETC2ZF8nj8j45lfz3lbT8_IlVMTSjpjpUnx0Sq1h8UyOs2j3k0OWR-OVRBY0JYBUuMksr9eCC6sXxEtbV4f2v35lrqS_fug"/>
+<div class="absolute inset-0 bg-gradient-to-tr from-surface-container-low via-transparent to-transparent"></div>
+</div>
+</div>
+</section>
+<!-- Papéis dos Personagens (Bento Grid) -->
+<section class="space-y-12">
+<div class="text-center space-y-4">
+<h2 class="text-4xl font-headline font-bold text-on-surface uppercase tracking-tighter">Papéis dos Personagens</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto">Sua identidade é secreta (exceto para o Xerife). Use sua função para guiar suas balas no Velho Oeste.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<!-- Xerife -->
+<div class="bg-surface-container-high p-8 rounded-xl space-y-6 border-b-4 border-primary">
+<div class="h-16 w-16 bg-primary text-on-primary flex items-center justify-center rounded-full mx-auto shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-4xl" data-icon="shield">shield</span>
+</div>
+<div class="text-center space-y-2">
+<div class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/60">Identidade Pública</div>
+<h3 class="text-2xl font-headline font-black uppercase text-primary">Xerife</h3>
+<p class="text-sm text-on-surface-variant">Elimine todos os <span class="font-bold">Foras-da-Lei</span> e o <span class="font-bold">Renegado</span> para trazer a paz.</p>
+</div>
+</div>
+<!-- Vice -->
+<div class="bg-surface-container-high p-8 rounded-xl space-y-6 border-b-4 border-secondary">
+<div class="h-16 w-16 bg-secondary text-on-secondary flex items-center justify-center rounded-full mx-auto">
+<span class="material-symbols-outlined text-4xl" data-icon="verified_user">verified_user</span>
+</div>
+<div class="text-center space-y-2">
+<div class="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary/60">Identidade Secreta</div>
+<h3 class="text-2xl font-headline font-black uppercase text-secondary">Vice</h3>
+<p class="text-sm text-on-surface-variant">Proteja o Xerife a qualquer custo. Seus objetivos são idênticos aos dele.</p>
+</div>
+</div>
+<!-- Fora-da-Lei -->
+<div class="bg-surface-container-high p-8 rounded-xl space-y-6 border-b-4 border-error">
+<div class="h-16 w-16 bg-error text-on-error flex items-center justify-center rounded-full mx-auto">
+<span class="material-symbols-outlined text-4xl" data-icon="skull">skull</span>
+</div>
+<div class="text-center space-y-2">
+<div class="text-[10px] font-bold uppercase tracking-[0.2em] text-error/60">Identidade Secreta</div>
+<h3 class="text-2xl font-headline font-black uppercase text-error">Fora-da-Lei</h3>
+<p class="text-sm text-on-surface-variant">Seu único objetivo é matar o <span class="font-bold">Xerife</span>. Não hesite em atirar.</p>
+</div>
+</div>
+<!-- Renegado -->
+<div class="bg-surface-container-high p-8 rounded-xl space-y-6 border-b-4 border-tertiary">
+<div class="h-16 w-16 bg-tertiary text-on-tertiary flex items-center justify-center rounded-full mx-auto">
+<span class="material-symbols-outlined text-4xl" data-icon="masks">masks</span>
+</div>
+<div class="text-center space-y-2">
+<div class="text-[10px] font-bold uppercase tracking-[0.2em] text-tertiary/60">Identidade Secreta</div>
+<h3 class="text-2xl font-headline font-black uppercase text-tertiary">Renegado</h3>
+<p class="text-sm text-on-surface-variant">Seja o último sobrevivente. O Xerife deve ser o último a morrer após todos os outros.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Como Jogar (Turn Phases) -->
+<section class="grid md:grid-cols-3 gap-12 items-start">
+<div class="md:sticky md:top-24 space-y-4">
+<h2 class="text-6xl font-headline font-black text-on-surface-variant opacity-20 uppercase leading-none">Turno</h2>
+<h3 class="text-4xl font-headline font-bold text-primary uppercase">Fases do Jogo</h3>
+<p class="text-on-surface-variant">Cada rodada segue uma ordem rigorosa para garantir que a lei (ou o caos) prevaleça.</p>
+</div>
+<div class="md:col-span-2 space-y-8">
+<!-- Fase 1 -->
+<div class="flex gap-8 group">
+<div class="text-5xl font-headline font-black text-outline-variant group-hover:text-primary transition-colors">01</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl flex-1 border border-outline-variant/10">
+<h4 class="text-xl font-headline font-bold text-on-surface uppercase mb-3">Compra de Cartas</h4>
+<p class="text-on-surface-variant">Compre duas cartas do baralho central. Se o baralho se esgotar, embaralhe o descarte e continue.</p>
+</div>
+</div>
+<!-- Fase 2 -->
+<div class="flex gap-8 group">
+<div class="text-5xl font-headline font-black text-outline-variant group-hover:text-primary transition-colors">02</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl flex-1 border border-outline-variant/10">
+<h4 class="text-xl font-headline font-bold text-on-surface uppercase mb-3">Jogar Cartas</h4>
+<p class="text-on-surface-variant">Jogue quantas cartas quiser para ajudar aliados ou ferir inimigos. <strong>Regra de Ouro:</strong> você só pode jogar uma carta <span class="text-primary italic">BANG!</span> por turno (a menos que possua a arma <span class="text-primary font-bold">Volcanic</span>).</p>
+</div>
+</div>
+<!-- Fase 3 -->
+<div class="flex gap-8 group">
+<div class="text-5xl font-headline font-black text-outline-variant group-hover:text-primary transition-colors">03</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl flex-1 border border-outline-variant/10">
+<h4 class="text-xl font-headline font-bold text-on-surface uppercase mb-3">Descarte Final</h4>
+<p class="text-on-surface-variant">Ao encerrar o turno, descarte o excesso: você deve ter em mãos no máximo o número de cartas igual aos seus <span class="text-primary font-bold">pontos de vida atuais</span>.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Tipos de Cartas (Visual Cards) -->
+<section class="space-y-12">
+<h2 class="text-4xl font-headline font-bold text-center uppercase">Arsenal da Fronteira</h2>
+<div class="grid md:grid-cols-2 gap-12">
+<!-- Brown Border -->
+<div class="relative group">
+<div class="absolute -inset-1 bg-gradient-to-b from-[#8b4513] to-transparent rounded-xl blur opacity-25"></div>
+<div class="relative bg-surface-container p-8 rounded-xl space-y-6">
+<div class="aspect-[2/3] w-48 mx-auto bg-surface-container-low rounded-lg border-4 border-[#8b4513] shadow-2xl flex flex-col p-4">
+<div class="h-1/2 w-full bg-neutral-800 rounded mb-4"></div>
+<div class="h-4 w-3/4 bg-[#8b4513] rounded mb-2"></div>
+<div class="h-2 w-full bg-outline-variant/20 rounded"></div>
+</div>
+<div class="text-center space-y-3">
+<h3 class="text-2xl font-headline font-bold text-[#efbc9e]">Borda Marrom</h3>
+<p class="text-on-surface-variant italic">Efeito Imediato</p>
+<p class="text-sm text-on-surface-variant">São descartadas instantaneamente após o uso. Exemplos: <strong>BANG!</strong>, <strong>Missed!</strong> (Esquiva) e <strong>Beer</strong> (Cerveja).</p>
+</div>
+</div>
+</div>
+<!-- Blue Border -->
+<div class="relative group">
+<div class="absolute -inset-1 bg-gradient-to-b from-blue-500 to-transparent rounded-xl blur opacity-25"></div>
+<div class="relative bg-surface-container p-8 rounded-xl space-y-6">
+<div class="aspect-[2/3] w-48 mx-auto bg-surface-container-low rounded-lg border-4 border-blue-500 shadow-2xl flex flex-col p-4">
+<div class="h-1/2 w-full bg-neutral-800 rounded mb-4"></div>
+<div class="h-4 w-3/4 bg-blue-500 rounded mb-2"></div>
+<div class="h-2 w-full bg-outline-variant/20 rounded"></div>
+</div>
+<div class="text-center space-y-3">
+<h3 class="text-2xl font-headline font-bold text-blue-300">Borda Azul</h3>
+<p class="text-on-surface-variant italic">Equipamentos e Permanentes</p>
+<p class="text-sm text-on-surface-variant">Ficam na mesa à sua frente. Incluem <strong>Armas</strong> (que definem o alcance dos disparos), <strong>Cavalos</strong> e punições como a <strong>Prisão</strong>.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Distância (New Section) -->
+<section class="grid md:grid-cols-2 gap-12 items-center bg-surface-container-low rounded-xl p-8 border border-outline-variant/20">
+<div class="space-y-6">
+<h3 class="text-3xl font-headline font-black text-primary uppercase">Dinâmica de Distância</h3>
+<p class="text-on-surface-variant">A distância entre você e os outros jogadores é medida pelo número de assentos. Por padrão, você só atinge quem está a 1 de distância.</p>
+<ul class="space-y-4">
+<li class="flex gap-4">
+<span class="material-symbols-outlined text-secondary" data-icon="add_location">add_location</span>
+<p class="text-sm"><span class="font-bold text-secondary">Mustang:</span> Aumenta a distância que os outros te veem em +1 (defensivo).</p>
+</li>
+<li class="flex gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="my_location">my_location</span>
+<p class="text-sm"><span class="font-bold text-primary">Appaloosa / Mira:</span> Reduz a distância que você vê os outros em -1 (ofensivo).</p>
+</li>
+<li class="flex gap-4">
+<span class="material-symbols-outlined text-orange-400" data-icon="ads_click">ads_click</span>
+<p class="text-sm"><span class="font-bold text-orange-400">Armas:</span> Cartas como Winchester (dist. 5) ou Remington (dist. 3) permitem atingir alvos distantes.</p>
+</li>
+</ul>
+</div>
+<div class="grid grid-cols-3 gap-4 opacity-40 grayscale group-hover:grayscale-0 transition-all duration-700">
+<div class="aspect-square bg-surface-container-highest rounded-full border-2 border-primary/20 flex items-center justify-center">1</div>
+<div class="aspect-square bg-primary/20 rounded-full border-2 border-primary flex items-center justify-center font-bold">VOCÊ</div>
+<div class="aspect-square bg-surface-container-highest rounded-full border-2 border-primary/20 flex items-center justify-center">1</div>
+</div>
+</section>
+<!-- Dicas para Iniciantes -->
+<section class="bg-primary/5 backdrop-blur-md rounded-2xl p-12 border border-primary/10 space-y-12">
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-6xl text-primary" data-icon="tips_and_updates">tips_and_updates</span>
+<h2 class="text-4xl font-headline font-black uppercase text-on-surface">Dicas de Sobrevivência</h2>
+</div>
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="space-y-3">
+<div class="text-primary font-headline font-bold uppercase tracking-widest text-xs">Dica #01</div>
+<h4 class="text-lg font-bold">Gerencie suas Cervejas</h4>
+<p class="text-sm text-on-surface-variant">Cervejas recuperam vida, mas não funcionam quando restam apenas dois jogadores no duelo final.</p>
+</div>
+<div class="space-y-3">
+<div class="text-primary font-headline font-bold uppercase tracking-widest text-xs">Dica #02</div>
+<h4 class="text-lg font-bold">Cuidado com o Xerife</h4>
+<p class="text-sm text-on-surface-variant">Se o Xerife eliminar um Vice, ele deve descartar todas as cartas da mão e da mesa imediatamente.</p>
+</div>
+<div class="space-y-3">
+<div class="text-primary font-headline font-bold uppercase tracking-widest text-xs">Dica #03</div>
+<h4 class="text-lg font-bold">Blefe é Fundamental</h4>
+<p class="text-sm text-on-surface-variant">Se você for o Renegado, finja ser um Vice para ganhar a confiança do Xerife antes da traição final.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-2 py-3 pb-safe bg-neutral-950/90 backdrop-blur-xl z-50 rounded-t-xl shadow-[0_-10px_30px_-15px_rgba(212,130,40,0.1)]">
+<a class="flex flex-col items-center justify-center text-neutral-500 px-4 py-2 hover:bg-neutral-800/50" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-work-sans text-[10px] font-bold uppercase tracking-widest mt-1">Lobby</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-orange-400/10 text-orange-400 rounded-lg px-4 py-2 hover:bg-neutral-800/50" href="#">
+<span class="material-symbols-outlined" data-icon="gavel">gavel</span>
+<span class="font-work-sans text-[10px] font-bold uppercase tracking-widest mt-1">Regras</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-500 px-4 py-2 hover:bg-neutral-800/50" href="#">
+<span class="material-symbols-outlined" data-icon="pets">pets</span>
+<span class="font-work-sans text-[10px] font-bold uppercase tracking-widest mt-1">Estábulo</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neutral-500 px-4 py-2 hover:bg-neutral-800/50" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="font-work-sans text-[10px] font-bold uppercase tracking-widest mt-1">Loja</span>
+</a>
+</nav>
+<!-- Footer Decoration -->
+<footer class="mt-24 py-12 border-t border-outline-variant/10 text-center opacity-50">
+<div class="text-2xl font-headline font-black text-orange-400 tracking-tighter mb-4">MODERN FRONTIER</div>
+<p class="text-xs uppercase tracking-[0.3em] font-label">© 1899 Modern Frontier Interactive. Todos os direitos reservados.</p>
+</footer>
+</body></html>

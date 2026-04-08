@@ -1,0 +1,67 @@
+{
+  "projectId": "7171599069899789050",
+  "projectTitle": "Duelo Western Digital",
+  "exportedAt": "2026-04-08T01:38:20.756Z",
+  "screens": [
+    {
+      "screenId": "d692cfb63747448ea0eb098a9cfc0603",
+      "slug": "01-lobby-do-jogo",
+      "html": "design\\stitch-duelo-western-digital\\01-lobby-do-jogo.html",
+      "image": "design\\stitch-duelo-western-digital\\01-lobby-do-jogo.jpg"
+    },
+    {
+      "screenId": "ae51dbf10e874b9eb2737c0c65a37dfc",
+      "slug": "02-lobby-do-jogo-alt",
+      "html": "design\\stitch-duelo-western-digital\\02-lobby-do-jogo-alt.html",
+      "image": "design\\stitch-duelo-western-digital\\02-lobby-do-jogo-alt.jpg"
+    },
+    {
+      "screenId": "f63bb1a73688426eae958b9de2860166",
+      "slug": "03-configurar-pratica-com-bots",
+      "html": "design\\stitch-duelo-western-digital\\03-configurar-pratica-com-bots.html",
+      "image": "design\\stitch-duelo-western-digital\\03-configurar-pratica-com-bots.jpg"
+    },
+    {
+      "screenId": "9c2884c281894ca8a645f25a3d155750",
+      "slug": "04-regras-do-jogo",
+      "html": "design\\stitch-duelo-western-digital\\04-regras-do-jogo.html",
+      "image": "design\\stitch-duelo-western-digital\\04-regras-do-jogo.jpg"
+    },
+    {
+      "screenId": "0611caf7abb74466bb7ccd230eb79181",
+      "slug": "05-loja-modern-frontier",
+      "html": "design\\stitch-duelo-western-digital\\05-loja-modern-frontier.html",
+      "image": "design\\stitch-duelo-western-digital\\05-loja-modern-frontier.jpg"
+    },
+    {
+      "screenId": "6dc9245c1e164436a20e4290ef944841",
+      "slug": "06-sala-de-espera",
+      "html": "design\\stitch-duelo-western-digital\\06-sala-de-espera.html",
+      "image": "design\\stitch-duelo-western-digital\\06-sala-de-espera.jpg"
+    },
+    {
+      "screenId": "b0f91cc0da73485687da5d89a3cc4761",
+      "slug": "07-lobby-do-jogo-v2",
+      "html": "design\\stitch-duelo-western-digital\\07-lobby-do-jogo-v2.html",
+      "image": "design\\stitch-duelo-western-digital\\07-lobby-do-jogo-v2.jpg"
+    },
+    {
+      "screenId": "f30703dff77641dba3403bb49e7f5308",
+      "slug": "08-regras-oficiais-modern-frontier",
+      "html": "design\\stitch-duelo-western-digital\\08-regras-oficiais-modern-frontier.html",
+      "image": "design\\stitch-duelo-western-digital\\08-regras-oficiais-modern-frontier.jpg"
+    },
+    {
+      "screenId": "e7fa231135fe4e1798942492d07338ae",
+      "slug": "09-criar-nova-sala",
+      "html": "design\\stitch-duelo-western-digital\\09-criar-nova-sala.html",
+      "image": "design\\stitch-duelo-western-digital\\09-criar-nova-sala.jpg"
+    },
+    {
+      "screenId": "a14b7804e8d747e985d8e3cc872950f8",
+      "slug": "10-o-duelo-gameplay",
+      "html": "design\\stitch-duelo-western-digital\\10-o-duelo-gameplay.html",
+      "image": "design\\stitch-duelo-western-digital\\10-o-duelo-gameplay.jpg"
+    }
+  ]
+}

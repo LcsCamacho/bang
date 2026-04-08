@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Work+Sans:wght@300;400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-container": "#472600",
+                        "surface-container-lowest": "#110d0a",
+                        "surface-container-low": "#1f1b17",
+                        "primary-container": "#d48228",
+                        "inverse-primary": "#8d4f00",
+                        "inverse-on-surface": "#352f2b",
+                        "tertiary-fixed-dim": "#d9b9ff",
+                        "surface-dim": "#17130f",
+                        "on-secondary-container": "#dcab8e",
+                        "on-error": "#690005",
+                        "on-secondary-fixed": "#2f1403",
+                        "on-secondary-fixed-variant": "#623e28",
+                        "surface-variant": "#39342f",
+                        "on-tertiary": "#3e2162",
+                        "error-container": "#93000a",
+                        "on-secondary": "#482914",
+                        "tertiary-container": "#a887cf",
+                        "secondary": "#efbc9e",
+                        "on-tertiary-fixed-variant": "#56387a",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-highest": "#39342f",
+                        "on-primary-fixed-variant": "#6b3b00",
+                        "primary-fixed-dim": "#ffb875",
+                        "error": "#ffb4ab",
+                        "surface-container-high": "#2e2925",
+                        "primary-fixed": "#ffdcc0",
+                        "background": "#17130f",
+                        "on-primary-fixed": "#2d1600",
+                        "outline": "#a18d7d",
+                        "on-background": "#ebe1da",
+                        "surface-bright": "#3e3834",
+                        "surface-container": "#231f1b",
+                        "tertiary": "#d9b9ff",
+                        "outline-variant": "#534437",
+                        "surface-tint": "#ffb875",
+                        "on-surface-variant": "#d9c2b1",
+                        "inverse-surface": "#ebe1da",
+                        "on-surface": "#ebe1da",
+                        "on-primary": "#4b2800",
+                        "secondary-container": "#623e28",
+                        "on-tertiary-container": "#3c1e5f",
+                        "on-tertiary-fixed": "#28074c",
+                        "primary": "#ffb875",
+                        "secondary-fixed-dim": "#efbc9e",
+                        "surface": "#17130f",
+                        "secondary-fixed": "#ffdbc8",
+                        "tertiary-fixed": "#eedbff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Work Sans"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .grain-overlay {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen selection:bg-primary selection:text-on-primary">
+<!-- Grain Overlay for Tactile Feel -->
+<div class="fixed inset-0 grain-overlay z-50"></div>
+<!-- Navigation Shell (TopAppBar) -->
+<header class="fixed top-0 left-0 right-0 z-40 bg-stone-900/80 backdrop-blur-md flex justify-between items-center w-full px-6 py-4 max-w-full shadow-2xl shadow-stone-950/50">
+<div class="text-2xl font-bold text-orange-400 drop-shadow-sm font-headline tracking-tight uppercase">
+            Modern Frontier
+        </div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-orange-400 border-b-2 border-orange-400 pb-1 font-headline tracking-tight uppercase hover:bg-stone-800/50 transition-colors duration-300" href="#">Lobby</a>
+<a class="text-stone-400 hover:text-stone-200 font-headline tracking-tight uppercase hover:bg-stone-800/50 transition-colors duration-300" href="#">Leaderboard</a>
+<a class="text-stone-400 hover:text-stone-200 font-headline tracking-tight uppercase hover:bg-stone-800/50 transition-colors duration-300" href="#">Stable</a>
+<a class="text-stone-400 hover:text-stone-200 font-headline tracking-tight uppercase hover:bg-stone-800/50 transition-colors duration-300" href="#">Store</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-orange-300 hover:bg-stone-800/50 p-2 transition-all duration-150 ease-in-out active:scale-95">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</button>
+<button class="text-orange-300 hover:bg-stone-800/50 p-2 transition-all duration-150 ease-in-out active:scale-95">
+<span class="material-symbols-outlined">stars</span>
+</button>
+<div class="w-10 h-10 rounded-full border-2 border-surface-container-highest overflow-hidden">
+<img alt="Outlaw Portrait" class="w-full h-full object-cover" data-alt="close-up portrait of a rugged outlaw with a weathered hat and intense gaze in warm dramatic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA59bqoHpkEM9WRWQy1Nj4FH0__RCIngLbjTD0x1qnO2x09w-vC2hPcoqHDmFQhDJR5ynrXgtOdJU-JBlt-fKqJl2PwmrzR6VHDI2Y4lyZniel1w3CLq5X2U12UhVSw6iy-ocbUXEUO-91Msyyu_y2fTUyUSMGPto6P3kNhBdT6zef6u4tCVGBu05bmaZf-EQT3hrE_tpq7h17edAuSuyiJH7yxq2sGGeXFIJm60Gp0aR_awBNtlJx7JNtT94aPf-nZGte8AAMFvDs"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-20 md:pb-8 px-4 md:px-8 max-w-7xl mx-auto min-h-screen relative">
+<!-- Saloon Background Aesthetic (Tonal Layering) -->
+<div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-surface-container-low via-background to-surface-container-lowest overflow-hidden">
+<div class="absolute inset-0 opacity-20" data-alt="dimly lit rustic wooden saloon interior with warm orange candlelight and soft dust particles floating in air" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAjo1QQq-cu9Jp_xunSz5CmZuBFWlpbJZ7_Fx4PRTrG9u7vPYUuTGW_xLEUM1p1D7KswwyxRrGdT3KId80oGIhJAaobsq2bGTTU6V2Ijz6AkbnqUn-4PHB1p7ohitbpgWdh14mU5pUjFpp43mzlhyIkQNyMGtNzIEZNqoYDJ4KzkKbNcimitKXken80MKqAdrAXDl0CYBRsCvp8oBnh72_uIBtrwR_yLnOImjSr-m4O4Ul_uO_2tk_fS5jBc30BIVvUVIVUxy2ER4U'); background-size: cover; background-position: center;"></div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Sidebar Navigation (Hidden on Mobile, Visible on Web) -->
+<aside class="hidden md:flex lg:col-span-2 flex-col h-[calc(100vh-120px)] border-r border-stone-800 bg-stone-900 font-headline text-sm font-bold tracking-wider">
+<div class="p-6 border-b border-stone-800 text-center">
+<div class="w-16 h-16 mx-auto mb-3 rounded-full bg-surface-container-highest p-1">
+<img alt="Player Profile" class="rounded-full w-full h-full object-cover" data-alt="digital avatar of a character with a leather duster and gunmetal goggles" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEJ58zlst2a4a3JbfJIWQrJeXVlHhOKIcFWfS6Wv8GBlRHW_Ttzl3NAZWXLmbub3sZW8xb_vxM1fKC2He_09ywovT4rvC7EGBsxHoewEHgYYkAuSzZj-kBCZMVL0XnhWRrrHS7qLUjGv9nDTdfqRDyzuRh5cCBj2xNI8JGgX38BSyWM45hVlffJZa1HftnAPW20u700paLwTXprwyhxaA3_H70Xn1jWJDumZpUNUcAoIeejICg2ZAYPxLIrVAZQ0r4M3a6uOmN16Q"/>
+</div>
+<div class="text-orange-400 font-black">The Drifter</div>
+<div class="text-stone-500 text-[10px] uppercase tracking-widest">Pistoleiro Nível 42</div>
+</div>
+<div class="flex-grow py-4">
+<div class="px-3 mb-2">
+<div class="bg-stone-800 text-orange-400 rounded-md border-l-4 border-orange-500 px-4 py-3 flex items-center gap-3 transition-transform duration-200 hover:translate-x-1">
+<span class="material-symbols-outlined">gavel</span> Saloon
+                        </div>
+</div>
+<div class="px-3 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-stone-500 hover:bg-stone-800/30 rounded-md transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">description</span> Mural de Recompensas
+                        </a>
+<a class="flex items-center gap-3 px-4 py-3 text-stone-500 hover:bg-stone-800/30 rounded-md transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">backpack</span> Inventário
+                        </a>
+</div>
+</div>
+<div class="p-4 border-t border-stone-800">
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary-container py-3 rounded-md font-bold text-center active:scale-98">
+                        Partida Rápida
+                    </button>
+</div>
+</aside>
+<!-- Center Stage: Waiting Room Logic -->
+<section class="lg:col-span-7 space-y-8">
+<!-- Status Header -->
+<div class="text-center md:text-left space-y-2">
+<h1 class="text-4xl md:text-6xl font-headline font-black text-primary tracking-tighter uppercase drop-shadow-md">
+                        AGUARDANDO JOGADORES...
+                    </h1>
+<div class="flex items-center justify-center md:justify-start gap-4">
+<div class="h-1 bg-surface-container-highest flex-grow max-w-[200px] rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[57%]"></div>
+</div>
+<span class="font-headline text-2xl font-bold text-secondary">4 / 7</span>
+</div>
+</div>
+<!-- Bento Grid of Connected Players -->
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+<!-- Player Card: Active User -->
+<div class="surface-container-low p-4 rounded-xl border border-outline-variant/15 flex flex-col items-center gap-3 relative overflow-hidden group">
+<div class="absolute top-0 right-0 bg-primary/20 text-primary text-[10px] px-2 py-1 font-bold rounded-bl-lg uppercase tracking-tighter">You</div>
+<div class="relative">
+<div class="w-20 h-20 rounded-full border-4 border-primary ring-4 ring-surface-container-highest/50 overflow-hidden">
+<img alt="The Drifter" class="w-full h-full object-cover" data-alt="portrait of a man with sunglasses and stubble in warm sunset lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlljkaeXoK3POpettNz7wZuWuPO31StqJNYqsNaFfFOIW7R1Q7Um6TNIMxuMWZUPH6dd_fdwqOroENdO_eQDtvbNNlLCMIoQVE4cBVsn8nWgmtyo71QAUvpDnW6-B5RG1u9evjkpfsAdzszQhq_hMy84HQmqalTyiwVyWBgcvbrmF1l3u5z7KQ_t510wwTVbCW-_OdW7c4_QwyEmFe8JgrVASiaVRi1cqJS7uboN14_PdF6QI47TwbZPNznDfxv-5845pvaskhC2Q"/>
+</div>
+<div class="absolute bottom-0 right-0 w-6 h-6 bg-green-500 rounded-full border-4 border-surface-container-low"></div>
+</div>
+<div class="text-center">
+<p class="font-headline font-bold text-on-surface">The Drifter</p>
+<p class="text-[10px] font-label text-stone-500 uppercase tracking-widest">Gunslinger</p>
+</div>
+</div>
+<!-- Player Card: Other -->
+<div class="surface-container-low p-4 rounded-xl border border-outline-variant/10 flex flex-col items-center gap-3 hover:bg-surface-container-high transition-colors duration-300">
+<div class="w-20 h-20 rounded-full border-4 border-surface-container-highest overflow-hidden grayscale hover:grayscale-0 transition-all">
+<img alt="Calamity Jane" class="w-full h-full object-cover" data-alt="portrait of a confident woman with a cowgirl hat and leather vest in a warm desert environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_yBXl3pJZbHNtCir18E4Gpx2D3uTg_lFQ6OGIHT4CYHxoWCNpovMXjaOWhqs2knZ-QGpYt3ZtbqppxIT1Vsg7MGpN-TTjQibHP_WZezpo309sAAQ4HC9PeAxpDDt-lBHOgREfcgEQOX3qMPb2waasLmHsBIWwQ8WGNQ58_oqePvY8YWkNSSvLhd4VulhiDK19oMa6z3Ej7o9T4aacFF1cxbHQr9PJ8rsffIgl_rQThFRQaqKEFXUTbveSv71IOzYR6E4AcSOz4ug"/>
+</div>
+<div class="text-center">
+<p class="font-headline font-bold text-on-surface-variant">Calamity_J</p>
+<p class="text-[10px] font-label text-stone-500 uppercase tracking-widest">Bounty Hunter</p>
+</div>
+</div>
+<!-- Player Card: Other -->
+<div class="surface-container-low p-4 rounded-xl border border-outline-variant/10 flex flex-col items-center gap-3 hover:bg-surface-container-high transition-colors duration-300">
+<div class="w-20 h-20 rounded-full border-4 border-surface-container-highest overflow-hidden">
+<img alt="The Kid" class="w-full h-full object-cover" data-alt="portrait of a young man with a smirk and a neckerchief in dusty golden hour light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRSw3JvWfFhwpT5piEQDQQa9EYu3UxAnuV_W5c0L_UMG2huD-LXFrdVkjyEPBbVeJ94XWei2T2XkMKbPWHtVC5vqsy-YCb7OsOJgZDHv08la26Mm1AY7lAt7-XOcOgpS797bg35rmbKdbWRl4D9q88NPnq9lNK0IOBeeILOr_AacF1sbmx5Cu_s9lT_JlWN7MO7fk77ylBHuRv6hvbVD84OE5DEhsCHJIohQfmlBoPNFERqZUF897gO_Bl6D_jKPQfXqpe0-ELUCQ"/>
+</div>
+<div class="text-center">
+<p class="font-headline font-bold text-on-surface-variant">The_Kid_99</p>
+<p class="text-[10px] font-label text-stone-500 uppercase tracking-widest">Maverick</p>
+</div>
+</div>
+<!-- Player Card: Other -->
+<div class="surface-container-low p-4 rounded-xl border border-outline-variant/10 flex flex-col items-center gap-3 hover:bg-surface-container-high transition-colors duration-300">
+<div class="w-20 h-20 rounded-full border-4 border-surface-container-highest overflow-hidden">
+<img alt="Iron Bill" class="w-full h-full object-cover" data-alt="portrait of an older bearded man with a stern expression and a metal sheriff badge" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJdHPQzECKOLo0UUGe6Wi2hy8k3r-MTj3bOdXf7-Z9LzOGIhMTvM-XKMn4CiMK46EfaLsbrlnBWgy2WPg0nnsG0NwIoV9u9sA_gnW_9wzlzq6kkDG_hIjhbmdGxF0-7w9qHzwbD2dNclFdS8evxhoMu2tUYhPiDuMlNxzrs2Oad68mTVnhWVOwTS8jXZlCDlxPrCJ00SfemcPl5oMtsF1hn90CL7_WVrE8DCPod4QMH4qyg9_U9IOLqKpBxE2Rs_uN3nE9oM9aWjs"/>
+</div>
+<div class="text-center">
+<p class="font-headline font-bold text-on-surface-variant">Iron_Bill</p>
+<p class="text-[10px] font-label text-stone-500 uppercase tracking-widest">Lawman</p>
+</div>
+</div>
+<!-- Empty Slots -->
+<div class="surface-container-lowest p-4 rounded-xl border-2 border-dashed border-outline-variant/20 flex flex-col items-center justify-center gap-2 text-stone-600">
+<span class="material-symbols-outlined text-3xl">hourglass_empty</span>
+<p class="font-headline text-xs uppercase tracking-widest">AGUARDANDO...</p>
+</div>
+<div class="surface-container-lowest p-4 rounded-xl border-2 border-dashed border-outline-variant/20 flex flex-col items-center justify-center gap-2 text-stone-600">
+<span class="material-symbols-outlined text-3xl">hourglass_empty</span>
+<p class="font-headline text-xs uppercase tracking-widest">AGUARDANDO...</p>
+</div>
+</div>
+<div class="flex justify-end pt-4">
+<button class="flex items-center gap-2 px-6 py-3 bg-surface-container-high hover:bg-error-container/20 text-on-surface rounded-md border border-outline-variant/15 transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-stone-500 group-hover:text-error transition-colors">logout</span>
+<span class="font-headline uppercase tracking-wider font-bold">SAIR DA SALA</span>
+</button>
+</div>
+</section>
+<!-- Right Column: Chat Window (Glassmorphism Card) -->
+<aside class="lg:col-span-3 h-full">
+<div class="bg-surface-container-high/60 backdrop-blur-xl rounded-xl border border-outline-variant/20 flex flex-col h-[600px] shadow-2xl">
+<div class="p-4 border-b border-outline-variant/10 flex items-center justify-between">
+<h3 class="font-headline font-bold text-primary tracking-widest uppercase">CHAT DO SALOON</h3>
+<span class="material-symbols-outlined text-sm text-stone-500">more_vert</span>
+</div>
+<div class="flex-grow p-4 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-stone-800">
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-secondary uppercase">SISTEMA</p>
+<p class="text-sm text-stone-400 font-body">Iron_Bill entrou na mesa.</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-orange-400 uppercase">The_Kid_99</p>
+<p class="text-sm bg-surface-container-low p-2 rounded-lg rounded-tl-none text-on-surface">Me deem as cartas, rapazes. Estou com sorte hoje.</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-stone-400 uppercase">Calamity_J</p>
+<p class="text-sm bg-stone-800/50 p-2 rounded-lg rounded-tl-none text-on-surface">Sorte não vai te salvar da mão de um homem morto.</p>
+</div>
+<div class="space-y-1 text-right">
+<p class="text-[10px] font-bold text-primary uppercase">You</p>
+<p class="text-sm bg-primary/10 p-2 rounded-lg rounded-tr-none text-primary inline-block">Só faltam mais três.</p>
+</div>
+</div>
+<div class="p-4 border-t border-outline-variant/10">
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-none rounded-lg py-3 px-4 text-sm font-body text-on-surface placeholder:text-stone-600 focus:ring-1 focus:ring-primary/50 transition-all" placeholder="Sussurre algo..." type="text"/>
+<button class="absolute right-2 top-2 p-1 text-primary">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Navigation Shell (BottomNavBar - Mobile Only) -->
+<footer class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-stone-950/90 backdrop-blur-xl flex justify-around items-center px-4 py-2 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.6)] rounded-t-xl">
+<button class="flex flex-col items-center justify-center bg-orange-400/10 text-orange-400 rounded-xl p-2 scale-110 duration-200">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label text-[10px] font-semibold uppercase">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-orange-200">
+<span class="material-symbols-outlined">style</span>
+<span class="font-label text-[10px] font-semibold uppercase">Decks</span>
+</button>
+<button class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-orange-200">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label text-[10px] font-semibold uppercase">Social</span>
+</button>
+<button class="flex flex-col items-center justify-center text-stone-500 p-2 hover:text-orange-200">
+<span class="material-symbols-outlined">local_mall</span>
+<span class="font-label text-[10px] font-semibold uppercase">Shop</span>
+</button>
+</footer>
+</body></html>
