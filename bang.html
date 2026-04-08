@@ -1,155 +1,301 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🤠 BANG! - O Jogo de Cartas</title>
-<link href="https://fonts.googleapis.com/css2?family=Rye&family=Playfair+Display:ital,wght@0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="bang.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modern Frontier — BANG!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Work+Sans:wght@300;400;500;600;700&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="bang.css">
 </head>
 <body>
 
-<!-- ══ MENU ══ -->
-<div id="menu-screen" class="screen active">
-  <div class="title-banner"><h1>BANG!</h1><div class="sub">O Jogo do Velho Oeste</div></div>
-  <div class="poster" data-badge="★ ESCOLHA O MODO ★">
-    <h2>Como deseja jogar?</h2>
-    <button class="mode-btn offline" onclick="goTo('offline-screen')">
-      <span class="mode-icon">🤖</span>
-      <span class="mode-text"><span>Jogar Offline</span><span class="mode-sub">Você vs bots — Fácil, Médio ou Difícil</span></span>
+<!-- ══ BARRA DE NAVEGAÇÃO GLOBAL ══ -->
+<nav class="app-nav" id="app-nav" style="display:none;">
+  <div class="app-nav__logo">Modern Frontier</div>
+  <ul class="app-nav__links">
+    <li><a class="app-nav__link is-active" href="#">Lobby</a></li>
+  </ul>
+  <div class="app-nav__actions">
+    <button class="app-nav__icon-btn" title="Configurações">
+      <span class="material-symbols-outlined" style="font-size:1.25rem">settings</span>
     </button>
-    <button class="mode-btn hotseat-m" onclick="goTo('hotseat-screen')">
-      <span class="mode-icon">👥</span>
-      <span class="mode-text"><span>Hotseat Local</span><span class="mode-sub">Vários jogadores no mesmo dispositivo</span></span>
+  </div>
+</nav>
+
+<!-- ══ MENU PRINCIPAL ══ -->
+<div id="menu-screen" class="screen is-active" style="padding-top:0;">
+  <div class="menu__logo-block">
+    <div class="menu__title">BANG!</div>
+    <div class="menu__subtitle">Modern Frontier — O Duelo do Velho Oeste</div>
+  </div>
+
+  <div class="menu__card">
+    <div class="menu__card-title">Escolha o modo de jogo</div>
+
+    <button class="mode-btn mode-btn--highlight" onclick="goTo('offline-screen')">
+      <div class="mode-btn__icon">🤖</div>
+      <div class="mode-btn__text">
+        <span class="mode-btn__label">Jogar Offline</span>
+        <span class="mode-btn__desc">Você vs bots — Fácil, Médio ou Difícil</span>
+      </div>
+      <span class="mode-btn__arrow">›</span>
     </button>
-    <button class="mode-btn online-m" onclick="goTo('online-screen')">
-      <span class="mode-icon">🌐</span>
-      <span class="mode-text"><span>Jogar Online</span><span class="mode-sub">Partidas em rede com amigos</span></span>
+
+    <button class="mode-btn" onclick="goTo('hotseat-screen')">
+      <div class="mode-btn__icon">👥</div>
+      <div class="mode-btn__text">
+        <span class="mode-btn__label">Hotseat Local</span>
+        <span class="mode-btn__desc">Vários jogadores no mesmo dispositivo</span>
+      </div>
+      <span class="mode-btn__arrow">›</span>
+    </button>
+
+    <button class="mode-btn" onclick="goTo('online-screen')">
+      <div class="mode-btn__icon">🌐</div>
+      <div class="mode-btn__text">
+        <span class="mode-btn__label">Jogar Online</span>
+        <span class="mode-btn__desc">Partidas em rede com amigos</span>
+      </div>
+      <span class="mode-btn__arrow">›</span>
     </button>
   </div>
 </div>
 
 <!-- ══ OFFLINE SETUP ══ -->
-<div id="offline-screen" class="screen">
-  <div class="title-banner"><h1>BANG!</h1></div>
-  <div class="poster" data-badge="★ MODO OFFLINE ★">
-    <h2>🤖 Você vs Bots</h2>
-    <div class="sf">
-      <label>Total de Jogadores</label>
-      <input type="range" id="off-n" min="4" max="7" value="5" oninput="document.getElementById('off-nd').textContent=this.value;updateOffInfo()">
-      <div class="cnt" id="off-nd">5</div>
+<div id="offline-screen" class="screen setup-screen">
+  <div class="setup__card">
+    <div class="setup__header">
+      <div class="setup__title">Prática com Bots</div>
+      <div class="setup__subtitle">Modo Offline</div>
     </div>
-    <div class="sf">
-      <label>Seu Nome</label>
-      <input type="text" id="human-name" placeholder="Seu apelido aqui">
-    </div>
-    <div class="sf">
-      <label>Dificuldade dos Bots</label>
-      <div class="diff-row">
-        <div class="dopt d-easy"><input type="radio" name="diff" id="de" value="easy"><label for="de">🟢 Fácil<br><span style="font-size:.58rem;opacity:.65">Joga aleatório</span></label></div>
-        <div class="dopt d-med"><input type="radio" name="diff" id="dm" value="medium" checked><label for="dm">🟡 Médio<br><span style="font-size:.58rem;opacity:.65">Tem estratégia</span></label></div>
-        <div class="dopt d-hard"><input type="radio" name="diff" id="dh" value="hard"><label for="dh">🔴 Difícil<br><span style="font-size:.58rem;opacity:.65">Muito agressivo</span></label></div>
+
+    <div class="form-field">
+      <label class="form-label">Total de Jogadores</label>
+      <div class="form-range-row">
+        <input
+          type="range" class="form-range" id="off-n"
+          min="4" max="7" value="5"
+          oninput="document.getElementById('off-nd').textContent=this.value;updateOffInfo()"
+        >
+        <div class="form-range-value" id="off-nd">5</div>
       </div>
     </div>
-    <div class="info-line" id="off-info"></div>
-    <button class="btn-main" onclick="startOffline()">🤠 Iniciar vs Bots</button>
-    <button class="btn-back" onclick="goTo('menu-screen')">← Voltar</button>
+
+    <div class="form-field">
+      <label class="form-label">Seu Nome</label>
+      <input type="text" class="form-input" id="human-name" placeholder="Seu apelido">
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Dificuldade dos Bots</label>
+      <div class="diff-grid">
+        <div class="diff-option diff-option--easy">
+          <input type="radio" name="diff" id="de" value="easy">
+          <label class="diff-option__label" for="de">🟢 Fácil<br><span style="font-size:.55em;opacity:.75">Aleatório</span></label>
+        </div>
+        <div class="diff-option diff-option--med">
+          <input type="radio" name="diff" id="dm" value="medium" checked>
+          <label class="diff-option__label" for="dm">🟡 Médio<br><span style="font-size:.55em;opacity:.75">Estratégico</span></label>
+        </div>
+        <div class="diff-option diff-option--hard">
+          <input type="radio" name="diff" id="dh" value="hard">
+          <label class="diff-option__label" for="dh">🔴 Difícil<br><span style="font-size:.55em;opacity:.75">Agressivo</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="setup__info" id="off-info"></div>
+
+    <button class="btn-primary" onclick="startOffline()">Iniciar vs Bots</button>
+    <button class="btn-secondary" onclick="goTo('menu-screen')">← Voltar</button>
   </div>
 </div>
 
 <!-- ══ HOTSEAT SETUP ══ -->
-<div id="hotseat-screen" class="screen">
-  <div class="title-banner"><h1>BANG!</h1></div>
-  <div class="poster" data-badge="★ HOTSEAT ★">
-    <h2>👥 Partida Local</h2>
-    <div class="sf">
-      <label>Número de Jogadores</label>
-      <input type="range" id="hs-n" min="4" max="7" value="4" oninput="document.getElementById('hs-nd').textContent=this.value;updateHSNames()">
-      <div class="cnt" id="hs-nd">4</div>
+<div id="hotseat-screen" class="screen setup-screen">
+  <div class="setup__card">
+    <div class="setup__header">
+      <div class="setup__title">Partida Local</div>
+      <div class="setup__subtitle">Hotseat — mesmo dispositivo</div>
     </div>
-    <div class="sf"><label>Nomes</label><div id="hs-names" style="display:flex;flex-direction:column;gap:6px;margin-top:5px;"></div></div>
-    <button class="btn-main" onclick="startHotseat()">🤠 Iniciar Partida</button>
-    <button class="btn-back" onclick="goTo('menu-screen')">← Voltar</button>
+
+    <div class="form-field">
+      <label class="form-label">Número de Jogadores</label>
+      <div class="form-range-row">
+        <input
+          type="range" class="form-range" id="hs-n"
+          min="4" max="7" value="4"
+          oninput="document.getElementById('hs-nd').textContent=this.value;updateHSNames()"
+        >
+        <div class="form-range-value" id="hs-nd">4</div>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Nomes dos Jogadores</label>
+      <div id="hs-names" style="display:flex;flex-direction:column;gap:6px;margin-top:5px;"></div>
+    </div>
+
+    <button class="btn-primary" onclick="startHotseat()">Iniciar Partida</button>
+    <button class="btn-secondary" onclick="goTo('menu-screen')">← Voltar</button>
   </div>
 </div>
 
 <!-- ══ ONLINE LOBBY ══ -->
-<div id="online-screen" class="screen">
-  <div class="title-banner"><h1>BANG!</h1></div>
-  <div class="poster" data-badge="★ ONLINE ★">
-    <h2>🌐 Sala multijogador</h2>
-    <div class="sf"><label>Seu nome</label><input type="text" id="on-name" placeholder="Apelido"></div>
-    <div class="sf"><label>Criar sala</label><button type="button" class="btn-main" onclick="onlineCreateRoom()">➕ Criar sala</button></div>
-    <div class="sf"><label>Entrar com código</label>
-      <input type="text" id="on-room" placeholder="ex.: a1b2c3d4" maxlength="8" style="text-transform:lowercase">
-      <button type="button" class="btn-main" style="margin-top:8px" onclick="onlineJoinRoom()">🚪 Entrar na sala</button>
+<div id="online-screen" class="screen setup-screen">
+  <div class="setup__card">
+    <div class="setup__header">
+      <div class="setup__title">Sala Multijogador</div>
+      <div class="setup__subtitle">Online — partidas em rede</div>
     </div>
-    <div id="on-lobby" class="on-lobby" style="display:none">
-      <p class="info-line">Sala: <strong id="on-rid"></strong></p>
-      <ul id="on-plist" class="on-plist"></ul>
-      <button type="button" class="btn-main" id="on-start" style="display:none" onclick="onlineStart()">🤠 Iniciar partida</button>
+
+    <div class="form-field">
+      <label class="form-label">Seu nome</label>
+      <input type="text" class="form-input" id="on-name" placeholder="Apelido">
     </div>
-    <button class="btn-back" onclick="onlineBack()">← Voltar</button>
+
+    <div class="form-field">
+      <label class="form-label">Criar sala</label>
+      <button type="button" class="btn-primary" onclick="onlineCreateRoom()">+ Criar sala</button>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Entrar com código</label>
+      <input
+        type="text" class="form-input" id="on-room"
+        placeholder="ex.: a1b2c3d4" maxlength="8"
+        style="text-transform:lowercase; margin-bottom:.5rem;"
+      >
+      <button type="button" class="btn-secondary" style="margin-top:0;" onclick="onlineJoinRoom()">Entrar na sala →</button>
+    </div>
+
+    <!-- Estado da sala após entrar/criar -->
+    <div id="on-lobby" class="lobby-section" style="display:none;">
+      <div class="lobby-section__label">Sala ativa</div>
+      <div class="lobby-room-code" id="on-rid">—</div>
+      <ul id="on-plist" class="lobby-player-list"></ul>
+      <button
+        type="button" class="btn-primary" id="on-start"
+        style="display:none; margin-top:.875rem;"
+        onclick="onlineStart()"
+      >Iniciar Partida →</button>
+    </div>
+
+    <button class="btn-ghost" style="margin-top:.75rem; width:100%;" onclick="onlineBack()">← Voltar</button>
   </div>
 </div>
 
 <!-- ══ GAME ══ -->
 <div id="game-screen">
+  <!-- Bot bar (turno de bot em andamento) -->
   <div class="bot-bar" id="bot-bar"></div>
+
   <div class="game-layout">
+    <!-- Anel de oponentes (topo) -->
     <div class="opponents-ring" id="opponents-ring" aria-hidden="true"></div>
-    <div class="table-area"><div class="table-title">— MESA DO XERIFE —</div><div class="pgrid" id="pgrid"></div></div>
-    <div class="sidebar">
-      <div class="ss">
-        <h3>⚡ Turno</h3>
-        <div class="tinfo"><div class="tname" id="t-name">-</div><div class="tchar" id="t-char">-</div><div class="tmyrole" id="t-my-role" style="display:none;font-size:.72rem;opacity:.92;margin-top:6px;line-height:1.35;color:rgba(255,220,160,.95);"></div></div>
-        <div class="ptrack"><div class="pdot" id="ph-draw">Comprar</div><div class="pdot" id="ph-play">Jogar</div><div class="pdot" id="ph-discard">Descartar</div></div>
-      </div>
-      <div class="ss">
-        <h3>🃏 Baralho</h3>
-        <div class="dpiles"><div class="dpile">🂠<br><span id="draw-n">-</span></div><div class="dpile" style="opacity:.5">🂡<br><span id="disc-n">-</span></div></div>
-      </div>
-      <div class="ss" style="flex:1;overflow:hidden"><h3>📜 Registro</h3><div class="glog" id="glog"></div></div>
+
+    <!-- Mesa central (jogadores) -->
+    <div class="table-area">
+      <div class="table-area__title">— Mesa do Xerife —</div>
+      <div class="pgrid" id="pgrid"></div>
     </div>
-    <div class="hand-area hand-dock" id="hand-dock">
-      <div class="hh"><div class="htitle" id="h-title">Sua Mão</div><div class="hmeta" id="h-meta"></div></div>
-      <div class="crow" id="h-cards"></div>
-      <div class="abts" id="h-btns"></div>
+
+    <!-- Sidebar direita -->
+    <div class="sidebar">
+      <!-- Turno -->
+      <div class="sidebar__section">
+        <div class="sidebar__section-title">Turno</div>
+        <div class="turn-info">
+          <div class="turn-info__name" id="t-name">—</div>
+          <div class="turn-info__char" id="t-char"></div>
+          <div class="turn-info__role" id="t-my-role" style="display:none;"></div>
+        </div>
+        <div class="phase-track">
+          <div class="phase-dot" id="ph-draw">Comprar</div>
+          <div class="phase-dot" id="ph-play">Jogar</div>
+          <div class="phase-dot" id="ph-discard">Descartar</div>
+        </div>
+      </div>
+
+      <!-- Pilhas -->
+      <div class="sidebar__section">
+        <div class="sidebar__section-title">Baralho</div>
+        <div class="pile-row">
+          <div class="pile-card">
+            <span>🂠</span>
+            <span class="pile-card__count" id="draw-n">—</span>
+          </div>
+          <div class="pile-card" style="opacity:.5;">
+            <span>🂡</span>
+            <span class="pile-card__count" id="disc-n">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Log -->
+      <div class="sidebar__section" style="flex:1;overflow:hidden;padding-bottom:0;">
+        <div class="sidebar__section-title">Registro</div>
+        <div class="log-panel" id="glog"></div>
+      </div>
+    </div>
+
+    <!-- Mão do jogador (rodapé) -->
+    <div class="hand-area" id="hand-dock">
+      <div class="hand-area__header">
+        <div class="hand-area__title" id="h-title">Sua Mão</div>
+        <div class="hand-area__meta" id="h-meta"></div>
+      </div>
+      <div class="hand-cards" id="h-cards"></div>
+      <div class="hand-actions" id="h-btns"></div>
     </div>
   </div>
 </div>
 
-<!-- MODALS -->
-<div class="moverlay" id="tgt-modal">
-  <div class="mbox">
-    <h2 id="m-title">Escolher Alvo</h2><p id="m-desc"></p>
-    <div class="tlist" id="m-list"></div>
+<!-- ══ MODAIS ══ -->
+<!-- Modal: escolher alvo -->
+<div class="modal-overlay" id="tgt-modal">
+  <div class="modal-box">
+    <div class="modal-box__title" id="m-title">Escolher Alvo</div>
+    <p class="modal-box__desc" id="m-desc"></p>
+    <div class="modal-list" id="m-list"></div>
     <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
   </div>
 </div>
-<div class="moverlay" id="store-modal">
-  <div class="mbox"><h2>🏪 Loja Geral</h2><p id="sm-desc">Escolha uma carta:</p><div class="tlist" id="sm-list"></div></div>
-</div>
 
-<!-- HOTSEAT COVER -->
-<div class="hcover" id="hcover">
-  <h2 id="hc-name"></h2>
-  <p>Passe o dispositivo para este jogador.<br>Não mostre sua mão!</p>
-  <p class="rh" id="hc-hint"></p>
-  <button class="btn-main" style="max-width:240px" onclick="revealTurn()">👁 Ver Minha Mão</button>
-</div>
-
-<!-- WIN -->
-<div class="woverlay" id="win-ov">
-  <div class="wbox">
-    <div class="wi" id="w-icon">🤠</div><h1 id="w-title">Vitória!</h1>
-    <p id="w-desc"></p><div class="wroles" id="w-roles"></div>
-    <button class="btn-main" onclick="location.reload()">↺ Nova Partida</button>
+<!-- Modal: Loja Geral -->
+<div class="modal-overlay" id="store-modal">
+  <div class="modal-box">
+    <div class="modal-box__title">Loja Geral</div>
+    <p class="modal-box__desc" id="sm-desc">Escolha uma carta:</p>
+    <div class="modal-list" id="sm-list"></div>
   </div>
 </div>
 
+<!-- ══ HOTSEAT COVER ══ -->
+<div class="hotseat-cover" id="hcover">
+  <div class="hotseat-cover__name" id="hc-name"></div>
+  <p class="hotseat-cover__hint">Passe o dispositivo para este jogador.<br>Não mostre sua mão!</p>
+  <p class="hotseat-cover__role" id="hc-hint"></p>
+  <button class="btn-primary" style="max-width:240px;margin-top:.5rem;" onclick="revealTurn()">👁 Ver Minha Mão</button>
+</div>
+
+<!-- ══ WIN OVERLAY ══ -->
+<div class="win-overlay" id="win-ov">
+  <div class="win-box">
+    <div class="win-box__icon" id="w-icon">🤠</div>
+    <div class="win-box__title" id="w-title">Vitória!</div>
+    <p class="win-box__desc" id="w-desc"></p>
+    <div class="win-box__roles" id="w-roles"></div>
+    <button class="btn-primary" onclick="location.reload()">↺ Nova Partida</button>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
 <div class="toast" id="toast"></div>
 
+<!-- ══ SCRIPTS ══ -->
 <script src="bang-nav.js"></script>
 <script src="bang-data.js"></script>
 <script src="bang-engine.js"></script>

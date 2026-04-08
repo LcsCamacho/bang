@@ -11,10 +11,10 @@ function showBotBar() {
   const botPlayer = getCurrentPlayer();
   const botBarEl = document.getElementById("bot-bar");
   botBarEl.textContent = `🤖 ${botPlayer.name} está jogando... (${botPlayer.char.name} · ${diffLabel(botPlayer.difficulty)})`;
-  botBarEl.classList.add("show");
+  botBarEl.classList.add("is-visible");
 }
 function hideBotBar() {
-  document.getElementById("bot-bar").classList.remove("show");
+  document.getElementById("bot-bar").classList.remove("is-visible");
 }
 function diffLabel(d) {
   return DIFFICULTY_LABELS[d] || "";

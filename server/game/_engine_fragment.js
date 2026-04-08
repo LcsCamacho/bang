@@ -988,8 +988,8 @@ function processStore() {
   const storeListEl = document.getElementById("sm-list");
   state.storeCards.forEach((card) => {
     const pickCardButton = document.createElement("button");
-    pickCardButton.className = "tbtn";
-    pickCardButton.innerHTML = `${card.icon} ${card.label} <span class="td">${card.suit}${card.value}</span>`;
+    pickCardButton.className = "target-btn";
+    pickCardButton.innerHTML = `${card.icon} ${card.label} <span class="target-btn__meta">${card.suit}${card.value}</span>`;
     pickCardButton.onclick = () => {
       if (state.storeOrder[state.storePick] !== pickerSeatIndex) return;
       const cardIndex = state.storeCards.indexOf(card);
@@ -1003,5 +1003,5 @@ function processStore() {
     };
     storeListEl.appendChild(pickCardButton);
   });
-  document.getElementById("store-modal").classList.add("open");
+  document.getElementById("store-modal").classList.add("is-open");
 }

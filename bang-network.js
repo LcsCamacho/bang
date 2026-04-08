@@ -45,7 +45,7 @@
     if (!publicSnapshot) return;
     if (privateSnapshot != null && privateSnapshot.playerId != null)
       myPlayerId = Number(privateSnapshot.playerId);
-    document.querySelectorAll(".screen").forEach((screenEl) => screenEl.classList.remove("active"));
+    document.querySelectorAll(".screen").forEach((screenEl) => screenEl.classList.remove("is-active"));
     const gameScreenEl = document.getElementById("game-screen");
     if (gameScreenEl) gameScreenEl.style.display = "block";
     document.body.classList.add("game-online");
@@ -138,7 +138,7 @@
           return `<div><b>${player.name}</b> — ${roleTag} (${player.char.name}) ${player.alive ? "✅" : "💀"}</div>`;
         })
         .join("");
-      document.getElementById("win-ov").classList.add("open");
+      document.getElementById("win-ov").classList.add("is-open");
     }
 
     if (publicSnapshot.lastToast && typeof toast === "function")
@@ -146,7 +146,7 @@
 
     if (!publicSnapshot.pending || publicSnapshot.pending.kind !== "storePick") {
       const storeModalEl = document.getElementById("store-modal");
-      if (storeModalEl) storeModalEl.classList.remove("open");
+      if (storeModalEl) storeModalEl.classList.remove("is-open");
     }
   }
 
@@ -193,15 +193,15 @@
       storeListEl.innerHTML = "";
       (pendingAction.cards || []).forEach((card, cardIndex) => {
         const pickCardButton = document.createElement("button");
-        pickCardButton.className = "tbtn";
-        pickCardButton.innerHTML = `${card.icon} ${card.label} <span class="td">${card.suit}${card.value}</span>`;
+        pickCardButton.className = "target-btn";
+        pickCardButton.innerHTML = `${card.icon} ${card.label} <span class="target-btn__meta">${card.suit}${card.value}</span>`;
         pickCardButton.onclick = () => {
-          document.getElementById("store-modal").classList.remove("open");
+          document.getElementById("store-modal").classList.remove("is-open");
           sendGameAction({ type: "storePick", cardIndex });
         };
         storeListEl.appendChild(pickCardButton);
       });
-      document.getElementById("store-modal").classList.add("open");
+      document.getElementById("store-modal").classList.add("is-open");
     }
   }
 

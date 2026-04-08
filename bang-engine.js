@@ -179,8 +179,9 @@ function dealInitialCards() {
 function renderGameScreen() {
   document
     .querySelectorAll(".screen")
-    .forEach((screen) => screen.classList.remove("active"));
-  document.getElementById("game-screen").style.display = "block";
+    .forEach((screen) => screen.classList.remove("is-active"));
+  document.getElementById("game-screen").style.display = "flex";
+  document.getElementById("game-screen").style.flexDirection = "column";
 }
 function logPlayersAtGameStart() {
   addLog(`⭐ Partida iniciada! ${LocalState.players.length} jogadores.`, "imp");
@@ -542,7 +543,7 @@ function showWin(icon, title, desc) {
         `<div>${rIcon(player.role)} <b>${player.name}</b> — ${rLabel(player.role)} (${player.char.name}) ${player.alive ? "✅" : "💀"}</div>`,
     )
     .join("");
-  document.getElementById("win-ov").classList.add("open");
+  document.getElementById("win-ov").classList.add("is-open");
 }
 
 // ═══ TURN ═══
@@ -975,7 +976,7 @@ function validTargets(type, attacker) {
 // ═══ GENERAL STORE ═══
 function closeStoreModal() {
   const modal = document.getElementById("store-modal");
-  if (modal) modal.classList.remove("open");
+  if (modal) modal.classList.remove("is-open");
   const storeListEl = document.getElementById("sm-list");
   if (storeListEl) storeListEl.innerHTML = "";
 }
@@ -1041,8 +1042,8 @@ function processStore() {
   const storeListEl = document.getElementById("sm-list");
   LocalState.storeCards.forEach((card) => {
     const pickCardButton = document.createElement("button");
-    pickCardButton.className = "tbtn";
-    pickCardButton.innerHTML = `${card.icon} ${card.label} <span class="td">${card.suit}${card.value}</span>`;
+    pickCardButton.className = "target-btn";
+    pickCardButton.innerHTML = `${card.icon} ${card.label} <span class="target-btn__meta">${card.suit}${card.value}</span>`;
     pickCardButton.onclick = () => {
       if (LocalState.storeOrder[LocalState.storePick] !== pickerSeatIndex) return;
       const cardIndex = LocalState.storeCards.indexOf(card);
@@ -1056,5 +1057,5 @@ function processStore() {
     };
     storeListEl.appendChild(pickCardButton);
   });
-  document.getElementById("store-modal").classList.add("open");
+  document.getElementById("store-modal").classList.add("is-open");
 }
