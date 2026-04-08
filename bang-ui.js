@@ -5,7 +5,7 @@ function openModal(type, targets, onPickTarget) {
   modalCallbackRef = onPickTarget;
   document.getElementById("m-title").textContent = MODAL_TITLES[type] || "Alvo";
   document.getElementById("m-desc").textContent =
-    type === "bang" ? `Alcance da arma: ${reach(currentP())}.` : "";
+    type === "bang" ? `Alcance da arma: ${reach(getCurrentPlayer())}.` : "";
   const targetListEl = document.getElementById("m-list");
   targetListEl.innerHTML = "";
   targets.forEach((targetPlayer) => {
@@ -15,7 +15,7 @@ function openModal(type, targets, onPickTarget) {
       targetPlayer.role === "sheriff" && type === "bang"
         ? `<span style="color:var(--sheriff-gold);font-weight:700;margin-right:4px">${rLabel("sheriff")}</span> `
         : "";
-    targetPickButton.innerHTML = `${rIcon(targetPlayer.role)} ${sheriffPrefix}${targetPlayer.name} <small style="opacity:.6">(${targetPlayer.char.name})</small> <span class="td">❤️${targetPlayer.life} dist.${dist(currentP(), targetPlayer)}</span>`;
+    targetPickButton.innerHTML = `${rIcon(targetPlayer.role)} ${sheriffPrefix}${targetPlayer.name} <small style="opacity:.6">(${targetPlayer.char.name})</small> <span class="td">❤️${targetPlayer.life} dist.${dist(getCurrentPlayer(), targetPlayer)}</span>`;
     targetPickButton.onclick = () => {
       closeModal();
       onPickTarget(targetPlayer);
@@ -31,7 +31,7 @@ function closeModal() {
 
 // ═══ HOTSEAT ═══
 function showHotseat() {
-  const activePlayer = currentP();
+  const activePlayer = getCurrentPlayer();
   document.getElementById("hc-name").textContent = `Vez de ${activePlayer.name}`;
   document.getElementById("hc-hint").textContent =
     activePlayer.role === "sheriff"
@@ -166,7 +166,7 @@ function renderPlayerRoleIndicator(player) {
   return "";
 }
 function renderHand() {
-  const activePlayer = currentP();
+  const activePlayer = getCurrentPlayer();
   const myId =
     LocalState.mode === "online" && typeof BangNetwork !== "undefined"
       ? BangNetwork.myPlayerId
@@ -236,7 +236,7 @@ function renderHand() {
           discardIndex < PLAYER_ABILITY_RULES.sidKetchumDiscardCost;
           discardIndex++
         ) {
-          disc(activePlayer.hand.pop());
+          discardCardToPile(activePlayer.hand.pop());
         }
         heal(activePlayer);
         addLog(`${activePlayer.name} (Sid Ketchum) usa habilidade!`);
@@ -313,7 +313,7 @@ const CTIPS = {
   winchester: "Alcance 5.",
 };
 function renderSidebar() {
-  const activePlayer = currentP();
+  const activePlayer = getCurrentPlayer();
   document.getElementById("t-name").textContent =
     `${activePlayer.isBot ? "🤖 " : "👤 "}${activePlayer.name}`;
   document.getElementById("t-char").textContent =

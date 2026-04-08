@@ -266,13 +266,13 @@ function reshuf() {
   state.discardPile = [];
   addLog("Baralho reembaralhado.");
 }
-function disc(card) {
+function discardCardToPile(card) {
   if (card) state.discardPile.push(card);
 }
-function findC(player, cardType) {
+function findHandCardIndexByType(player, cardType) {
   return player.hand.findIndex((card) => card.type === cardType);
 }
-function removeC(player, handIndex) {
+function removeCardFromHandAt(player, handIndex) {
   return player.hand.splice(handIndex, 1)[0];
 }
 
@@ -303,7 +303,7 @@ function canShoot(attacker, defender) {
 function drawCheck() {
   if (state.drawPile.length === 0) reshuf();
   const drawnCard = state.drawPile.pop();
-  disc(drawnCard);
+  discardCardToPile(drawnCard);
   return drawnCard;
 }
 function drawCheckLD(player) {
@@ -449,16 +449,16 @@ function elim(eliminated, killer) {
     }
   });
   if (eliminated.hand.length > 0) {
-    eliminated.hand.forEach((handCard) => disc(handCard));
+    eliminated.hand.forEach((handCard) => discardCardToPile(handCard));
     eliminated.hand = [];
   }
   checkWin();
 }
 function beerRescue(player) {
   if (!player.alive && alive().length > 2) {
-    const beerIdx = findC(player, "beer");
+    const beerIdx = findHandCardIndexByType(player, "beer");
     if (beerIdx >= 0) {
-      disc(removeC(player, beerIdx));
+      discardCardToPile(removeCardFromHandAt(player, beerIdx));
       player.life = 1;
       player.alive = true;
       addLog(`🍺 ${player.name} bebe cerveja e sobrevive!`, "hl");
@@ -505,7 +505,7 @@ function showWin(icon, title, desc) {
 // ═══ TURN ═══
 function beginTurn() {
   if (state.gameOver) return;
-  const activePlayer = currentP();
+  const activePlayer = getCurrentPlayer();
   activePlayer.usedBang = false;
   if (!resolveDynamiteAtTurnStart(activePlayer)) {
     advTurn();
@@ -529,7 +529,7 @@ function doDraw() {
     BangNetwork.sendGameAction({ type: "draw" });
     return;
   }
-  const activePlayer = currentP();
+  const activePlayer = getCurrentPlayer();
   if (state.phase !== PHASES.draw) return;
   const drawStrategyKey =
     activePlayer.char.ability === "discardDraw" && state.discardPile.length === 0
@@ -557,7 +557,7 @@ function doDiscard(handIndex) {
     return;
   }
   if (state.phase !== PHASES.discard) return;
-  disc(currentP().hand.splice(handIndex, 1)[0]);
+  discardCardToPile(getCurrentPlayer().hand.splice(handIndex, 1)[0]);
   renderGame();
 }
 function endDiscard() {
@@ -565,7 +565,7 @@ function endDiscard() {
     BangNetwork.sendGameAction({ type: "endDiscard" });
     return;
   }
-  const activePlayer = currentP();
+  const activePlayer = getCurrentPlayer();
   if (activePlayer.hand.length > activePlayer.life) {
     toast(`Descarte até ${activePlayer.life} carta(s)!`);
     return;
@@ -589,7 +589,7 @@ function nextAlive(fromSeatIndex) {
   }
   return cursor;
 }
-function currentP() {
+function getCurrentPlayer() {
   return state.players[state.current];
 }
 
@@ -613,16 +613,16 @@ function resolveShot(attacker, target) {
       : 0;
   if (missedCount + bangAsMissedCount >= missesRequired) {
     let remaining = missesRequired;
-    while (remaining > 0 && findC(target, "missed") >= 0) {
-      disc(removeC(target, findC(target, "missed")));
+    while (remaining > 0 && findHandCardIndexByType(target, "missed") >= 0) {
+      discardCardToPile(removeCardFromHandAt(target, findHandCardIndexByType(target, "missed")));
       remaining--;
     }
     while (
       remaining > 0 &&
       target.char.ability === "bangMissed" &&
-      findC(target, "bang") >= 0
+      findHandCardIndexByType(target, "bang") >= 0
     ) {
-      disc(removeC(target, findC(target, "bang")));
+      discardCardToPile(removeCardFromHandAt(target, findHandCardIndexByType(target, "bang")));
       remaining--;
     }
     addLog(`🙈 ${target.name} evitou o tiro!`);
@@ -637,15 +637,15 @@ function resolveDuel(challenger, defender) {
   let passiveDuelist = challenger;
   let duelRound = 0;
   while (duelRound++ < GAME_LIMITS.duelRoundLimit) {
-    const bangIdx = findC(activeDuelist, "bang");
+    const bangIdx = findHandCardIndexByType(activeDuelist, "bang");
     const missedIdx =
-      activeDuelist.char.ability === "bangMissed" ? findC(activeDuelist, "missed") : -1;
+      activeDuelist.char.ability === "bangMissed" ? findHandCardIndexByType(activeDuelist, "missed") : -1;
     if (bangIdx >= 0) {
-      disc(removeC(activeDuelist, bangIdx));
+      discardCardToPile(removeCardFromHandAt(activeDuelist, bangIdx));
       addLog(`⚔️ ${activeDuelist.name} joga BANG!`);
       [activeDuelist, passiveDuelist] = [passiveDuelist, activeDuelist];
     } else if (missedIdx >= 0) {
-      disc(removeC(activeDuelist, missedIdx));
+      discardCardToPile(removeCardFromHandAt(activeDuelist, missedIdx));
       addLog(`⚔️ ${activeDuelist.name} (CJ) usa Errei!`);
       [activeDuelist, passiveDuelist] = [passiveDuelist, activeDuelist];
     } else {
@@ -664,7 +664,7 @@ function playCard(handIndex) {
     return;
   }
   if (state.gameOver || state.phase !== "play") return;
-  const activePlayer = currentP();
+  const activePlayer = getCurrentPlayer();
   const card = activePlayer.hand[handIndex];
   if (!card) return;
   state.pendingCard = card;
@@ -685,8 +685,8 @@ function playCard(handIndex) {
 function consumeExec(player, handIndex, card, target) {
   const cardResolved = execCard(player, handIndex, card, target);
   if (cardResolved) {
-    removeC(player, handIndex);
-    disc(card);
+    removeCardFromHandAt(player, handIndex);
+    discardCardToPile(card);
     suzyCheck(player);
     renderGame();
   }
@@ -708,8 +708,8 @@ function executeMissedAsBang(player, cardIndex, card) {
     return false;
   }
   openModal("bang", targets, (target) => {
-    removeC(player, cardIndex);
-    disc(card);
+    removeCardFromHandAt(player, cardIndex);
+    discardCardToPile(card);
     resolveShot(player, target);
     player.usedBang = true;
     suzyCheck(player);
@@ -722,7 +722,7 @@ function executePanicCard(player, target) {
     toast("Alvo sem cartas!");
     return false;
   }
-  const stolenCard = removeC(
+  const stolenCard = removeCardFromHandAt(
     target,
     Math.floor(Math.random() * target.hand.length),
   );
@@ -732,7 +732,7 @@ function executePanicCard(player, target) {
 }
 function executeCatBalouCard(target) {
   if (target.hand.length > 0) {
-    disc(removeC(target, Math.floor(Math.random() * target.hand.length)));
+    discardCardToPile(removeCardFromHandAt(target, Math.floor(Math.random() * target.hand.length)));
     addLog(`🐱 Cat Balou: ${target.name} descarta carta.`);
     return true;
   }
@@ -824,14 +824,14 @@ function handleIndiansCard(context) {
   addLog(`🏹 ${player.name} usa Índios!`);
   state.players.forEach((victim) => {
     if (!victim.alive || victim === player) return;
-    const bangIdx = findC(victim, "bang");
+    const bangIdx = findHandCardIndexByType(victim, "bang");
     const missedIdx =
-      victim.char.ability === "bangMissed" ? findC(victim, "missed") : -1;
+      victim.char.ability === "bangMissed" ? findHandCardIndexByType(victim, "missed") : -1;
     if (bangIdx >= 0) {
-      disc(removeC(victim, bangIdx));
+      discardCardToPile(removeCardFromHandAt(victim, bangIdx));
       addLog(`${victim.name} descarta BANG!`);
     } else if (missedIdx >= 0) {
-      disc(removeC(victim, missedIdx));
+      discardCardToPile(removeCardFromHandAt(victim, missedIdx));
       addLog(`${victim.name} (CJ) usa Errei!`);
     } else {
       damage(victim, player);
@@ -881,7 +881,7 @@ function handleWeaponCard(context) {
   const { player, card, type } = context;
   const weaponKey = card.weaponKey || type;
   if (player.equipment.weaponKey !== "colt45")
-    disc({ type: player.equipment.weaponKey });
+    discardCardToPile({ type: player.equipment.weaponKey });
   player.equipment.weaponKey = weaponKey;
   addLog(
     `🔫 ${player.name} equipa ${WEAPONS[weaponKey].label} (alcance ${WEAPONS[weaponKey].reach}).`,
@@ -939,8 +939,8 @@ function resolveStore(player, handIndex, storeCard) {
     if (state.drawPile.length === 0) reshuf();
     state.storeCards.push(state.drawPile.pop());
   }
-  removeC(player, handIndex);
-  disc(storeCard);
+  removeCardFromHandAt(player, handIndex);
+  discardCardToPile(storeCard);
   addLog(`🏪 Loja Geral: ${alivePlayers.length} cartas.`);
   state.storeOrder = [];
   let seatCursor = state.current;

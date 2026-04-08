@@ -1,14 +1,14 @@
 // ═══ BOT AI ═══
 // ═══ BOT AI ═══
 function botDoTurn() {
-  const botPlayer = currentP();
+  const botPlayer = getCurrentPlayer();
   if (!botPlayer.isBot) return;
   showBotBar();
   doDraw();
   setTimeout(botPlay, GAME_LIMITS.botStartDelayMs);
 }
 function showBotBar() {
-  const botPlayer = currentP();
+  const botPlayer = getCurrentPlayer();
   const botBarEl = document.getElementById("bot-bar");
   botBarEl.textContent = `🤖 ${botPlayer.name} está jogando... (${botPlayer.char.name} · ${diffLabel(botPlayer.difficulty)})`;
   botBarEl.classList.add("show");
@@ -21,7 +21,7 @@ function diffLabel(d) {
 }
 
 function botPlay() {
-  const botPlayer = currentP();
+  const botPlayer = getCurrentPlayer();
   if (!botPlayer.isBot || LocalState.phase !== PHASES.play || LocalState.gameOver) return;
   const playStrategy =
     BOT_TURN_STRATEGY[botPlayer.difficulty] || BOT_TURN_STRATEGY.hard;
@@ -49,7 +49,7 @@ function getAliveSheriff() {
   );
 }
 function tryPlayCardByType(player, cardType) {
-  const cardIndex = findC(player, cardType);
+  const cardIndex = findHandCardIndexByType(player, cardType);
   if (cardIndex < 0) return false;
   return execAndRemove(player, cardIndex, player.hand[cardIndex], null);
 }
@@ -59,14 +59,14 @@ function tryPlayBestWeapon(player) {
   return execAndRemove(player, weaponIndex, player.hand[weaponIndex], null);
 }
 function tryPlayTargetedCard(player, cardType, targetStrategy) {
-  const cardIndex = findC(player, cardType);
+  const cardIndex = findHandCardIndexByType(player, cardType);
   if (cardIndex < 0) return false;
   const target = botTgt(player, targetStrategy);
   if (!target) return false;
   return execAndRemove(player, cardIndex, player.hand[cardIndex], target);
 }
 function tryPlayCardAtSpecificTarget(player, cardType, target) {
-  const cardIndex = findC(player, cardType);
+  const cardIndex = findHandCardIndexByType(player, cardType);
   if (cardIndex < 0 || !target) return false;
   return execAndRemove(player, cardIndex, player.hand[cardIndex], target);
 }
@@ -159,8 +159,8 @@ function bestWeaponIdx(player) {
 function execAndRemove(player, handIndex, card, target) {
   const cardResolved = execCard(player, handIndex, card, target);
   if (cardResolved) {
-    removeC(player, handIndex);
-    disc(card);
+    removeCardFromHandAt(player, handIndex);
+    discardCardToPile(card);
     suzyCheck(player);
     renderGame();
   }
@@ -209,14 +209,14 @@ function botTgt(botPlayer, strategy) {
   return candidatePool[Math.floor(Math.random() * candidatePool.length)];
 }
 function botDiscard() {
-  const botPlayer = currentP();
+  const botPlayer = getCurrentPlayer();
   if (!botPlayer.alive) {
     advTurn();
     return;
   }
   while (botPlayer.hand.length > botPlayer.life) {
-    const missedIdx = findC(botPlayer, "missed");
-    disc(removeC(botPlayer, missedIdx >= 0 ? missedIdx : botPlayer.hand.length - 1));
+    const missedIdx = findHandCardIndexByType(botPlayer, "missed");
+    discardCardToPile(removeCardFromHandAt(botPlayer, missedIdx >= 0 ? missedIdx : botPlayer.hand.length - 1));
   }
   addLog(`🤖 ${botPlayer.name} encerra o turno.`, "bot");
   hideBotBar();
