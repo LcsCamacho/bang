@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar sala — Modern Frontier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=Work+Sans:wght@400;500;600&family=Inter:wght@500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="../bang.css">
+  <link rel="stylesheet" href="frontier-pages.css">
+</head>
+<body class="mf-body" data-mf-page="create-room">
+  <div class="mf-bg-blur" aria-hidden="true"></div>
+  <header class="mf-topbar">
+    <a class="mf-topbar__brand" href="lobby.html">Modern Frontier</a>
+    <ul class="mf-topbar__nav">
+      <li><a href="lobby.html">Lobby</a></li>
+      <li><a class="mf-nav--active" href="criar-sala.html">Criar</a></li>
+      <li><a href="regras.html">Regras</a></li>
+      <li><a href="loja.html">Loja</a></li>
+    </ul>
+    <div class="mf-topbar__actions">
+      <button type="button" class="mf-icon-btn" aria-label="Fechar" onclick="location.href='lobby.html'"><span class="material-symbols-outlined">close</span></button>
+    </div>
+  </header>
+
+  <main class="mf-main" style="position:relative;z-index:1;display:flex;align-items:center;min-height:calc(100vh - 6rem)">
+    <div class="mf-parchment-modal mf-form" style="width:100%">
+      <h1>Nova sala</h1>
+      <p>Defina um nome amigável e o tamanho da mesa. Validamos contra 4–7 jogadores, batendo com <code style="word-break:break-all">GameRules.isValidPlayerCount</code> no cliente.</p>
+      <form id="mf-create-room-form">
+        <label class="mf-form-label" for="mf-room-name">Nome da sala</label>
+        <input id="mf-room-name" name="name" type="text" required maxlength="48" placeholder="ex.: Saloon do Riacho" autocomplete="off">
+
+        <label class="mf-form-label" for="mf-room-capacity">Capacidade</label>
+        <select id="mf-room-capacity" name="capacity" required>
+          <option value="4">4 jogadores</option>
+          <option value="5" selected>5 jogadores</option>
+          <option value="6">6 jogadores</option>
+          <option value="7">7 jogadores</option>
+        </select>
+
+        <label class="mf-form-label" for="mf-room-visibility">Visibilidade</label>
+        <select id="mf-room-visibility" name="visibility">
+          <option value="public">Pública</option>
+          <option value="private">Privada (código)</option>
+        </select>
+
+        <button type="submit" class="mf-btn mf-btn--primary mf-btn--block mf-btn--xl" style="margin-top:0.5rem">Criar e ir para sala de espera</button>
+        <a class="mf-btn mf-btn--ghost mf-btn--block" href="lobby.html" style="margin-top:0.75rem;text-align:center">Cancelar</a>
+      </form>
+    </div>
+  </main>
+
+  <div id="mf-toast" class="mf-toast" role="status" aria-live="polite"></div>
+  <script src="js/mf-routes.js"></script>
+  <script src="js/game-rules.js"></script>
+  <script src="js/mf-storage.js"></script>
+  <script src="js/mf-app.js"></script>
+</body>
+</html>

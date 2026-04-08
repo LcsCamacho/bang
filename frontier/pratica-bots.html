@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modo de treino — Modern Frontier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=Work+Sans:wght@400;500;600&family=Inter:wght@500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="../bang.css">
+  <link rel="stylesheet" href="frontier-pages.css">
+</head>
+<body class="mf-body" data-mf-page="practice">
+  <header class="mf-topbar">
+    <a class="mf-topbar__brand" href="lobby.html">Modern Frontier</a>
+    <ul class="mf-topbar__nav">
+      <li><a href="lobby.html">Lobby</a></li>
+      <li><a href="regras.html">Regras</a></li>
+      <li><a href="loja.html">Loja</a></li>
+      <li><a class="mf-nav--active" href="pratica-bots.html">Prática</a></li>
+    </ul>
+    <div class="mf-topbar__actions">
+      <button type="button" class="mf-icon-btn" aria-label="Configurações"><span class="material-symbols-outlined">settings</span></button>
+      <span class="mf-avatar--header" aria-hidden="true">MF</span>
+    </div>
+  </header>
+
+  <main class="mf-main">
+    <header class="mf-hero">
+      <h1 class="mf-hero__title" style="font-size:clamp(2rem,4vw,3rem)">Modo de treino</h1>
+      <p class="mf-hero__lead">Afie a pontaria contra bots. O número de jogadores segue a distribuição oficial de papéis (4 a 7). Ao iniciar, você será levado ao <strong>bang.html</strong> para jogar no motor atual.</p>
+    </header>
+
+    <div class="mf-practice-grid">
+      <div class="mf-stack-lg">
+        <section class="mf-card-section">
+          <div class="mf-card-section__title"><span class="material-symbols-outlined">military_tech</span> Dificuldade</div>
+          <div class="mf-diff-grid">
+            <div class="mf-diff-option">
+              <input type="radio" name="mf-difficulty" id="mf-d-easy" value="easy">
+              <label for="mf-d-easy"><span class="mf-diff-option__tier">Fácil</span><span class="mf-diff-option__name">Recruta</span></label>
+            </div>
+            <div class="mf-diff-option">
+              <input type="radio" name="mf-difficulty" id="mf-d-med" value="medium" checked>
+              <label for="mf-d-med"><span class="mf-diff-option__tier">Normal</span><span class="mf-diff-option__name">Pistoleiro</span></label>
+            </div>
+            <div class="mf-diff-option">
+              <input type="radio" name="mf-difficulty" id="mf-d-hard" value="hard">
+              <label for="mf-d-hard"><span class="mf-diff-option__tier">Difícil</span><span class="mf-diff-option__name">Lenda</span></label>
+            </div>
+          </div>
+        </section>
+
+        <section class="mf-card-section">
+          <div class="mf-card-section__title"><span class="material-symbols-outlined">groups</span> Total de jogadores</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem">
+            <span class="text-label" style="color:var(--color-on-surface-variant)">Inclui você + bots</span>
+            <span id="mf-practice-count-display" class="mf-room-card__count">5</span>
+          </div>
+          <div class="mf-range-row">
+            <span class="mf-muted" style="font-size:0.75rem;font-weight:700">4</span>
+            <input type="range" class="mf-range" id="mf-practice-players" min="4" max="7" step="1" value="5" aria-valuemin="4" aria-valuemax="7" aria-valuenow="5">
+            <span class="mf-muted" style="font-size:0.75rem;font-weight:700">7</span>
+          </div>
+          <div class="mf-range-ticks" aria-hidden="true"><span></span><span class="is-active"></span><span></span><span></span><span></span></div>
+          <div id="mf-practice-roles" class="mf-practice-roles"></div>
+        </section>
+
+        <button type="button" class="mf-btn mf-btn--primary mf-btn--block mf-btn--xl" id="mf-practice-start">
+          Iniciar prática <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+        <p class="mf-muted mf-text-center text-label">Compatível com as mesas 4–7 do motor em <code style="color:var(--color-primary)">bang.html</code>.</p>
+      </div>
+
+      <aside>
+        <div class="mf-preview-card">
+          <div class="mf-preview-card__frame">
+            <div class="mf-preview-card__name">Silas “o sombra”</div>
+            <div class="mf-preview-card__sub">Bot adversário · foco em blefe de distância</div>
+          </div>
+        </div>
+        <p class="mf-muted" style="margin-top:1rem;font-size:0.875rem;line-height:1.5">A prévia é cosmética; no jogo real os personagens vêm do baralho de figuras do BANG!</p>
+      </aside>
+    </div>
+  </main>
+
+  <nav class="mf-bottomnav" aria-label="Navegação principal">
+    <a href="lobby.html"><span class="material-symbols-outlined">home</span>Início</a>
+    <a href="regras.html"><span class="material-symbols-outlined">gavel</span>Regras</a>
+    <a class="mf-bottomnav--active" href="pratica-bots.html"><span class="material-symbols-outlined">smart_toy</span>Bots</a>
+    <a href="loja.html"><span class="material-symbols-outlined">local_mall</span>Loja</a>
+  </nav>
+
+  <div id="mf-toast" class="mf-toast" role="status" aria-live="polite"></div>
+  <script src="js/mf-routes.js"></script>
+  <script src="js/game-rules.js"></script>
+  <script src="js/mf-storage.js"></script>
+  <script src="js/mf-app.js"></script>
+</body>
+</html>

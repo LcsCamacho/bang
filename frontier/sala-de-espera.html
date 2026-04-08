@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sala de espera — Modern Frontier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=Work+Sans:wght@400;500;600&family=Inter:wght@500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="../bang.css">
+  <link rel="stylesheet" href="frontier-pages.css">
+</head>
+<body class="mf-body" data-mf-page="waiting">
+  <div class="mf-bg-blur" aria-hidden="true"></div>
+  <header class="mf-topbar">
+    <a class="mf-topbar__brand" href="lobby.html">Modern Frontier</a>
+    <ul class="mf-topbar__nav">
+      <li><a class="mf-nav--active" href="sala-de-espera.html">Sala</a></li>
+      <li><a href="regras.html">Regras</a></li>
+      <li><a href="loja.html">Loja</a></li>
+      <li><a href="lobby.html">Lobby</a></li>
+    </ul>
+    <div class="mf-topbar__actions">
+      <span class="mf-wallet-pill"><span class="material-symbols-outlined" style="font-size:1.125rem">stars</span> 42</span>
+      <span class="mf-avatar--header" aria-hidden="true">MF</span>
+    </div>
+  </header>
+
+  <main class="mf-main" style="position:relative;z-index:1">
+    <header class="mf-hero">
+      <h1 class="mf-hero__title" style="font-size:clamp(1.75rem,3vw,2.5rem)">Sala de espera</h1>
+      <p class="mf-hero__lead">Convide a gangue com o código. Estado mock: ao iniciar, seguimos para a tela de duelo ou você pode abrir o motor completo.</p>
+    </header>
+
+    <div class="mf-waiting-layout">
+      <aside class="mf-side-profile">
+        <div class="mf-avatar mf-avatar--header" style="width:4rem;height:4rem;margin:0 auto 0.75rem;font-size:1rem">TU</div>
+        <div class="text-headline text-primary" style="font-size:0.9rem">The Drifter</div>
+        <p class="text-label mf-muted" style="margin-top:0.35rem">Nível 42 · Pistoleiro</p>
+        <a class="mf-btn mf-btn--primary mf-btn--block" href="lobby.html" style="margin-top:1.25rem">Voltar ao lobby</a>
+      </aside>
+
+      <section class="mf-card-section">
+        <h2 class="mf-card-section__title"><span class="material-symbols-outlined">tag</span> Código da sala</h2>
+        <div class="mf-code-box" id="mf-room-code">A1B2C3D4</div>
+        <button type="button" class="mf-btn mf-btn--ghost mf-btn--block" id="mf-copy-code">Copiar código</button>
+
+        <h2 class="mf-card-section__title" style="margin-top:2rem"><span class="material-symbols-outlined">groups</span> Jogadores</h2>
+        <ul class="mf-slot-list">
+          <li class="mf-slot"><span>Você (host)</span><span class="mf-tag mf-tag--public">Pronto</span></li>
+          <li class="mf-slot"><span class="mf-muted">Vaga livre</span><span class="text-label mf-muted">—</span></li>
+          <li class="mf-slot"><span class="mf-muted">Vaga livre</span><span class="text-label mf-muted">—</span></li>
+          <li class="mf-slot"><span class="mf-muted">Vaga livre</span><span class="text-label mf-muted">—</span></li>
+        </ul>
+
+        <button type="button" class="mf-btn mf-btn--primary mf-btn--block mf-btn--xl" id="mf-host-start" style="margin-top:1.5rem">Iniciar duelo (demo)</button>
+        <p class="mf-muted mf-text-center" style="margin-top:0.75rem;font-size:0.8125rem">Multijogador real usará o mesmo código via servidor em <code style="color:var(--color-primary)">server/</code>.</p>
+      </section>
+    </div>
+  </main>
+
+  <nav class="mf-bottomnav" aria-label="Navegação principal">
+    <a href="lobby.html"><span class="material-symbols-outlined">home</span>Início</a>
+    <a href="regras.html"><span class="material-symbols-outlined">gavel</span>Regras</a>
+    <a class="mf-bottomnav--active" href="sala-de-espera.html"><span class="material-symbols-outlined">hourglass_top</span>Sala</a>
+    <a href="loja.html"><span class="material-symbols-outlined">local_mall</span>Loja</a>
+  </nav>
+
+  <div id="mf-toast" class="mf-toast" role="status" aria-live="polite"></div>
+  <script src="js/mf-routes.js"></script>
+  <script src="js/game-rules.js"></script>
+  <script src="js/mf-storage.js"></script>
+  <script src="js/mf-app.js"></script>
+</body>
+</html>

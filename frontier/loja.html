@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loja — Modern Frontier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=Work+Sans:wght@400;500;600&family=Inter:wght@500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="../bang.css">
+  <link rel="stylesheet" href="frontier-pages.css">
+</head>
+<body class="mf-body" data-mf-page="store">
+  <header class="mf-topbar">
+    <a class="mf-topbar__brand" href="lobby.html">Modern Frontier</a>
+    <ul class="mf-topbar__nav">
+      <li><a href="lobby.html">Lobby</a></li>
+      <li><a href="regras.html">Regras</a></li>
+      <li><a class="mf-nav--active" href="loja.html">Loja</a></li>
+      <li><a href="pratica-bots.html">Prática</a></li>
+    </ul>
+    <div class="mf-topbar__actions">
+      <span class="mf-wallet-pill"><span class="material-symbols-outlined" style="font-size:1.125rem">account_balance_wallet</span> 1.250</span>
+      <button type="button" class="mf-icon-btn" aria-label="Configurações"><span class="material-symbols-outlined">settings</span></button>
+    </div>
+  </header>
+
+  <main class="mf-main">
+    <header class="mf-hero">
+      <h1 class="mf-hero__title" style="font-size:clamp(2rem,4vw,3rem)">Mercado da fronteira</h1>
+      <p class="mf-hero__lead">Cosméticos e futuros pacotes de cartas. Esta grade é estática (UI); compras reais exigem backend e pagamento.</p>
+    </header>
+
+    <div class="mf-store-grid">
+      <article class="mf-store-card">
+        <span class="material-symbols-outlined text-primary" style="font-size:2rem">style</span>
+        <h2 class="text-headline" style="font-size:1rem;margin:0">Dorso “Areia queimada”</h2>
+        <p class="mf-muted" style="font-size:0.875rem;line-height:1.45">Altera apenas o verso visual das cartas na sua mesa.</p>
+        <div class="mf-store-card__price">320 ouro</div>
+        <button type="button" class="mf-btn mf-btn--primary mf-btn--block" onclick="document.getElementById('mf-toast').textContent='Em breve: integração de loja'; document.getElementById('mf-toast').classList.add('mf-toast--visible'); setTimeout(function(){document.getElementById('mf-toast').classList.remove('mf-toast--visible')},2000)">Reservar</button>
+      </article>
+      <article class="mf-store-card">
+        <span class="material-symbols-outlined" style="font-size:2rem;color:var(--color-tertiary)">shield</span>
+        <h2 class="text-headline" style="font-size:1rem;margin:0">Moldura do Xerife</h2>
+        <p class="mf-muted" style="font-size:0.875rem;line-height:1.45">Borda dourada no retrato quando você for a lei.</p>
+        <div class="mf-store-card__price">540 ouro</div>
+        <button type="button" class="mf-btn mf-btn--ghost mf-btn--block" onclick="document.getElementById('mf-toast').textContent='Em breve: integração de loja'; document.getElementById('mf-toast').classList.add('mf-toast--visible'); setTimeout(function(){document.getElementById('mf-toast').classList.remove('mf-toast--visible')},2000)">Ver detalhes</button>
+      </article>
+      <article class="mf-store-card">
+        <span class="material-symbols-outlined" style="font-size:2rem;color:var(--color-secondary)">local_fire_department</span>
+        <h2 class="text-headline" style="font-size:1rem;margin:0">Pacote de efeitos</h2>
+        <p class="mf-muted" style="font-size:0.875rem;line-height:1.45">Faíscas ao jogar BANG! e fumaça no descarte.</p>
+        <div class="mf-store-card__price">890 ouro</div>
+        <button type="button" class="mf-btn mf-btn--ghost mf-btn--block" onclick="document.getElementById('mf-toast').textContent='Em breve: integração de loja'; document.getElementById('mf-toast').classList.add('mf-toast--visible'); setTimeout(function(){document.getElementById('mf-toast').classList.remove('mf-toast--visible')},2000)">Pré-visualizar</button>
+      </article>
+    </div>
+  </main>
+
+  <nav class="mf-bottomnav" aria-label="Navegação principal">
+    <a href="lobby.html"><span class="material-symbols-outlined">home</span>Início</a>
+    <a href="regras.html"><span class="material-symbols-outlined">gavel</span>Regras</a>
+    <a href="pratica-bots.html"><span class="material-symbols-outlined">smart_toy</span>Bots</a>
+    <a class="mf-bottomnav--active" href="loja.html"><span class="material-symbols-outlined">local_mall</span>Loja</a>
+  </nav>
+
+  <div id="mf-toast" class="mf-toast" role="status" aria-live="polite"></div>
+  <script src="js/mf-routes.js"></script>
+  <script src="js/game-rules.js"></script>
+  <script src="js/mf-storage.js"></script>
+  <script src="js/mf-app.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>O Saloon — Modern Frontier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=Work+Sans:wght@400;500;600&family=Inter:wght@500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="../bang.css">
+  <link rel="stylesheet" href="frontier-pages.css">
+</head>
+<body class="mf-body" data-mf-page="lobby">
+  <header class="mf-topbar">
+    <a class="mf-topbar__brand" href="lobby.html">Modern Frontier</a>
+    <ul class="mf-topbar__nav">
+      <li><a class="mf-nav--active" href="lobby.html">Lobby</a></li>
+      <li><a href="regras.html">Regras</a></li>
+      <li><a href="loja.html">Loja</a></li>
+      <li><a href="pratica-bots.html">Prática</a></li>
+    </ul>
+    <div class="mf-topbar__actions">
+      <button type="button" class="mf-icon-btn" aria-label="Carteira"><span class="material-symbols-outlined">account_balance_wallet</span></button>
+      <button type="button" class="mf-icon-btn" aria-label="Progresso"><span class="material-symbols-outlined">stars</span></button>
+      <span class="mf-avatar--header" aria-hidden="true">MF</span>
+    </div>
+  </header>
+
+  <main class="mf-main">
+    <header class="mf-hero">
+      <div class="mf-hero__row">
+        <div>
+          <h1 class="mf-hero__title">O Saloon</h1>
+          <p class="mf-hero__lead">Puxe uma cadeira, forasteiro. Encontre uma sala ou abra sua própria lenda — salas aqui são demonstração até o backend multijogador estar ligado.</p>
+        </div>
+        <div class="mf-hero__actions">
+          <button type="button" class="mf-btn mf-btn--primary" data-mf-go="waitingRoom">Entrada rápida</button>
+          <a class="mf-btn mf-btn--ghost" href="criar-sala.html">Criar sala</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="mf-lobby-grid">
+      <aside class="mf-stack-lg">
+        <div class="mf-panel">
+          <div class="mf-panel__title"><span class="material-symbols-outlined" style="font-size:1rem">filter_alt</span> Filtros</div>
+          <button type="button" class="mf-filter-chip mf-filter-chip--active" data-mf-filter>Padrão 4–7</button>
+          <button type="button" class="mf-filter-chip" data-mf-filter>Altas apostas</button>
+          <button type="button" class="mf-filter-chip" data-mf-filter>Jogo rápido</button>
+        </div>
+        <div class="mf-event-card">
+          <div class="mf-event-card__bg" aria-hidden="true"></div>
+          <div class="mf-event-card__body">
+            <div class="mf-event-card__kicker">Evento ativo</div>
+            <div class="mf-event-card__title">Recompensa do crepúsculo</div>
+          </div>
+        </div>
+      </aside>
+      <section class="mf-room-scroll" id="mf-room-list" aria-label="Lista de salas"></section>
+    </div>
+  </main>
+
+  <nav class="mf-bottomnav" aria-label="Navegação principal">
+    <a class="mf-bottomnav--active" href="lobby.html"><span class="material-symbols-outlined">home</span>Início</a>
+    <a href="regras.html"><span class="material-symbols-outlined">gavel</span>Regras</a>
+    <a href="pratica-bots.html"><span class="material-symbols-outlined">smart_toy</span>Bots</a>
+    <a href="loja.html"><span class="material-symbols-outlined">local_mall</span>Loja</a>
+  </nav>
+
+  <div id="mf-toast" class="mf-toast" role="status" aria-live="polite"></div>
+  <script src="js/mf-routes.js"></script>
+  <script src="js/game-rules.js"></script>
+  <script src="js/mf-storage.js"></script>
+  <script src="js/mf-app.js"></script>
+</body>
+</html>

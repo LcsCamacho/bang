@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regras — Modern Frontier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=Work+Sans:wght@400;500;600&family=Inter:wght@500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="../bang.css">
+  <link rel="stylesheet" href="frontier-pages.css">
+</head>
+<body class="mf-body" data-mf-page="rules-summary">
+  <header class="mf-topbar">
+    <a class="mf-topbar__brand" href="lobby.html">Modern Frontier</a>
+    <ul class="mf-topbar__nav">
+      <li><a href="lobby.html">Lobby</a></li>
+      <li><a class="mf-nav--active" href="regras.html">Regras</a></li>
+      <li><a href="loja.html">Loja</a></li>
+      <li><a href="regras-manual.html">Manual</a></li>
+    </ul>
+    <div class="mf-topbar__actions">
+      <button type="button" class="mf-icon-btn" aria-label="Conta"><span class="material-symbols-outlined">account_circle</span></button>
+      <button type="button" class="mf-icon-btn" aria-label="Configurações"><span class="material-symbols-outlined">settings</span></button>
+    </div>
+  </header>
+
+  <main class="mf-main">
+    <section class="mf-rules-hero">
+      <h1>Objetivo do jogo</h1>
+      <p class="mf-muted" style="font-size:1.05rem;max-width:36rem;line-height:1.6">
+        A <strong style="color:var(--color-primary)">lei</strong> protege o Xerife. Os <strong style="color:var(--color-error)">Foras-da-Lei</strong> querem derrubá-lo. O <strong style="color:var(--color-tertiary)">Renegado</strong> joga um jogo longo até restar apenas ele e o Xerife. Cada partida usa a distribuição de papéis do servidor (4 a 7 jogadores).
+      </p>
+      <div style="display:inline-flex;align-items:center;gap:0.5rem;margin-top:1rem;padding:0.5rem 1rem;border-radius:var(--radius-md);background:rgba(255,184,117,0.08);border:1px solid rgba(255,184,117,0.2)">
+        <span class="material-symbols-outlined" style="color:var(--color-primary)">gavel</span>
+        <span class="text-headline" style="font-size:0.75rem">Sobrevivência ou justiça</span>
+      </div>
+    </section>
+
+    <section class="mf-stack-lg" style="margin-bottom:3rem">
+      <h2 class="mf-section-title mf-text-center">Papéis dos personagens</h2>
+      <p class="mf-muted mf-text-center" style="max-width:36rem;margin:0 auto 1.5rem">Identidade secreta, exceto o Xerife — como na experiência de <a href="../bang.html" style="color:var(--color-primary)">bang.html</a>.</p>
+      <div id="mf-roles-grid" class="mf-roles-grid"></div>
+    </section>
+
+    <section class="mf-stack-lg" style="margin-bottom:3rem">
+      <h2 class="mf-section-title">Como jogar — turno</h2>
+      <p class="mf-muted" style="max-width:28rem;margin-bottom:1.5rem">Fases alinhadas ao fluxo do motor: comprar → jogar → descartar até o limite da vida.</p>
+      <div id="mf-turn-phases"></div>
+    </section>
+
+    <section class="mf-card-section" style="margin-bottom:3rem">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+        <span class="material-symbols-outlined" style="font-size:3rem;color:var(--color-primary)">tips_and_updates</span>
+        <h2 class="mf-section-title" style="margin:0">Dicas de sobrevivência</h2>
+      </div>
+      <div class="mf-store-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
+        <div>
+          <div class="text-label text-primary" style="margin-bottom:0.35rem">Dica 01</div>
+          <h3 style="font-family:var(--font-headline);margin-bottom:0.35rem">Economize BANG!</h3>
+          <p class="mf-muted" style="font-size:0.875rem;line-height:1.45">Um tiro por turno, salvo poderes de personagem. Guarde pressão para o fim da rodada.</p>
+        </div>
+        <div>
+          <div class="text-label text-primary" style="margin-bottom:0.35rem">Dica 02</div>
+          <h3 style="font-family:var(--font-headline);margin-bottom:0.35rem">Distância importa</h3>
+          <p class="mf-muted" style="font-size:0.875rem;line-height:1.45">Armas e Mustang alteram alcance; observe o anel de jogadores no cliente legado.</p>
+        </div>
+        <div>
+          <div class="text-label text-primary" style="margin-bottom:0.35rem">Dica 03</div>
+          <h3 style="font-family:var(--font-headline);margin-bottom:0.35rem">Blefe do Renegado</h3>
+          <p class="mf-muted" style="font-size:0.875rem;line-height:1.45">Finja alinhar com a lei até restarem apenas você e o Xerife.</p>
+        </div>
+      </div>
+    </section>
+
+    <p class="mf-muted mf-text-center text-label" style="padding-bottom:2rem">
+      <a href="regras-manual.html" style="color:var(--color-primary)">Abrir manual estendido Modern Frontier →</a>
+    </p>
+  </main>
+
+  <nav class="mf-bottomnav" aria-label="Navegação principal">
+    <a href="lobby.html"><span class="material-symbols-outlined">home</span>Início</a>
+    <a class="mf-bottomnav--active" href="regras.html"><span class="material-symbols-outlined">gavel</span>Regras</a>
+    <a href="pratica-bots.html"><span class="material-symbols-outlined">smart_toy</span>Bots</a>
+    <a href="loja.html"><span class="material-symbols-outlined">local_mall</span>Loja</a>
+  </nav>
+
+  <div id="mf-toast" class="mf-toast" role="status" aria-live="polite"></div>
+  <script src="js/mf-routes.js"></script>
+  <script src="js/game-rules.js"></script>
+  <script src="js/mf-storage.js"></script>
+  <script src="js/mf-app.js"></script>
+</body>
+</html>

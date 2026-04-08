@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual oficial — Modern Frontier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=Work+Sans:wght@400;500;600&family=Inter:wght@500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="../bang.css">
+  <link rel="stylesheet" href="frontier-pages.css">
+</head>
+<body class="mf-body" data-mf-page="rules-official">
+  <header class="mf-topbar">
+    <a class="mf-topbar__brand" href="lobby.html">Modern Frontier</a>
+    <ul class="mf-topbar__nav">
+      <li><a href="lobby.html">Lobby</a></li>
+      <li><a class="mf-nav--active" href="regras-manual.html">Manual</a></li>
+      <li><a href="loja.html">Loja</a></li>
+      <li><a href="../bang.html">Jogar</a></li>
+    </ul>
+    <div class="mf-topbar__actions">
+      <button type="button" class="mf-icon-btn" aria-label="Buscar"><span class="material-symbols-outlined">search</span></button>
+    </div>
+  </header>
+
+  <main class="mf-main">
+    <header class="mf-rules-hero">
+      <h1>Manual Modern Frontier</h1>
+      <p class="mf-muted" style="font-size:1.05rem;max-width:40rem;line-height:1.65">
+        Consolida o que o servidor em <code style="color:var(--color-primary)">server/src/game/</code> modela hoje: turno em três fases, distribuição de papéis por contagem de jogadores, distância baseada em armas/cavalos e um baralho compartilhado com pilha de descarte.
+      </p>
+    </header>
+
+    <section class="mf-stack-lg" style="margin-bottom:2.5rem">
+      <h2 class="mf-section-title">Papéis e vitória</h2>
+      <div id="mf-roles-grid" class="mf-roles-grid"></div>
+      <p class="mf-muted" style="margin-top:1rem;line-height:1.55">
+        Vitória instantânea quando o Xerife cai (Foras-da-Lei), quando todos os Foras e o Renegado caem (Lei + Renegado ainda vivo segue até duelo final), ou quando o Renegado vence o Xerife em mesa final — conforme regras clássicas de BANG!
+      </p>
+    </section>
+
+    <section class="mf-stack-lg" style="margin-bottom:2.5rem">
+      <h2 class="mf-section-title">Estrutura do turno</h2>
+      <div id="mf-turn-phases"></div>
+    </section>
+
+    <section class="mf-card-section" style="margin-bottom:2rem">
+      <h2 class="mf-card-section__title"><span class="material-symbols-outlined">straighten</span> Distância e alvo</h2>
+      <p class="mf-muted" style="line-height:1.55;margin-bottom:0.75rem">O alcance padrão da arma é 1. Cartas como Schofield, Remington, Carabina e Winchester aumentam esse valor; Mustang e Scope alteram como você enxerga ou é visto.</p>
+      <p class="mf-muted" style="line-height:1.55">Cartas que exigem alvo explícito no motor incluem: BANG!, Duelo, Pânico!, Cat Balou e Cadeia — ver <code style="color:var(--color-primary)">CARD_TYPES_REQUIRING_TARGET</code> no servidor.</p>
+    </section>
+
+    <section class="mf-card-section" style="margin-bottom:2rem">
+      <h2 class="mf-card-section__title"><span class="material-symbols-outlined">local_fire_department</span> Dinamite e explosões</h2>
+      <p class="mf-muted" style="line-height:1.55">Quando a Dinamite explodir, o motor aplica dano fixo (ver <code style="color:var(--color-primary)">GAME_LIMITS.dynamiteDamage</code>). Valores de revelação seguem a tabela oficial de naipes/valores configurada no servidor.</p>
+    </section>
+
+    <section class="mf-card-section" style="margin-bottom:2rem">
+      <h2 class="mf-card-section__title"><span class="material-symbols-outlined">storefront</span> Loja geral</h2>
+      <p class="mf-muted" style="line-height:1.55">Ao resolver a Loja Geral, o cliente oferece escolhas priorizadas por tipo de carta (<code style="color:var(--color-primary)">STORE_CARD_PRIORITY</code>). Esta UI web replica apenas o texto; o fluxo interativo continua em <a href="../bang.html" style="color:var(--color-primary)">bang.html</a>.</p>
+    </section>
+
+    <section class="mf-card-section">
+      <h2 class="mf-card-section__title"><span class="material-symbols-outlined">groups</span> Personagens jogáveis</h2>
+      <p class="mf-muted" style="line-height:1.55;margin-bottom:1rem">Cada figura no baralho possui vida e habilidade passiva/ativa espelhada em <code style="color:var(--color-primary)">CHARS</code> no servidor. A interface Modern Frontier lista efeitos durante a partida legada.</p>
+      <a class="mf-btn mf-btn--ghost" href="regras.html">← Voltar ao resumo ilustrado</a>
+    </section>
+  </main>
+
+  <nav class="mf-bottomnav" aria-label="Navegação principal">
+    <a href="lobby.html"><span class="material-symbols-outlined">home</span>Início</a>
+    <a class="mf-bottomnav--active" href="regras-manual.html"><span class="material-symbols-outlined">menu_book</span>Manual</a>
+    <a href="pratica-bots.html"><span class="material-symbols-outlined">smart_toy</span>Bots</a>
+    <a href="loja.html"><span class="material-symbols-outlined">local_mall</span>Loja</a>
+  </nav>
+
+  <div id="mf-toast" class="mf-toast" role="status" aria-live="polite"></div>
+  <script src="js/mf-routes.js"></script>
+  <script src="js/game-rules.js"></script>
+  <script src="js/mf-storage.js"></script>
+  <script src="js/mf-app.js"></script>
+</body>
+</html>

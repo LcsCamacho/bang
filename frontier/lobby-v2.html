@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lobby v2 — Modern Frontier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=Work+Sans:wght@400;500;600&family=Inter:wght@500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="../bang.css">
+  <link rel="stylesheet" href="frontier-pages.css">
+</head>
+<body class="mf-body" data-mf-page="lobby-v2">
+  <header class="mf-topbar">
+    <a class="mf-topbar__brand" href="lobby-v2.html">Modern Frontier</a>
+    <ul class="mf-topbar__nav">
+      <li><a class="mf-nav--active" href="lobby-v2.html">Lobby</a></li>
+      <li><a href="regras.html">Regras</a></li>
+      <li><a href="loja.html">Loja</a></li>
+      <li><a href="duelo.html">Duelo</a></li>
+    </ul>
+    <div class="mf-topbar__actions">
+      <span class="mf-wallet-pill"><span class="material-symbols-outlined" style="font-size:1.125rem">account_balance_wallet</span> 1.250</span>
+      <span class="mf-wallet-pill"><span class="material-symbols-outlined" style="font-size:1.125rem">stars</span> 42</span>
+      <span class="mf-avatar--header" aria-hidden="true">MF</span>
+    </div>
+  </header>
+
+  <main class="mf-main">
+    <div class="mf-card-section" style="margin-bottom:2rem;border-left:4px solid var(--color-tertiary)">
+      <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center">
+        <div>
+          <p class="text-label" style="color:var(--color-tertiary);margin-bottom:0.35rem">Torneio semanal</p>
+          <h2 class="mf-section-title" style="margin:0;font-size:1.25rem">Trilha do Carrasco</h2>
+          <p class="mf-muted" style="max-width:32rem;margin-top:0.5rem;font-size:0.9rem">Ranking separado do ELO casual. Recompensas cosméticas apenas; sem vínculo com o motor ainda.</p>
+        </div>
+        <a class="mf-btn mf-btn--primary" href="sala-de-espera.html">Entrar na fila</a>
+      </div>
+    </div>
+
+    <header class="mf-hero">
+      <div class="mf-hero__row">
+        <div>
+          <h1 class="mf-hero__title">Saloon central</h1>
+          <p class="mf-hero__lead">Segunda variação de lobby: destaque para torneio + mesma lista de salas mock abaixo.</p>
+        </div>
+        <div class="mf-hero__actions">
+          <a class="mf-btn mf-btn--primary" href="criar-sala.html">Nova sala</a>
+          <a class="mf-btn mf-btn--ghost" href="pratica-bots.html">Treino</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="mf-lobby-grid">
+      <aside class="mf-stack-lg">
+        <div class="mf-panel">
+          <div class="mf-panel__title"><span class="material-symbols-outlined" style="font-size:1rem">tune</span> Modo de jogo</div>
+          <button type="button" class="mf-filter-chip mf-filter-chip--active" data-mf-filter>Clássico BANG!</button>
+          <button type="button" class="mf-filter-chip" data-mf-filter>Somente amigos</button>
+          <button type="button" class="mf-filter-chip" data-mf-filter>Espectador</button>
+        </div>
+        <div class="mf-event-card">
+          <div class="mf-event-card__bg" aria-hidden="true"></div>
+          <div class="mf-event-card__body">
+            <div class="mf-event-card__kicker">Bônus de ouro</div>
+            <div class="mf-event-card__title">Dobro até meia-noite</div>
+          </div>
+        </div>
+      </aside>
+      <section class="mf-room-scroll" id="mf-room-list" aria-label="Lista de salas"></section>
+    </div>
+  </main>
+
+  <nav class="mf-bottomnav" aria-label="Navegação principal">
+    <a class="mf-bottomnav--active" href="lobby-v2.html"><span class="material-symbols-outlined">home</span>Início</a>
+    <a href="regras.html"><span class="material-symbols-outlined">gavel</span>Regras</a>
+    <a href="duelo.html"><span class="material-symbols-outlined">swords</span>Duelo</a>
+    <a href="loja.html"><span class="material-symbols-outlined">local_mall</span>Loja</a>
+  </nav>
+
+  <div id="mf-toast" class="mf-toast" role="status" aria-live="polite"></div>
+  <script src="js/mf-routes.js"></script>
+  <script src="js/game-rules.js"></script>
+  <script src="js/mf-storage.js"></script>
+  <script src="js/mf-app.js"></script>
+</body>
+</html>

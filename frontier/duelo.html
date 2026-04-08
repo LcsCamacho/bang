@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>O duelo — Modern Frontier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=Work+Sans:wght@400;500;600&family=Inter:wght@500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="../bang.css">
+  <link rel="stylesheet" href="frontier-pages.css">
+</head>
+<body class="mf-body mf-game-root" data-mf-page="gameplay">
+  <nav class="mf-topbar">
+    <a class="mf-topbar__brand" href="lobby.html">Modern Frontier</a>
+    <ul class="mf-topbar__nav">
+      <li><a href="lobby.html">Lobby</a></li>
+      <li><a href="regras.html">Regras</a></li>
+      <li><a class="mf-nav--active" href="duelo.html">Duelo</a></li>
+      <li><a href="loja.html">Loja</a></li>
+    </ul>
+    <div class="mf-topbar__actions">
+      <span class="mf-wallet-pill"><span class="material-symbols-outlined" style="font-size:1.125rem">account_balance_wallet</span> 1.250</span>
+      <span class="mf-wallet-pill"><span class="material-symbols-outlined" style="font-size:1.125rem">stars</span> 42</span>
+      <span class="mf-avatar--header" aria-hidden="true">MF</span>
+    </div>
+  </nav>
+
+  <main class="mf-main">
+    <div class="mf-tabletop">
+      <div class="mf-opponents">
+        <div class="mf-opponent">
+          <div class="mf-opponent__avatar">M</div>
+          <div class="mf-text-center">
+            <p class="text-headline text-primary" style="font-size:0.75rem;margin:0">Mike de ferro</p>
+            <div style="display:flex;gap:2px;justify-content:center;margin-top:4px">
+              <span class="material-symbols-outlined" style="font-size:14px;color:var(--color-error);font-variation-settings:'FILL' 1">favorite</span>
+              <span class="material-symbols-outlined" style="font-size:14px;color:var(--color-error);font-variation-settings:'FILL' 1">favorite</span>
+              <span class="material-symbols-outlined" style="font-size:14px;color:var(--color-on-surface-variant);font-variation-settings:'FILL' 0">favorite</span>
+            </div>
+          </div>
+        </div>
+        <div class="mf-opponent mf-opponent--turn" style="align-self:flex-start;margin-top:2rem">
+          <div class="mf-opponent__avatar" style="width:5.5rem;height:5.5rem;font-size:1.25rem">X</div>
+          <div class="mf-text-center">
+            <p class="text-headline text-primary" style="font-size:0.8rem;margin:0">Xerife Anna</p>
+            <p class="text-label mf-muted" style="margin-top:0.25rem">Turno atual</p>
+          </div>
+        </div>
+        <div class="mf-opponent">
+          <div class="mf-opponent__avatar">R</div>
+          <div class="mf-text-center">
+            <p class="text-headline text-tertiary" style="font-size:0.75rem;margin:0">Rosa salgada</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);text-align:center;z-index:1">
+        <p class="text-label mf-muted" style="margin-bottom:0.35rem">Mesa</p>
+        <p class="text-headline text-primary" style="font-size:1rem">Fase: jogar cartas</p>
+        <p class="mf-muted" style="font-size:0.8125rem;margin-top:0.35rem;max-width:14rem">Layout de referência. O tabuleiro interativo completo permanece em <strong>bang.html</strong>.</p>
+        <a class="mf-btn mf-btn--primary" href="../bang.html" style="margin-top:1rem">Abrir motor do jogo</a>
+      </div>
+    </div>
+
+    <div class="mf-hand-dock">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+        <span class="text-headline" style="font-size:0.75rem;color:var(--color-primary)">Sua mão (mock)</span>
+        <span class="text-label mf-muted">4 cartas · vida 3</span>
+      </div>
+      <div class="mf-hand-cards" aria-hidden="true">
+        <div class="mf-card-fake"></div>
+        <div class="mf-card-fake"></div>
+        <div class="mf-card-fake"></div>
+        <div class="mf-card-fake"></div>
+      </div>
+    </div>
+  </main>
+
+  <div id="mf-toast" class="mf-toast" role="status" aria-live="polite"></div>
+  <script src="js/mf-routes.js"></script>
+  <script src="js/game-rules.js"></script>
+  <script src="js/mf-storage.js"></script>
+  <script src="js/mf-app.js"></script>
+</body>
+</html>
